@@ -14,7 +14,7 @@ A full-featured e-commerce experience using the best services out there:
 - Vercel to host it
 - **TakeShape ShapeDB for profile data storage**
 - **TakeShape Indexing for query optimization and search**
-- **TakeShape API Workbench for service mesh and GraphQL API generation**
+- **TakeShape API Mesh to bring all these services together in one easy-to-use GraphQL API**
 
 ## Screenshot
 
