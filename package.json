@@ -1,0 +1,62 @@
+{
+  "name": "takeshape-starter-auth0-stripe",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next build && next export",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.5.8",
+    "@auth0/auth0-react": "^1.9.0",
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@stripe/react-stripe-js": "^1.7.0",
+    "@stripe/stripe-js": "^1.22.0",
+    "@theme-ui/color": "^0.13.1",
+    "@theme-ui/components": "0.13.1",
+    "@theme-ui/core": "0.13.1",
+    "@theme-ui/css": "0.13.1",
+    "@theme-ui/presets": "^0.13.1",
+    "@theme-ui/theme-provider": "0.13.1",
+    "abortcontroller-polyfill": "^1.7.3",
+    "date-fns": "^2.28.0",
+    "graphql": "^16.3.0",
+    "lodash": "^4.17.21",
+    "next": "^12.0.10",
+    "node-fetch": "^3.2.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-hook-form": "^7.25.3",
+    "react-icons": "^4.3.1",
+    "stripe": "^8.201.0"
+  },
+  "prettier": {
+    "requirePragma": false,
+    "printWidth": 120,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "none",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "overrides": [
+      {
+        "files": [
+          "*.md"
+        ],
+        "options": {
+          "proseWrap": "always"
+        }
+      }
+    ]
+  },
+  "devDependencies": {
+    "eslint": "8.8.0",
+    "eslint-config-next": "12.0.10"
+  }
+}
