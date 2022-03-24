@@ -1,11 +1,20 @@
-# TakeShape Starter Auth0 + Stripe
+# WARNING
 
-The following is a guide to launch a Next.JS project that uses Auth0 for authentication, Stripe for purchasing
-subscription products, and TakeShape to store custom user profile information and generate an easy-to-use, user-scoped
-Stripe GraphQL API.
+This starter is a work in progress! Do not use for anything important.
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with
-[`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# TakeShape Starter E-commerce Kitchen Sink
+
+A full-featured e-commerce experience using the best services out there:
+
+- Auth0 for user authentication
+- Stripe for products, payments and subscriptions
+- Klaviyo for newsletter subscriptions
+- Judge.me for product reviews
+- Next.js to build the pages and bundle it all up
+- Vercel to host it
+- **TakeShape ShapeDB for profile data storage**
+- **TakeShape Indexing for query optimization and search**
+- **TakeShape API Workbench for service mesh and GraphQL API generation**
 
 ## Screenshot
 
