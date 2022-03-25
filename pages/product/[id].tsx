@@ -1,5 +1,5 @@
 import { NextPage, GetStaticProps, GetStaticPaths } from 'next';
-import { Heading, Divider, Alert, Spinner, Container } from '@theme-ui/components';
+import { Heading, Divider } from '@theme-ui/components';
 import { Page } from 'components/layout';
 import { ProductCard } from 'components/products';
 import { takeshapeApiUrl, takeshapeApiKey } from 'lib/config';
@@ -12,6 +12,7 @@ import {
   GetStripeProducts,
   StripeProducts
 } from 'lib/queries';
+import { getSingle } from 'lib/utils/types';
 
 interface ProductPageProps {
   product: Stripe_Product;
@@ -27,13 +28,6 @@ const ProductPage: NextPage<ProductPageProps> = (props) => {
   );
 };
 
-function getSingle<T>(param?: T | T[]): T | undefined {
-  if (Array.isArray(param)) {
-    return param[0];
-  }
-  return param;
-}
-
 export const getStaticProps: GetStaticProps<ProductPageProps> = async (context) => {
   const { params } = context;
   const id = getSingle(params.id);
@@ -42,7 +36,7 @@ export const getStaticProps: GetStaticProps<ProductPageProps> = async (context) 
     data: { product }
   } = await client.query<GetStripeProductQuery, GetStripeProductArgs>({
     query: GetStripeProduct,
-    variables: { id: id }
+    variables: { id }
   });
   return {
     props: {
