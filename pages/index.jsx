@@ -43,7 +43,7 @@ export async function getStaticProps() {
     if (data.errors) {
       error = data.errors;
     } else {
-      products = data.products.items;
+      products = data.products.items.filter(product => product.active === true);
     }
   } catch (err) {
     console.error(err);
