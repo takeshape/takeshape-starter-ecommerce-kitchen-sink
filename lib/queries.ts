@@ -1,8 +1,15 @@
 import { gql } from '@apollo/client';
+import { Stripe_Product } from './takeshape/types';
+
+export interface StripeProducts {
+  products: {
+    items: Stripe_Product[];
+  };
+}
 
 export const GetStripeProducts = gql`
   query GetStripeProductsQuery {
-    products: getIndexedProductList(where: {active: {eq: true}}) {
+    products: getIndexedProductList(where: { active: { eq: true } }) {
       items {
         id
         name
@@ -16,6 +23,34 @@ export const GetStripeProducts = gql`
             interval
             intervalCount: interval_count
           }
+        }
+      }
+    }
+  }
+`;
+
+export interface GetStripeProductArgs {
+  id: string;
+}
+
+export type GetStripeProductQuery = {
+  product: Stripe_Product;
+};
+
+export const GetStripeProduct = gql`
+  query GetStripeProductQuery($id: String!) {
+    product: Stripe_getProduct(id: $id) {
+      id
+      name
+      description
+      images
+      prices {
+        id
+        unitAmount: unit_amount
+        currency
+        recurring {
+          interval
+          intervalCount: interval_count
         }
       }
     }

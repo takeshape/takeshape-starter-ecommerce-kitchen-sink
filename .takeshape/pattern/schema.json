@@ -103,19 +103,6 @@
       "description": "Fetch Stripe products from the API Index.",
       "args": "TSListArgs<Stripe_Product>"
     },
-    "getIndexedProduct": {
-      "shape": "Stripe_Product",
-      "resolver": {
-        "shapeName": "Stripe_Product",
-        "name": "takeshape:queryApiIndex",
-        "service": "takeshape:local",
-        "options": {
-          "indexedShape": "Stripe_Product"
-        }
-      },
-      "description": "Fetch Stripe products from the API Index.",
-      "args": "TSGetArgs<Stripe_Product>"
-    },
     "getMyProfile": {
       "shape": "Profile",
       "resolver": {
