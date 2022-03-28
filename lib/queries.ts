@@ -29,6 +29,31 @@ export const GetStripeProducts = gql`
   }
 `;
 
+export const SearchStripeProducts = gql`
+  query SearchStripeProductsQuery($query: String!) {
+    products: search(terms: $query) {
+      results {
+        __typename
+        ... on Stripe_Product {
+          id
+          name
+          description
+          images
+          prices {
+            id
+            unitAmount: unit_amount
+            currency
+            recurring {
+              interval
+              intervalCount: interval_count
+            }
+          }  
+        }
+      }
+    }
+  }
+`;
+
 export interface GetStripeProductArgs {
   id: string;
 }
