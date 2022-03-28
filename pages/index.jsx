@@ -1,8 +1,8 @@
 import { Heading, Divider, Alert, Spinner, Container } from '@theme-ui/components';
 import { Page } from 'components/layout';
 import { ProductList } from 'components/products';
-import { takeshapeApiUrl, takeshapeApiKey } from 'lib/config';
 import { GetStripeProducts } from 'lib/queries';
+import { takeshapeApiUrl, takeshapeApiKey } from 'lib/config';
 import { createApolloClient } from 'lib/apollo';
 
 function HomePage({ products, error }) {

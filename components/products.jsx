@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import NextLink from 'next/link';
 import {
   Grid,
   Box,
+  Link,
   Card,
   Heading,
   Paragraph,
@@ -143,39 +145,49 @@ export const ProductCard = ({ product }) => {
 
   return (
     <Card sx={{ height: '100%' }}>
-      <Flex sx={{ height: '100%', flexDirection: 'column' }}>
-        <Box>
-          <ProductImage images={images} />
+      <Flex sx={{ height: '100%', flexDirection: 'row', flexWrap: 'wrap' }}>
+        <Box sx={{ flex: '1 1 24em', minWidth: '8em' }}>
+          <NextLink href={`/product/${product.id}`} passHref>
+            <Link>
+              <ProductImage images={images} />
+            </Link>
+          </NextLink>
         </Box>
-        <Box>
-          <Heading>{name}</Heading>
-        </Box>
-        <Box sx={{ flexGrow: 1 }}>
-          <Paragraph>{description}</Paragraph>
-        </Box>
-        <Box>
-          <ProductPrice price={price} />
+        <Flex sx={{ flex: '1 1 24em', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Box sx={{ flexGrow: 0 }}>
+            <Heading>
+              <NextLink href={`/product/${product.id}`} passHref>
+                <Link sx={{ color: 'inherit' }}>{name}</Link>
+              </NextLink>
+            </Heading>
+          </Box>
+          <Box sx={{ flexGrow: 1 }}>
+            <Paragraph>{description}</Paragraph>
+          </Box>
+          <Box>
+            <ProductPrice price={price} />
 
-          {oneTimePayment && recurringPayments.length ? (
-            <ProductPaymentToggle purchaseType={purchaseType} onChange={handleUpdatePurchaseType} />
-          ) : null}
+            {oneTimePayment && recurringPayments.length ? (
+              <ProductPaymentToggle purchaseType={purchaseType} onChange={handleUpdatePurchaseType} />
+            ) : null}
 
-          {recurringPayments.length ? (
-            <ProductRecurringSelect
-              currentPrice={price}
-              recurringPayments={recurringPayments}
-              onChange={handleUpdateRecurring}
-            />
-          ) : null}
+            {recurringPayments.length ? (
+              <ProductRecurringSelect
+                currentPrice={price}
+                recurringPayments={recurringPayments}
+                onChange={handleUpdateRecurring}
+              />
+            ) : null}
 
-          <Box>Quantity</Box>
-          <Grid columns={[2]}>
-            <ProductQuantitySelect onChange={handleUpdateQuantity} />
-            <Button type="button" onClick={handleAddToCart}>
-              <small>ADD TO CART</small>
-            </Button>
-          </Grid>
-        </Box>
+            <Box>Quantity</Box>
+            <Grid columns={[2]}>
+              <ProductQuantitySelect onChange={handleUpdateQuantity} />
+              <Button type="button" onClick={handleAddToCart}>
+                <small>ADD TO CART</small>
+              </Button>
+            </Grid>
+          </Box>
+        </Flex>
       </Flex>
     </Card>
   );

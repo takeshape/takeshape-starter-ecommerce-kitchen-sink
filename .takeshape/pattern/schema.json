@@ -6,9 +6,7 @@
   "created": "2021-06-08T13:12:26.923Z",
   "updated": "2022-03-24T21:28:00.915Z",
   "defaultLocale": "en-us",
-  "locales": [
-    "en-us"
-  ],
+  "locales": ["en-us"],
   "workflows": {},
   "forms": {
     "Profile": {
@@ -33,14 +31,7 @@
             "widget": "singleLineText"
           }
         },
-        "order": [
-          "id",
-          "name",
-          "email",
-          "bio",
-          "avatar",
-          "stripeCustomerId"
-        ]
+        "order": ["id", "name", "email", "bio", "avatar", "stripeCustomerId"]
       }
     }
   },
@@ -273,13 +264,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "draft",
-              "open",
-              "paid",
-              "uncollectable",
-              "void"
-            ]
+            "enum": ["draft", "open", "paid", "uncollectable", "void"]
           },
           "limit": {
             "type": "number"
@@ -363,10 +348,7 @@
                 [
                   "filter",
                   {
-                    "predicate": [
-                      "status",
-                      "succeeded"
-                    ]
+                    "predicate": ["status", "succeeded"]
                   }
                 ]
               ]
@@ -609,9 +591,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id"
-        ]
+        "required": ["id"]
       }
     }
   },
@@ -1064,9 +1044,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "subscriptionId"
-        ]
+        "required": ["subscriptionId"]
       }
     },
     "createMyCheckoutSession": {
@@ -1170,11 +1148,7 @@
           },
           "mode": {
             "type": "string",
-            "enum": [
-              "payment",
-              "subscription",
-              "setup"
-            ]
+            "enum": ["payment", "subscription", "setup"]
           },
           "lineItems": {
             "type": "array",
@@ -1191,10 +1165,7 @@
             }
           }
         },
-        "required": [
-          "lineItems",
-          "redirectUrl"
-        ]
+        "required": ["lineItems", "redirectUrl"]
       }
     },
     "updateProfile": {
@@ -1373,9 +1344,7 @@
             "description": "",
             "$ref": "#/shapes/TSRelationship/schema",
             "@relationship": {
-              "shapeIds": [
-                "ASSET"
-              ]
+              "shapeIds": ["ASSET"]
             },
             "title": "Avatar",
             "@mapping": "takeshape:local:Profile.k0Ha4O7oV"
