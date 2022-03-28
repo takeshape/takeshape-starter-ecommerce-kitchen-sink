@@ -84,9 +84,6 @@
             "cursorArg": "starting_after",
             "pageSizeArg": "limit"
           }
-        },
-        "get": {
-          "name": "Stripe_getProduct"
         }
       },
       "triggers": [
