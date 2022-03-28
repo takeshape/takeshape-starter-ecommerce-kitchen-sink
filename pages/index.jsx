@@ -1,6 +1,5 @@
 import { Heading, Divider, Alert, Spinner, Container } from '@theme-ui/components';
 import { Page } from 'components/layout';
-import { Search } from 'components/search';
 import { ProductList } from 'components/products';
 import { GetStripeProducts } from 'lib/queries';
 import { takeshapeApiUrl, takeshapeApiKey } from 'lib/config';
@@ -9,7 +8,6 @@ import { createApolloClient } from 'lib/apollo';
 function HomePage({ products, error }) {
   return (
     <Page>
-      <Search />
       <Heading as="h1">Products</Heading>
       <Divider />
 
