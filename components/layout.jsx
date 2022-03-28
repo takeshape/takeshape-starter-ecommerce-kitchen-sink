@@ -5,20 +5,26 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { CartIcon, CartSidebar } from './cart';
 import Notifications from './notifications';
 import { Logout, Login } from './user';
+import { Search } from './search';
 
 export const Header = () => {
   const { user } = useAuth0();
 
   return (
     <Container as="header">
-      <Flex as="nav">
+      <Flex as="nav" sx={{ gap: '1rem', alignItems: 'center' }}>
         <Link href="/" passHref>
           <NavLink p={2}>Home</NavLink>
         </Link>
         <Link href="/about" passHref>
           <NavLink p={2}>About</NavLink>
         </Link>
-        <Box variant="styles.flexspace" />
+        <Box variant="styles.flexspace" sx={{ flex: '1 1 auto' }}>
+          <Search />
+        </Box>
+        <Box variant="links.nav">
+          <CartIcon />
+        </Box>
         {user ? (
           <>
             <Link href="/account" passHref>
@@ -36,9 +42,6 @@ export const Header = () => {
             <Login />
           </Box>
         )}
-        <Box variant="links.nav">
-          <CartIcon />
-        </Box>
       </Flex>
     </Container>
   );
