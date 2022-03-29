@@ -13,14 +13,7 @@ import {
   Reviews_Stats,
   QueryGetProductReviewsArgs
 } from 'lib/takeshape/types';
-import {
-  GetStripeProduct,
-  GetStripeProductArgs,
-  GetStripeProductQuery,
-  GetStripeProducts,
-  GetProductReviews,
-  StripeProducts
-} from 'lib/queries';
+import { GetProduct, GetProductArgs, GetProductResponse, GetStripeProducts, StripeProducts } from 'lib/queries';
 import { getSingle } from 'lib/utils/types';
 
 interface ProductPageProps {
@@ -55,22 +48,16 @@ export const getStaticProps: GetStaticProps<ProductPageProps> = async (context) 
   const id = getSingle(params.id);
   const client = createApolloClient(takeshapeApiUrl, () => takeshapeAnonymousApiKey);
   const {
-    data: { product }
-  } = await client.query<GetStripeProductQuery, GetStripeProductArgs>({
-    query: GetStripeProduct,
+    data: { product, reviews }
+  } = await client.query<GetProductResponse, GetProductArgs>({
+    query: GetProduct,
     variables: { id }
-  });
-  const {
-    data: { getProductReviews }
-  } = await client.query<{ getProductReviews: Reviews_ProductReviewsQueryResponse }, QueryGetProductReviewsArgs>({
-    query: GetProductReviews,
-    variables: { sku: id }
   });
   return {
     props: {
       product,
-      reviews: getProductReviews.reviews.data ?? null,
-      stats: getProductReviews.stats ?? null
+      reviews: reviews.reviews.data ?? null,
+      stats: reviews.stats ?? null
     }
   };
 };

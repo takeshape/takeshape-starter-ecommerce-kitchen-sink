@@ -1,28 +1,5 @@
 import { gql } from '@apollo/client';
-import { Stripe_Product } from './takeshape/types';
-
-export const GetProductReviews = gql`
-  query GetProductReviews($sku: String!) {
-    getProductReviews(sku: $sku) {
-      reviews {
-        data {
-          date_created
-          order_id
-          product_review_id
-          rating
-          review
-          sku
-          timeago
-          title
-        }
-      }
-      stats {
-        average
-        count
-      }
-    }
-  }
-`;
+import { Reviews_ProductReviewsQueryResponse, Stripe_Product } from './takeshape/types';
 
 export interface StripeProducts {
   products: {
@@ -77,16 +54,17 @@ export const SearchStripeProducts = gql`
   }
 `;
 
-export interface GetStripeProductArgs {
+export interface GetProductArgs {
   id: string;
 }
 
-export type GetStripeProductQuery = {
+export type GetProductResponse = {
   product: Stripe_Product;
+  reviews: Reviews_ProductReviewsQueryResponse;
 };
 
-export const GetStripeProduct = gql`
-  query GetStripeProductQuery($id: String!) {
+export const GetProduct = gql`
+  query GetProduct($id: String!) {
     product: Stripe_getProduct(id: $id) {
       id
       name
@@ -100,6 +78,21 @@ export const GetStripeProduct = gql`
           interval
           intervalCount: interval_count
         }
+      }
+    }
+    reviews: getProductReviews(sku: $id) {
+      reviews {
+        data {
+          date_created
+          timeago
+          rating
+          title
+          review
+        }
+      }
+      stats {
+        average
+        count
       }
     }
   }
