@@ -2,9 +2,9 @@
   "apiVersion": "2",
   "dataKey": "AQIDAHi9nATJb1LYgj5u7ShOGp43y2H6TuckRKGDlwTU4b6ryQHpD1ExP5EeUSOHKV9LG+ofAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMUCghZNs1AGoyxZ8MAgEQgDuRWxn8sl1YiM0CkUifGRkgeXzEU0/2IDozZfB4uuketCRxaEqcxBzh6l7lrIJAKkPOQGTYQD32doiYog==",
   "projectId": "79b5254d-5bc3-4034-8b05-e9c2f097de5a",
-  "version": 189,
+  "version": 199,
   "created": "2021-06-08T13:12:26.923Z",
-  "updated": "2022-03-24T21:28:00.915Z",
+  "updated": "2022-03-29T16:27:31.078Z",
   "defaultLocale": "en-us",
   "locales": [
     "en-us"
@@ -69,6 +69,18 @@
         "useRestfulNames": true
       },
       "authentication": "R7Wso3SewJO3mfPpm+GsBbTykozdnpJlC+WQZgTxbeHh42EaAzQY/vZOTUATnpFxFz2d291LEz02S+usrGkaOqcJqlMoZ/7XCsmfRHkJXlMDL0JSHGRuyL4y9hssPofuRn1QxTz0BNllceMT6zNZGkfOxVdPP8EiTO/ddzeyN4w5jnJAmFhWy0cA7r7hpnvKojE0qpdOwA=="
+    },
+    "reviews-io": {
+      "id": "reviews-io",
+      "provider": "generic",
+      "title": "Reviews.io",
+      "namespace": "Reviews",
+      "serviceType": "rest",
+      "authenticationType": "searchParams",
+      "authentication": "HhPDszv1Mj8mYQ2ZdqunCvNhxIFsCFU55IuyuSe31llMNC8BENmwQKQ0usM+m81hrj1sJmfNMUyg1l1Jjj6pnj7pMVgHnQ6JQgtceUjJAR/j/BByx1GZ1y0J93lJ5qxOrHexkXLMY7wIBTWs6O+Y",
+      "options": {
+        "endpoint": "https://api.reviews.io"
+      }
     }
   },
   "indexedShapes": {
@@ -106,6 +118,43 @@
     }
   },
   "queries": {
+    "getProductReviews": {
+      "shape": "Reviews_ProductReviews",
+      "resolver": {
+        "name": "rest:get",
+        "service": "reviews-io",
+        "path": "/product/review",
+        "searchParams": {
+          "ops": [
+            {
+              "path": "store",
+              "value": "www.markcatalano.net"
+            },
+            {
+              "path": "sku",
+              "mapping": "$args.sku"
+            }
+          ]
+        },
+        "results": {
+          "ops": [
+            {
+              "path": "$",
+              "mapping": "$finalResolver.reviews"
+            }
+          ]
+        }
+      },
+      "description": "Get product reviews for an SKU",
+      "args": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "getIndexedProductList": {
       "shape": "PaginatedList<Stripe_Product>",
       "resolver": {
@@ -623,6 +672,67 @@
     }
   },
   "mutations": {
+    "queueReviewInvitation": {
+      "shape": "Reviews_PostResponse",
+      "resolver": {
+        "name": "rest:post",
+        "service": "reviews-io",
+        "path": "invitation",
+        "searchParams": {
+          "ops": [
+            {
+              "path": "store",
+              "value": "www.markcatalano.net"
+            }
+          ]
+        },
+        "json": {
+          "ops": [
+            {
+              "path": "name",
+              "mapping": "$args.name"
+            },
+            {
+              "path": "email",
+              "mapping": "$args.email"
+            },
+            {
+              "path": "order_id",
+              "mapping": "$args.orderId"
+            },
+            {
+              "path": "products",
+              "mapping": "$args.products"
+            },
+            {
+              "path": "template_id",
+              "value": "47970"
+            }
+          ]
+        }
+      },
+      "description": "Queue a review invitation with Reviews.io",
+      "args": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "string"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "@ref": "local:Reviews_Product"
+            }
+          }
+        }
+      }
+    },
     "upsertMyProfile": {
       "shape": "Profile",
       "resolver": {
@@ -1246,6 +1356,203 @@
     }
   },
   "shapes": {
+    "Reviews_PostResponse": {
+      "id": "Reviews_PostResponse",
+      "name": "Reviews_PostResponse",
+      "title": "Reviews_PostResponse",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "Reviews_ProductReviewer": {
+      "id": "Reviews_ProductReviewer",
+      "name": "Reviews_ProductReviewer",
+      "title": "Reviews_ProductReviewer",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "verified_buyer": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "profile_picture": {
+            "type": "string"
+          },
+          "gravatar": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Reviews_ProductReview": {
+      "id": "Reviews_ProductReview",
+      "name": "Reviews_ProductReview",
+      "title": "Reviews_ProductReview",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "product_review_id": {
+            "type": "integer"
+          },
+          "review": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer"
+          },
+          "date_created": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "reviewer": {
+            "@ref": "local:Reviews_ProductReviewer"
+          },
+          "timeago": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Reviews_ProductReviews": {
+      "id": "Reviews_ProductReviews",
+      "name": "Reviews_ProductReviews",
+      "title": "Reviews_ProductReviews",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer"
+          },
+          "per_page": {
+            "type": "integer"
+          },
+          "current_page": {
+            "type": "integer"
+          },
+          "last_page": {
+            "type": "integer"
+          },
+          "from": {
+            "type": "integer"
+          },
+          "to": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "@ref": "local:Reviews_ProductReview"
+            }
+          }
+        }
+      }
+    },
+    "Reviews_Store": {
+      "id": "Reviews_Store",
+      "name": "Reviews_Store",
+      "title": "Reviews_Store",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "logo": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Reviews_Product": {
+      "id": "Reviews_Product",
+      "name": "Reviews_Product",
+      "title": "Reviews_Product",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "pageUrl": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Reviews_Stats": {
+      "id": "Reviews_Stats",
+      "name": "Reviews_Stats",
+      "title": "Reviews_Stats",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "average": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "Reviews_ProductReviewsQueryResponse": {
+      "id": "Reviews_ProductReviewsQueryResponse",
+      "name": "Reviews_ProductReviewsQueryResponse",
+      "title": "Reviews_ProductReviewsQueryResponse",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "reviews": {
+            "@ref": "local:Reviews_ProductReviews"
+          },
+          "store": {
+            "@ref": "local:Reviews_Store"
+          },
+          "word": {
+            "type": "string"
+          },
+          "write_review_link": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "Stripe_Product": {
       "id": "Stripe_Product",
       "name": "Stripe_Product",

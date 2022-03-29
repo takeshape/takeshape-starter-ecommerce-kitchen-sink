@@ -47,7 +47,7 @@ export const SearchStripeProducts = gql`
               interval
               intervalCount: interval_count
             }
-          }  
+          }
         }
       }
     }
@@ -253,6 +253,15 @@ export const GetMyPayments = gql`
           invoicePdf: invoice_pdf
         }
       }
+    }
+  }
+`;
+
+export const QueueReviewInvitation = gql`
+  mutation QueueReviewInvitationMutation {
+    queueReviewInvitation(name: String, email: String, orderId: String, products: [Reviews_ProductInput]) {
+      status
+      messages
     }
   }
 `;
