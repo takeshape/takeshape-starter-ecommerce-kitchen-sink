@@ -1,11 +1,11 @@
 import type { NextApiHandler, NextConfig } from 'next';
 import Stripe from 'stripe';
 import { buffer } from 'micro';
-import { stripePublishableKey, stripeWebhookSecret, takeshapeApiUrl, takeshapeWebhookApiKey } from 'lib/config';
+import { stripeSecretKey, stripeWebhookSecret, takeshapeApiUrl, takeshapeWebhookApiKey, siteUrl } from 'lib/config';
 import { createApolloClient } from 'lib/apollo/client';
 import { QueueReviewInvitation } from 'lib/queries';
 
-const stripe = new Stripe(stripePublishableKey, { apiVersion: '2020-08-27' });
+const stripe = new Stripe(stripeSecretKey, { apiVersion: '2020-08-27' });
 const client = createApolloClient(takeshapeApiUrl, () => takeshapeWebhookApiKey);
 
 export const config: NextConfig = {
@@ -17,12 +17,7 @@ export const config: NextConfig = {
 const handler: NextApiHandler = async (req, res) => {
   const { headers } = req;
 
-  console.log('req.body', req.body);
-
   const stripeSignature = headers['stripe-signature'];
-
-  console.log('stripeSignature', stripeSignature);
-
   const buf = await buffer(req);
   const event = stripe.webhooks.constructEvent(buf.toString(), stripeSignature, stripeWebhookSecret);
 
@@ -30,32 +25,32 @@ const handler: NextApiHandler = async (req, res) => {
     switch (event.type) {
       case 'invoice.paid':
         const invoice = event.data.object as Stripe.Invoice;
-        console.log(invoice);
+
+        if (!invoice.customer_email) {
+          console.info('No email on invoice');
+          return;
+        }
 
         const lineItemsPromise = invoice.lines.data.map(async (lineItem) =>
-          stripe.invoiceItems.retrieve(lineItem.id, { expand: ['data.price.product'] })
+          stripe.invoiceItems.retrieve(lineItem.id, { expand: ['price.product'] })
         );
         const lineItems = await Promise.all(lineItemsPromise);
-
-        console.log('lineItems', lineItems);
 
         const products = lineItems.map((lineItem) => {
           const product = lineItem.price.product as Stripe.Product;
           return {
             sku: product.id,
             name: product.name,
-            description: product.description,
-            pageUrl: `product/${product.id}`,
-            image: product.images[0]
+            description: product.description ?? '',
+            pageUrl: `https://${siteUrl}/${product.id}`,
+            image: product.images[0] ?? ''
           };
         });
-
-        console.log('products', products);
 
         const { data } = await client.mutate({
           mutation: QueueReviewInvitation,
           variables: {
-            name: invoice.customer_name,
+            name: invoice.customer_name ?? 'Customer',
             email: invoice.customer_email,
             orderId: invoice.id,
             products
@@ -67,15 +62,15 @@ const handler: NextApiHandler = async (req, res) => {
         }
 
         console.info(data);
-        res.status(200);
+        res.status(200).json({ status: 'ok' });
         break;
       default:
-        console.log(`Unhandled event type ${event.type}`);
-        res.status(200);
+        console.info(`Unhandled event type ${event.type}`);
+        res.status(200).json({ status: 'ok' });
     }
   } catch (err) {
     console.error(err);
-    res.status(500);
+    res.status(500).json({ status: 'error' });
   }
 };
 

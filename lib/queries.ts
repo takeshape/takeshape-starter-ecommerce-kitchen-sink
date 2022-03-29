@@ -258,8 +258,13 @@ export const GetMyPayments = gql`
 `;
 
 export const QueueReviewInvitation = gql`
-  mutation QueueReviewInvitationMutation {
-    queueReviewInvitation(name: String, email: String, orderId: String, products: [Reviews_ProductInput]) {
+  mutation QueueReviewInvitationMutation(
+    $name: String
+    $email: String
+    $orderId: String
+    $products: [Reviews_ProductInput]
+  ) {
+    queueReviewInvitation(name: $name, email: $email, orderId: $orderId, products: $products) {
       status
       messages
     }
