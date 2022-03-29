@@ -153,7 +153,6 @@ const theme = {
     }
   },
   alerts: {
-    ...swiss.alerts,
     primary: {
       color: 'background',
       bg: 'primary'
