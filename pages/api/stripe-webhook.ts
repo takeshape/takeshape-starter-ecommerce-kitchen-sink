@@ -7,6 +7,12 @@ import { QueueReviewInvitation } from 'lib/queries';
 const stripe = new Stripe(stripePublishableKey, { apiVersion: '2020-08-27' });
 const client = createApolloClient(takeshapeApiUrl, () => takeshapeWebhookApiKey);
 
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
+
 const handler: NextApiHandler = async (req, res) => {
   const { body, headers } = req;
   const stripeSignature = headers['stripe-signature'];
