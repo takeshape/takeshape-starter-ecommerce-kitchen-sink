@@ -74,7 +74,7 @@ export const ProductRecurringSelect = ({ currentPrice, recurringPayments, onChan
 
 export const ProductQuantitySelect = ({ defaultValue, onChange }) => {
   return (
-    <Box variant="product.quantity">
+    <Box variant="styles.product.quantity">
       <Select defaultValue={defaultValue ?? 1} onChange={onChange}>
         {range(10).map((num) => (
           <option key={num} value={num + 1}>

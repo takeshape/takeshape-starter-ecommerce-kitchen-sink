@@ -88,6 +88,9 @@ type Query {
     where: TSWhereTsStaticSiteInput
   ): TsStaticSitePaginatedList
 
+  """Get product reviews for an SKU"""
+  getProductReviews(sku: String): Reviews_ProductReviewsQueryResponse
+
   """Fetch Stripe products from the API Index."""
   getIndexedProductList(
     terms: String
@@ -169,6 +172,7 @@ type Query {
   <p>Retrieves the details of an existing product. Supply the unique product ID from either a product creation request or the product list, and Stripe will return the corresponding product information.</p>
   """
   Stripe_getProduct(expand: [String], id: String!): Stripe_Product
+  Klaviyo_getLists: Klaviyo_GetListsResponse
   searchAssetIndex(
     terms: String
 
@@ -634,6 +638,55 @@ input TSWhereTsStaticSiteEnvironmentVariablesInput {
 input TSWhereTsStaticSiteTriggersInput {
   contentTypeId: TSWhereStringInput
   status: TSWhereStringInput
+}
+
+type Reviews_ProductReviewsQueryResponse {
+  reviews: Reviews_ProductReviews
+  store: Reviews_Store
+  stats: Reviews_Stats
+  word: String
+  write_review_link: String
+}
+
+type Reviews_ProductReviews {
+  total: Int
+  per_page: Int
+  current_page: Int
+  last_page: Int
+  from: Int
+  to: Int
+  data: [Reviews_ProductReview]
+}
+
+type Reviews_ProductReview {
+  title: String
+  product_review_id: Int
+  review: String
+  sku: String
+  rating: Int
+  date_created: String
+  order_id: String
+  reviewer: Reviews_ProductReviewer
+  timeago: String
+}
+
+type Reviews_ProductReviewer {
+  first_name: String
+  last_name: String
+  verified_buyer: String
+  address: String
+  profile_picture: String
+  gravatar: String
+}
+
+type Reviews_Store {
+  name: String
+  logo: String
+}
+
+type Reviews_Stats {
+  average: String
+  count: Int
 }
 
 type Stripe_ProductPaginatedList {
@@ -12697,6 +12750,15 @@ input TSWhereProfileInput {
   NOT: TSWhereProfileInput
 }
 
+type Klaviyo_GetListsResponse {
+  items: [Klaviyo_GetListsResponseItemsProperty]
+}
+
+type Klaviyo_GetListsResponseItemsProperty {
+  list_id: String
+  list_name: String
+}
+
 """Asset search results"""
 type AssetSearchResults {
   results: [Asset!]!
@@ -12811,6 +12873,9 @@ type WithContext {
     where: TSWhereTsStaticSiteInput
   ): TsStaticSitePaginatedList
 
+  """Get product reviews for an SKU"""
+  getProductReviews(sku: String): Reviews_ProductReviewsQueryResponse
+
   """Fetch Stripe products from the API Index."""
   getIndexedProductList(
     terms: String
@@ -12892,6 +12957,7 @@ type WithContext {
   <p>Retrieves the details of an existing product. Supply the unique product ID from either a product creation request or the product list, and Stripe will return the corresponding product information.</p>
   """
   Stripe_getProduct(expand: [String], id: String!): Stripe_Product
+  Klaviyo_getLists: Klaviyo_GetListsResponse
   searchAssetIndex(
     terms: String
 
@@ -13016,6 +13082,10 @@ type Mutation {
 
   """Delete TsStaticSite"""
   deleteTsStaticSite(input: DeleteTsStaticSiteInput!, clientMutationId: String): DeleteTsStaticSiteResult
+  Klaviyo_getListMembers(input: GetListMembersInput, list_id: String!): [GetListMemberItem]
+
+  """Queue a review invitation with Reviews.io"""
+  queueReviewInvitation(name: String, email: String, orderId: String, products: [Reviews_ProductInput]): Reviews_PostResponse
 
   """Upsert my profile."""
   upsertMyProfile(name: String, bio: String, avatarId: String): Profile
@@ -13290,6 +13360,33 @@ type DeleteTsStaticSiteResult {
 """delete TsStaticSite input"""
 input DeleteTsStaticSiteInput {
   _id: ID!
+}
+
+type GetListMemberItem {
+  id: String
+  created: String
+  email: String
+  push_token: String
+  phone_number: String
+}
+
+input GetListMembersInput {
+  emails: [String]
+  phone_numbers: [String]
+  push_tokens: [String]
+}
+
+type Reviews_PostResponse {
+  status: String
+  messages: [String]
+}
+
+input Reviews_ProductInput {
+  name: String
+  sku: String
+  image: String
+  pageUrl: String
+  description: String
 }
 
 input Stripe_CustomerAddressPropertyInput {

@@ -69,3 +69,21 @@
       - Resource: ["ts:shape:4a0614fc-9519-4dbe-976a-99622dc4fe37:Stripe*"]
         Effect: "Allow"
         Action: ["shape:query"]
+- name: webhook
+  permissions:
+    Statement:
+      - Resource:
+          [
+            "ts:graphql:4a0614fc-9519-4dbe-976a-99622dc4fe37:Mutation.*",
+          ]
+        Effect: "Allow"
+        Action: ["graphql:execute"]
+      - Resource:
+          [
+            "ts:graphql:4a0614fc-9519-4dbe-976a-99622dc4fe37:Query.*",
+          ]
+        Effect: "Allow"
+        Action: ["graphql:execute"]
+      - Resource: ["ts:shape:4a0614fc-9519-4dbe-976a-99622dc4fe37:*"]
+        Effect: "Allow"
+        Action: ["shape:query"]

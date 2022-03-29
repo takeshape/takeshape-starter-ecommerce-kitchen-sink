@@ -27,7 +27,7 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     setPersistedCartItems(state.items);
     setCartIsReady(dispatch);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(state.items)]);
 
   useEffect(() => {

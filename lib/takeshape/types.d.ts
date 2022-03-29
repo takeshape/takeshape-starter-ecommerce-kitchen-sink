@@ -32,6 +32,8 @@ export type Query = {
   getTsStaticSite?: Maybe<TsStaticSite>;
   /** Returns a list TsStaticSite in natural order. */
   getTsStaticSiteList?: Maybe<TsStaticSitePaginatedList>;
+  /** Get product reviews for an SKU */
+  getProductReviews?: Maybe<Reviews_ProductReviewsQueryResponse>;
   /** Fetch Stripe products from the API Index. */
   getIndexedProductList?: Maybe<Stripe_ProductPaginatedList>;
   /** Get my profile */
@@ -52,6 +54,7 @@ export type Query = {
   Stripe_listProducts?: Maybe<Stripe_ListProductsResponse>;
   /** <p>Retrieves the details of an existing product. Supply the unique product ID from either a product creation request or the product list, and Stripe will return the corresponding product information.</p> */
   Stripe_getProduct?: Maybe<Stripe_Product>;
+  Klaviyo_getLists?: Maybe<Klaviyo_GetListsResponse>;
   searchAssetIndex?: Maybe<AssetSearchResults>;
   searchTsStaticSiteIndex?: Maybe<TsStaticSiteSearchResults>;
   searchProfileIndex?: Maybe<ProfileSearchResults>;
@@ -134,6 +137,12 @@ export type QueryGetTsStaticSiteListArgs = {
   enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
   onlyEnabled?: InputMaybe<Scalars['Boolean']>;
   where?: InputMaybe<TsWhereTsStaticSiteInput>;
+};
+
+
+/** Root of the Schema */
+export type QueryGetProductReviewsArgs = {
+  sku?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -630,6 +639,61 @@ export type TsWhereTsStaticSiteEnvironmentVariablesInput = {
 export type TsWhereTsStaticSiteTriggersInput = {
   contentTypeId?: InputMaybe<TsWhereStringInput>;
   status?: InputMaybe<TsWhereStringInput>;
+};
+
+export type Reviews_ProductReviewsQueryResponse = {
+  __typename?: 'Reviews_ProductReviewsQueryResponse';
+  reviews?: Maybe<Reviews_ProductReviews>;
+  store?: Maybe<Reviews_Store>;
+  stats?: Maybe<Reviews_Stats>;
+  word?: Maybe<Scalars['String']>;
+  write_review_link?: Maybe<Scalars['String']>;
+};
+
+export type Reviews_ProductReviews = {
+  __typename?: 'Reviews_ProductReviews';
+  total?: Maybe<Scalars['Int']>;
+  per_page?: Maybe<Scalars['Int']>;
+  current_page?: Maybe<Scalars['Int']>;
+  last_page?: Maybe<Scalars['Int']>;
+  from?: Maybe<Scalars['Int']>;
+  to?: Maybe<Scalars['Int']>;
+  data?: Maybe<Array<Maybe<Reviews_ProductReview>>>;
+};
+
+export type Reviews_ProductReview = {
+  __typename?: 'Reviews_ProductReview';
+  title?: Maybe<Scalars['String']>;
+  product_review_id?: Maybe<Scalars['Int']>;
+  review?: Maybe<Scalars['String']>;
+  sku?: Maybe<Scalars['String']>;
+  rating?: Maybe<Scalars['Int']>;
+  date_created?: Maybe<Scalars['String']>;
+  order_id?: Maybe<Scalars['String']>;
+  reviewer?: Maybe<Reviews_ProductReviewer>;
+  timeago?: Maybe<Scalars['String']>;
+};
+
+export type Reviews_ProductReviewer = {
+  __typename?: 'Reviews_ProductReviewer';
+  first_name?: Maybe<Scalars['String']>;
+  last_name?: Maybe<Scalars['String']>;
+  verified_buyer?: Maybe<Scalars['String']>;
+  address?: Maybe<Scalars['String']>;
+  profile_picture?: Maybe<Scalars['String']>;
+  gravatar?: Maybe<Scalars['String']>;
+};
+
+export type Reviews_Store = {
+  __typename?: 'Reviews_Store';
+  name?: Maybe<Scalars['String']>;
+  logo?: Maybe<Scalars['String']>;
+};
+
+export type Reviews_Stats = {
+  __typename?: 'Reviews_Stats';
+  average?: Maybe<Scalars['String']>;
+  count?: Maybe<Scalars['Int']>;
 };
 
 export type Stripe_ProductPaginatedList = {
@@ -10059,6 +10123,17 @@ export type TsWhereProfileInput = {
   NOT?: InputMaybe<TsWhereProfileInput>;
 };
 
+export type Klaviyo_GetListsResponse = {
+  __typename?: 'Klaviyo_GetListsResponse';
+  items?: Maybe<Array<Maybe<Klaviyo_GetListsResponseItemsProperty>>>;
+};
+
+export type Klaviyo_GetListsResponseItemsProperty = {
+  __typename?: 'Klaviyo_GetListsResponseItemsProperty';
+  list_id?: Maybe<Scalars['String']>;
+  list_name?: Maybe<Scalars['String']>;
+};
+
 /** Asset search results */
 export type AssetSearchResults = {
   __typename?: 'AssetSearchResults';
@@ -10103,6 +10178,8 @@ export type WithContext = {
   getTsStaticSite?: Maybe<TsStaticSite>;
   /** Returns a list TsStaticSite in natural order. */
   getTsStaticSiteList?: Maybe<TsStaticSitePaginatedList>;
+  /** Get product reviews for an SKU */
+  getProductReviews?: Maybe<Reviews_ProductReviewsQueryResponse>;
   /** Fetch Stripe products from the API Index. */
   getIndexedProductList?: Maybe<Stripe_ProductPaginatedList>;
   /** Get my profile */
@@ -10123,6 +10200,7 @@ export type WithContext = {
   Stripe_listProducts?: Maybe<Stripe_ListProductsResponse>;
   /** <p>Retrieves the details of an existing product. Supply the unique product ID from either a product creation request or the product list, and Stripe will return the corresponding product information.</p> */
   Stripe_getProduct?: Maybe<Stripe_Product>;
+  Klaviyo_getLists?: Maybe<Klaviyo_GetListsResponse>;
   searchAssetIndex?: Maybe<AssetSearchResults>;
   searchTsStaticSiteIndex?: Maybe<TsStaticSiteSearchResults>;
   searchProfileIndex?: Maybe<ProfileSearchResults>;
@@ -10204,6 +10282,12 @@ export type WithContextGetTsStaticSiteListArgs = {
   enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
   onlyEnabled?: InputMaybe<Scalars['Boolean']>;
   where?: InputMaybe<TsWhereTsStaticSiteInput>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetProductReviewsArgs = {
+  sku?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -10367,6 +10451,9 @@ export type Mutation = {
   duplicateTsStaticSite?: Maybe<DuplicateTsStaticSiteResult>;
   /** Delete TsStaticSite */
   deleteTsStaticSite?: Maybe<DeleteTsStaticSiteResult>;
+  Klaviyo_getListMembers?: Maybe<Array<Maybe<GetListMemberItem>>>;
+  /** Queue a review invitation with Reviews.io */
+  queueReviewInvitation?: Maybe<Reviews_PostResponse>;
   /** Upsert my profile. */
   upsertMyProfile?: Maybe<Profile>;
   /** Upsert my Stripe customer. */
@@ -10455,6 +10542,20 @@ export type MutationDuplicateTsStaticSiteArgs = {
 export type MutationDeleteTsStaticSiteArgs = {
   input: DeleteTsStaticSiteInput;
   clientMutationId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationKlaviyo_GetListMembersArgs = {
+  input?: InputMaybe<GetListMembersInput>;
+  list_id: Scalars['String'];
+};
+
+
+export type MutationQueueReviewInvitationArgs = {
+  name?: InputMaybe<Scalars['String']>;
+  email?: InputMaybe<Scalars['String']>;
+  orderId?: InputMaybe<Scalars['String']>;
+  products?: InputMaybe<Array<InputMaybe<Reviews_ProductInput>>>;
 };
 
 
@@ -10766,6 +10867,35 @@ export type DeleteTsStaticSiteResult = {
 /** delete TsStaticSite input */
 export type DeleteTsStaticSiteInput = {
   _id: Scalars['ID'];
+};
+
+export type GetListMemberItem = {
+  __typename?: 'GetListMemberItem';
+  id?: Maybe<Scalars['String']>;
+  created?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  push_token?: Maybe<Scalars['String']>;
+  phone_number?: Maybe<Scalars['String']>;
+};
+
+export type GetListMembersInput = {
+  emails?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  phone_numbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  push_tokens?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type Reviews_PostResponse = {
+  __typename?: 'Reviews_PostResponse';
+  status?: Maybe<Scalars['String']>;
+  messages?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+export type Reviews_ProductInput = {
+  name?: InputMaybe<Scalars['String']>;
+  sku?: InputMaybe<Scalars['String']>;
+  image?: InputMaybe<Scalars['String']>;
+  pageUrl?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
 };
 
 export type Stripe_CustomerAddressPropertyInput = {
