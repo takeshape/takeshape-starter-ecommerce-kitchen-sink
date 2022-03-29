@@ -119,7 +119,7 @@
   },
   "queries": {
     "getProductReviews": {
-      "shape": "Reviews_ProductReviews",
+      "shape": "Reviews_ProductReviewsQueryResponse",
       "resolver": {
         "name": "rest:get",
         "service": "reviews-io",
@@ -133,14 +133,6 @@
             {
               "path": "sku",
               "mapping": "$args.sku"
-            }
-          ]
-        },
-        "results": {
-          "ops": [
-            {
-              "path": "$",
-              "mapping": "$finalResolver.reviews"
             }
           ]
         }
@@ -1543,6 +1535,9 @@
           },
           "store": {
             "@ref": "local:Reviews_Store"
+          },
+          "stats": {
+            "@ref": "local:Reviews_Stats"
           },
           "word": {
             "type": "string"

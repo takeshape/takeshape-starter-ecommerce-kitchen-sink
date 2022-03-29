@@ -27,8 +27,8 @@ const handler: NextApiHandler = async (req, res) => {
         const invoice = event.data.object as Stripe.Invoice;
 
         if (!invoice.customer_email) {
-          console.info('No email on invoice');
-          return;
+          console.warn('No email on invoice');
+          break;
         }
 
         const lineItemsPromise = invoice.lines.data.map(async (lineItem) =>
@@ -62,15 +62,14 @@ const handler: NextApiHandler = async (req, res) => {
         }
 
         console.info(data);
-        res.status(200).json({ status: 'ok' });
         break;
       default:
         console.info(`Unhandled event type ${event.type}`);
-        res.status(200).json({ status: 'ok' });
     }
+    res.status(200).json({ status: 'ok' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ status: 'error' });
+    res.status(500).json({ status: 'error', message: err.message });
   }
 };
 
