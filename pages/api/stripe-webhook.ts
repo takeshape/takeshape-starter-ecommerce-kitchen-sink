@@ -1,5 +1,6 @@
 import type { NextApiHandler } from 'next';
 import Stripe from 'stripe';
+import { buffer } from 'micro';
 import { stripePublishableKey, stripeWebhookSecret, takeshapeApiUrl, takeshapeWebhookApiKey } from 'lib/config';
 import { createApolloClient } from 'lib/apollo/client';
 import { QueueReviewInvitation } from 'lib/queries';
@@ -14,9 +15,10 @@ export const config = {
 };
 
 const handler: NextApiHandler = async (req, res) => {
-  const { body, headers } = req;
+  const { headers } = req;
   const stripeSignature = headers['stripe-signature'];
-  const event = stripe.webhooks.constructEvent(body, stripeSignature, stripeWebhookSecret);
+  const buf = await buffer(req);
+  const event = stripe.webhooks.constructEvent(buf, stripeSignature, stripeWebhookSecret);
 
   try {
     switch (event.type) {
