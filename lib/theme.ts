@@ -133,24 +133,24 @@ const theme = {
       textTransform: 'uppercase'
     },
     h1: {
-      variant: "text.display"
+      variant: 'text.display'
     },
     h2: {
-      variant: "text.heading",
+      variant: 'text.heading',
       fontSize: 5
     },
     h3: {
-      variant: "text.heading",
+      variant: 'text.heading',
       fontSize: 4
     },
     h4: {
-      variant: "text.heading",
+      variant: 'text.heading',
       fontSize: 3
     },
     h5: {
-      variant: "text.heading",
+      variant: 'text.heading',
       fontSize: 2
-    }       
+    }
   },
   alerts: {
     ...swiss.alerts,
