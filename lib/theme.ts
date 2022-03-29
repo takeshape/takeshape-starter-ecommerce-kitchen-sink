@@ -1,11 +1,12 @@
+import type { Theme } from '@theme-ui/core';
 import { swiss } from '@theme-ui/presets';
 import { lighten } from '@theme-ui/color';
 
-const theme = {
+const theme: Theme = {
   ...swiss,
   colors: {
     ...swiss.colors,
-    lightGray: lighten('black', 0.5)
+    lightGray: lighten('black', 0.5) as any
   },
   styles: {
     ...swiss.styles,
@@ -17,6 +18,22 @@ const theme = {
     },
     spinner: {
       color: 'primary'
+    },
+    cart: {
+      itemList: {
+        flexDirection: 'column'
+      },
+      item: {
+        marginBottom: 4
+      },
+      itemGrid: {
+        alignItems: 'center'
+      }
+    },
+    product: {
+      quantity: {
+        width: 50
+      }
     }
   },
   layout: {
@@ -200,22 +217,6 @@ const theme = {
         color: 'gray',
         borderColor: 'gray'
       }
-    }
-  },
-  cart: {
-    itemList: {
-      flexDirection: 'column'
-    },
-    item: {
-      marginBottom: 4
-    },
-    itemGrid: {
-      alignItems: 'center'
-    }
-  },
-  product: {
-    quantity: {
-      width: 50
     }
   }
 };

@@ -44,8 +44,8 @@ export const CartIcon = () => {
 
 const CartItem = ({ product, onChangeQuantity, onClickRemove }) => {
   return (
-    <Box variant="cart.item">
-      <Grid variant="cart.itemGrid" gap={2} columns={[3, '0.5fr 2fr 0.5fr']}>
+    <Box variant="styles.cart.item">
+      <Grid variant="styles.cart.itemGrid" gap={2} columns={[3, '0.5fr 2fr 0.5fr']}>
         <Box>
           {product.images?.[0] ? (
             <Image

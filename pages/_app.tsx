@@ -13,32 +13,6 @@ const onRedirectCallback = (appState) => {
   Router.replace(appState?.returnTo ?? '/');
 };
 
-const RootStyles = () =>
-  jsx(Global, {
-    styles: (emotionTheme) => {
-      const theme = emotionTheme;
-      const { useRootStyles } = theme.config || theme;
-
-      if (useRootStyles === false || (theme.styles && !theme.styles.root)) {
-        return null;
-      }
-
-      const boxSizing = theme.config?.useBorderBox === false ? undefined : 'border-box';
-
-      return css({
-        '*': {
-          boxSizing
-        },
-        html: {
-          variant: 'styles.root'
-        },
-        body: {
-          margin: 0
-        }
-      })(theme);
-    }
-  });
-
 export default function App({ Component, pageProps }) {
   return (
     <Auth0Provider
@@ -54,7 +28,6 @@ export default function App({ Component, pageProps }) {
         <TakeshapeProvider>
           <CartProvider>
             <ThemeProvider theme={theme}>
-              <RootStyles />
               <Component {...pageProps} />
             </ThemeProvider>
           </CartProvider>
