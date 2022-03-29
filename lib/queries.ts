@@ -1,6 +1,29 @@
 import { gql } from '@apollo/client';
 import { Stripe_Product } from './takeshape/types';
 
+export const GetProductReviews = gql`
+  query GetProductReviews($sku: String!) {
+    getProductReviews(sku: $sku) {
+      reviews {
+        data {
+          date_created
+          order_id
+          product_review_id
+          rating
+          review
+          sku
+          timeago
+          title
+        }
+      }
+      stats {
+        average
+        count
+      }
+    }
+  }
+`;
+
 export interface StripeProducts {
   products: {
     items: Stripe_Product[];

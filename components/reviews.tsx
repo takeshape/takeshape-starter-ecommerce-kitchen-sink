@@ -1,30 +1,48 @@
 import StarRatings from 'react-star-ratings';
 import { Box, Flex, Text } from '@theme-ui/components';
+import { Reviews_ProductReview, Reviews_Stats } from 'lib/takeshape/types';
 
-export const Review = (props) => {
+export const Review: React.FC<Reviews_ProductReview> = (props) => {
+  const { title, review, rating, timeago, date_created } = props;
   return (
     <div>
       <Flex as="header" sx={{ alignItems: 'baseline', gap: '1rem' }}>
-        <h3>{props.title}</h3>
-        <StarRatings rating={props.score} numberOfStars={5} starDimension="20px" starSpacing="2px" />
+        <Box sx={{ marginBottom: '.75em' }}>
+          <Text as="h3" sx={{ marginBottom: 0 }}>
+            {title}
+          </Text>
+          <Text as="time" title={date_created} sx={{ fontSize: '.8em', lineHeight: 1, opacity: 0.7 }}>
+            {timeago}
+          </Text>
+        </Box>
+        <StarRatings rating={rating} numberOfStars={5} starDimension="20px" starSpacing="2px" />
       </Flex>
-      <Text as="p">{props.content}</Text>
+      <Text as="p" sx={{ paddingLeft: '1rem' }}>
+        {review}
+      </Text>
     </div>
   );
 };
 
-export const ReviewList = (props) => {
-  const { reviews, bottomline } = props;
-  if (!reviews.length) return null;
+export interface ReviewListProps {
+  reviews: Reviews_ProductReview[] | null;
+  stats: Reviews_Stats | null;
+}
+
+export const ReviewList: React.FC<ReviewListProps> = (props) => {
+  const { reviews, stats } = props;
+  if (!reviews?.length) return null;
   return (
     <>
-      <Flex as="header" sx={{ alignItems: 'baseline', gap: '1rem' }}>
-        <h2>{bottomline.total_review} reviews</h2>
-        <StarRatings rating={bottomline.average_score} numberOfStars={5} starDimension="20px" starSpacing="2px" />
-      </Flex>
+      {stats && (
+        <Flex as="header" sx={{ alignItems: 'baseline', gap: '1rem' }}>
+          <h2>{stats.count} reviews</h2>
+          <StarRatings rating={parseFloat(stats.average)} numberOfStars={5} starDimension="20px" starSpacing="2px" />
+        </Flex>
+      )}
       <Box as="ul" sx={{ paddingLeft: 0, listStyleType: 'none' }}>
         {reviews.map((review, index) => (
-          <Box as="li" sx={{ marginBottom: '2rem' }} key={`review-${index}`}>
+          <Box as="li" sx={{ margin: '2rem' }} key={`review-${index}`}>
             <Review {...review} />
           </Box>
         ))}

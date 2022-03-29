@@ -6,26 +6,27 @@ import { ProductCard } from 'components/products';
 import { takeshapeApiUrl, takeshapeAnonymousApiKey } from 'lib/config';
 import { ReviewList } from 'components/reviews';
 import { createApolloClient } from 'lib/apollo';
-import { Stripe_Product } from 'lib/takeshape/types';
+import {
+  Stripe_Product,
+  Reviews_ProductReviewsQueryResponse,
+  Reviews_ProductReview,
+  Reviews_Stats,
+  QueryGetProductReviewsArgs
+} from 'lib/takeshape/types';
 import {
   GetStripeProduct,
   GetStripeProductArgs,
   GetStripeProductQuery,
   GetStripeProducts,
+  GetProductReviews,
   StripeProducts
 } from 'lib/queries';
 import { getSingle } from 'lib/utils/types';
 
-interface Review {
-  score: number;
-  title: string;
-  content: string;
-}
-
 interface ProductPageProps {
   product: Stripe_Product;
-  reviews: Review[];
-  bottomline: any;
+  reviews: Reviews_ProductReview[] | null;
+  stats: Reviews_Stats | null;
 }
 
 const ProductPage: NextPage<ProductPageProps> = (props) => {
@@ -37,13 +38,14 @@ const ProductPage: NextPage<ProductPageProps> = (props) => {
     return <div>Loading...</div>;
   }
 
-  const { product, reviews, bottomline } = props;
+  const { product, reviews, stats } = props;
+
   return (
     <Page>
       <Heading as="h1">{product.name ?? 'Product'}</Heading>
       <Divider />
       <ProductCard product={product} />
-      <ReviewList reviews={reviews} bottomline={bottomline} />
+      <ReviewList reviews={reviews} stats={stats} />
     </Page>
   );
 };
@@ -58,18 +60,17 @@ export const getStaticProps: GetStaticProps<ProductPageProps> = async (context) 
     query: GetStripeProduct,
     variables: { id }
   });
+  const {
+    data: { getProductReviews }
+  } = await client.query<{ getProductReviews: Reviews_ProductReviewsQueryResponse }, QueryGetProductReviewsArgs>({
+    query: GetProductReviews,
+    variables: { sku: id }
+  });
   return {
     props: {
       product,
-      reviews: [
-        { score: 5, title: 'I love it', content: 'Greatest product of all time' },
-        { score: 3, title: 'It is fine', content: 'I am satisfied' },
-        { score: 1, title: 'I hate it', content: 'Worst product of all time' }
-      ],
-      bottomline: {
-        total_review: 11,
-        average_score: 3.5
-      }
+      reviews: getProductReviews.reviews.data ?? null,
+      stats: getProductReviews.stats ?? null
     }
   };
 };

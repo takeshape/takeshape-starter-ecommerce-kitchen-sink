@@ -197,7 +197,7 @@ export const ProductList = ({ products }) => {
   return (
     <>
       {products.length ? (
-        <Grid gap={2} columns={3} sx={{ gridAutoRows: '1fr' }}>
+        <Grid gap={3} columns={3} sx={{ gridAutoRows: '1fr' }}>
           {products.map((product) => (
             <Box key={product.id} sx={{ height: '100%' }}>
               <ProductCard product={product} />
