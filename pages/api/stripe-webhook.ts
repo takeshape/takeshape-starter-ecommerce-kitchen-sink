@@ -1,4 +1,4 @@
-import type { NextApiHandler } from 'next';
+import type { NextApiHandler, NextConfig } from 'next';
 import Stripe from 'stripe';
 import { buffer } from 'micro';
 import { stripePublishableKey, stripeWebhookSecret, takeshapeApiUrl, takeshapeWebhookApiKey } from 'lib/config';
@@ -8,7 +8,7 @@ import { QueueReviewInvitation } from 'lib/queries';
 const stripe = new Stripe(stripePublishableKey, { apiVersion: '2020-08-27' });
 const client = createApolloClient(takeshapeApiUrl, () => takeshapeWebhookApiKey);
 
-export const config = {
+export const config: NextConfig = {
   api: {
     bodyParser: false
   }
@@ -16,9 +16,15 @@ export const config = {
 
 const handler: NextApiHandler = async (req, res) => {
   const { headers } = req;
+
+  console.log('req.body', req.body);
+
   const stripeSignature = headers['stripe-signature'];
+
+  console.log('stripeSignature', stripeSignature);
+
   const buf = await buffer(req);
-  const event = stripe.webhooks.constructEvent(buf, stripeSignature, stripeWebhookSecret);
+  const event = stripe.webhooks.constructEvent(buf.toString(), stripeSignature, stripeWebhookSecret);
 
   try {
     switch (event.type) {
