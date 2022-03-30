@@ -207,25 +207,30 @@ const theme: Theme = {
     }
   },
   forms: {
-    input: {
-      '&:read-only': {
-        color: 'gray',
-        borderColor: 'gray'
-      },
-      '&:focus:read-only': {
-        borderColor: 'none',
-        boxShadow: 0,
-        outline: 'none'
-      }
+    label: {
+      fontSize: '0.8em',
+      color: 'lightGray',
+      lineHeight: '1.6'
     },
     disabledLabel: {
-      color: 'gray',
-      borderColor: 'gray'
+      fontSize: '0.8em',
+      color: '#999',
+      lineHeight: '1.6'
+    },
+    input: {
+      '&:read-only': {
+        color: '#999'
+      },
+      borderColor: '#ccc'
+    },
+    textarea: {
+      borderColor: '#ccc'
     },
     select: {
+      backgroundColor: '#fff',
+      borderColor: '#ccc',
       '&:disabled': {
-        color: 'gray',
-        borderColor: 'gray'
+        color: 'gray'
       }
     }
   }

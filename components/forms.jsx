@@ -137,11 +137,14 @@ const ProfileAvatarUploadForm = ({ profile }) => {
   };
 
   return (
-    <Flex sx={{ justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+    <Flex sx={{ flexDirection: 'column' }}>
       <Heading variant="h5">Avatar</Heading>
-      <Box sx={{ textAlign: 'center' }}>
+      <Box sx={{ margin: '2rem 0' }}>
         {profile?.avatar ? (
-          <Avatar src={buildImageUrl(profile.avatar, { h: 400, w: 400 })} sx={{ objectFit: 'cover' }} />
+          <Avatar
+            src={buildImageUrl(profile.avatar, { h: 160, w: 160 })}
+            sx={{ objectFit: 'cover', border: '1px solid #ccc' }}
+          />
         ) : (
           <Box variant="images.avatar"></Box>
         )}
@@ -151,9 +154,11 @@ const ProfileAvatarUploadForm = ({ profile }) => {
 
         <Input onChange={updateAvatar} type="file" disabled={isHandlingFile} />
 
-        <Progress max={1} value={totalProgress} mt={1}>
-          {totalProgress ? `${totalProgress * 100}%` : null}
-        </Progress>
+        {totalProgress && (
+          <Progress max={1} value={totalProgress} mt={1}>
+            {totalProgress * 100}%
+          </Progress>
+        )}
       </form>
     </Flex>
   );

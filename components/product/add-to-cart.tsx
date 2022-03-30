@@ -27,11 +27,11 @@ export const ProductPrice = ({ price, quantity }) => {
 export const ProductPaymentToggle = ({ purchaseType, onChange }) => {
   return (
     <Box sx={{ margin: '1rem 0' }}>
-      <Label sx={{ display: 'flex', alignItems: 'center', marginBottom: '.5rem' }}>
+      <Label sx={{ display: 'flex', alignItems: 'center', marginBottom: '.5rem', fontSize: '1em' }}>
         <Radio value={oneTimePurchase} checked={purchaseType === oneTimePurchase} onChange={onChange} />
         One-Time Purchase
       </Label>
-      <Label sx={{ display: 'flex', alignItems: 'center' }}>
+      <Label sx={{ display: 'flex', alignItems: 'center', fontSize: '1em' }}>
         <Radio value={recurringPurchase} checked={purchaseType === recurringPurchase} onChange={onChange} />
         Subscribe &amp; Save!
       </Label>
