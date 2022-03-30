@@ -100,7 +100,7 @@ export const Search = () => {
                       padding: '1rem',
                       color: 'black',
                       textDecoration: 'none',
-                      ':hover': { backgroundColor: '#eee' }
+                      ':hover': { color: 'primary', backgroundColor: '#eee' }
                     }}
                   >
                     {image && (
