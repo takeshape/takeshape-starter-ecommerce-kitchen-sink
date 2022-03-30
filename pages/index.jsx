@@ -1,30 +1,30 @@
 import { Heading, Divider, Alert, Spinner, Container } from '@theme-ui/components';
 import { Page } from 'components/layout';
-import { ProductList } from 'components/products';
+import ProductGrid from 'components/product/grid';
 import { GetStripeProducts } from 'lib/queries';
 import { takeshapeApiUrl, takeshapeAnonymousApiKey } from 'lib/config';
 import { createApolloClient } from 'lib/apollo';
 
 function HomePage({ products, error }) {
+  if (error) {
+    return (
+      <Page>
+        <Alert>Error loading products</Alert>
+        <pre style={{ color: 'red' }}>{JSON.stringify(error, null, 2)}</pre>
+      </Page>
+    );
+  }
   return (
     <Page>
-      <Heading as="h1">Products</Heading>
-      <Divider />
-
-      {!products && (
-        <Container variant="layout.loading">
-          <Spinner />
-        </Container>
-      )}
-
-      {products && <ProductList products={products} />}
-
-      {error && (
-        <>
-          <Alert>Error loading products</Alert>
-          <pre style={{ color: 'red' }}>{JSON.stringify(error, null, 2)}</pre>
-        </>
-      )}
+      <Heading as="h1" sx={{marginBottom: '2rem', fontSize: '3.2em'}}>Products</Heading>
+      {products
+        ? <ProductGrid products={products} />
+        : (
+          <Container variant="layout.loading">
+            <Spinner />
+          </Container>
+        )
+      }      
     </Page>
   );
 }

@@ -34,6 +34,11 @@ const theme: Theme = {
       quantity: {
         width: 50
       }
+    },
+    inputLabel: {
+      fontSize: '0.8em',
+      color: 'lightGray',
+      lineHeight: '1.6'
     }
   },
   layout: {
@@ -119,7 +124,7 @@ const theme: Theme = {
     },
     login: {
       cursor: 'pointer',
-      backgroundColor: 'purple'
+      backgroundColor: 'secondary'
     },
     logout: {
       cursor: 'pointer',

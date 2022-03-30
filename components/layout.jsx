@@ -1,4 +1,4 @@
-import { Container, Flex, NavLink, Box, Text } from '@theme-ui/components';
+import { Container, Divider, Flex, NavLink, Box, Text } from '@theme-ui/components';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -12,12 +12,12 @@ export const Header = () => {
 
   return (
     <Container as="header">
-      <Flex as="nav" sx={{ gap: '1rem', alignItems: 'center' }}>
+      <Flex as="nav" sx={{ gap: '2rem', alignItems: 'center' }}>
         <Link href="/" passHref>
-          <NavLink p={2}>Home</NavLink>
+          <NavLink>Home</NavLink>
         </Link>
         <Link href="/about" passHref>
-          <NavLink p={2}>About</NavLink>
+          <NavLink>About</NavLink>
         </Link>
         <Box variant="styles.flexspace" sx={{ flex: '1 1 auto' }}>
           <Search />
@@ -28,10 +28,10 @@ export const Header = () => {
         {user ? (
           <>
             <Link href="/account" passHref>
-              <NavLink p={2}>Account</NavLink>
+              <NavLink>Account</NavLink>
             </Link>
             <Link href="/purchases" passHref>
-              <NavLink p={2}>Purchases</NavLink>
+              <NavLink>Purchases</NavLink>
             </Link>
             <Box variant="links.nav">
               <Logout />
@@ -79,7 +79,7 @@ export const Page = ({ children }) => {
       </Head>
 
       <Header />
-
+      <Divider />
       <Container as="main" variant="layout.main">
         {children}
       </Container>

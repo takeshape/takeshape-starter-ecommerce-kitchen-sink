@@ -8,7 +8,8 @@ import { getCheckoutPayload } from 'lib/utils/checkout';
 import { CreateMyCheckoutSession } from 'lib/queries';
 import { useCart } from 'lib/cart';
 import getStripe from 'lib/utils/stripe';
-import { ProductPrice, ProductQuantitySelect } from './products';
+import ProductImage from './product/image';
+import { ProductPrice, Quantity } from './product/add-to-cart';
 
 export const CartIcon = () => {
   const {
@@ -27,11 +28,14 @@ export const CartIcon = () => {
   return (
     <>
       {isCartReady ? (
-        <Flex sx={{ alignItems: 'center' }}>
-          <IconButton aria-label="Toggle cart preview" onClick={handleCartButton}>
-            <FiShoppingCart size={25} alt="Cart icon" />
+        <Flex
+          sx={{ alignItems: 'center', pointer: 'cursor', ':hover': { color: 'primary' } }}
+          onClick={handleCartButton}
+        >
+          <IconButton aria-label="Toggle cart preview">
+            <FiShoppingCart size={25} title="Cart" />
           </IconButton>
-          <Text as="div" sx={{ width: '1rem', textAlign: 'center' }}>
+          <Text as="div" sx={{ fontWeight: 'bold', width: '1rem', textAlign: 'center' }}>
             {cartQuantity ? cartQuantity : ''}
           </Text>
         </Flex>
@@ -44,35 +48,26 @@ export const CartIcon = () => {
 
 const CartItem = ({ product, onChangeQuantity, onClickRemove }) => {
   return (
-    <Box variant="styles.cart.item">
-      <Grid variant="styles.cart.itemGrid" gap={2} columns={[3, '0.5fr 2fr 0.5fr']}>
-        <Box>
-          {product.images?.[0] ? (
-            <Image
-              alt={`Image of ${product.name}`}
-              src={product.images?.[0]}
-              width={100}
-              height={100}
-              objectFit="fill"
-            />
-          ) : (
-            ''
-          )}
+    <Box variant="styles.cart.item" sx={{ width: '100%', padding: '0 1rem' }}>
+      <Flex variant="styles.cart.itemGrid" sx={{ width: '100%', gap: '1rem', alignItems: 'flex-start' }}>
+        <Box sx={{ flex: '0 1 6rem' }}>
+          <ProductImage maxHeight="6rem" images={product.images} />
         </Box>
-        <Box>
+        <Box sx={{ flex: '1 1 auto' }}>
           <div>
             <strong>{product.name}</strong>
           </div>
-          <Grid gap={2} columns={3}>
-            <ProductPrice price={product.price} />
-            <ProductQuantitySelect defaultValue={product.quantity} onChange={onChangeQuantity} />
-            <ProductPrice price={product.price} quantity={product.quantity} />
-          </Grid>
+          <Flex sx={{ gap: '1rem', alignItems: 'flex-end', margin: '1rem 0' }}>
+            <Quantity id={product.id} defaultValue={product.quantity} onChange={onChangeQuantity} />
+            <Box sx={{ fontSize: '.8em' }}>
+              <ProductPrice price={product.price} quantity={product.quantity} />
+            </Box>
+          </Flex>
         </Box>
-        <IconButton onClick={onClickRemove}>
-          <FiTrash2 size={50} />
+        <IconButton sx={{ flex: '0 1 28px', ':hover': { color: 'primary' } }} onClick={onClickRemove}>
+          <FiTrash2 size={28} />
         </IconButton>
-      </Grid>
+      </Flex>
     </Box>
   );
 };
@@ -137,36 +132,46 @@ export const CartSidebar = () => {
           }}
           variant="layout.cart"
         >
-          <Flex>
-            <Close sx={{ ml: 'auto' }} onClick={handleCloseButton} />
-          </Flex>
           <Flex sx={{ flexDirection: 'column', flex: '1 1 auto' }}>
-            <Heading sx={{ textAlign: 'center' }}>Your Cart</Heading>
-            <Divider />
-            <Box>
-              <Flex variant="cart.itemList">
-                {items.map((product, index) => (
-                  <CartItem
-                    key={`${product.id}_${index}`}
-                    product={product}
-                    onChangeQuantity={(event) => handleUpdate(index, { quantity: Number(event.target.value) })}
-                    onClickRemove={() => handleRemove(index)}
-                  />
-                ))}
-              </Flex>
-            </Box>
-            <Divider />
-            {cartTotal ? (
-              <Box sx={{ textAlign: 'center' }}>
-                <strong>Subtotal</strong> <span>{formatPrice(cartCurrency, cartTotal)}</span>
-              </Box>
-            ) : null}
-            <Divider />
-            <Box>
+            <Flex
+              sx={{ backgroundColor: 'white', padding: '1rem', marginBottom: '2rem', position: 'sticky', top: '0' }}
+            >
+              <Heading sx={{ margin: 0, flex: '1 1 auto' }}>Your Cart</Heading>
+              <Close sx={{ pointer: 'cursor', ':hover': { color: 'primary' } }} onClick={handleCloseButton} />
+            </Flex>
+            <Flex variant="cart.itemList" sx={{ flex: '1 1 auto', flexDirection: 'column' }}>
+              {items.map((product, index) => (
+                <CartItem
+                  key={`${product.id}_${index}`}
+                  product={product}
+                  onChangeQuantity={(event) => handleUpdate(index, { quantity: Number(event.target.value) })}
+                  onClickRemove={() => handleRemove(index)}
+                />
+              ))}
+            </Flex>
+            <Flex
+              sx={{
+                backgroundColor: 'white',
+                padding: '1rem',
+                position: 'sticky',
+                bottom: '0',
+                gap: '2rem',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
               <Button disabled={items && items.length === 0} onClick={handleCheckout} sx={{ width: '100%' }}>
-                Checkout Now
+                Checkout
               </Button>
-            </Box>
+              {cartTotal ? (
+                <Box sx={{ flex: '1 1 50%' }}>
+                  <Text as="p" sx={{ fontWeight: 'bold', fontSize: '.6em', lineHeight: '1' }}>
+                    Subtotal
+                  </Text>
+                  <Text>{formatPrice(cartCurrency, cartTotal)}</Text>
+                </Box>
+              ) : null}
+            </Flex>
           </Flex>
         </Flex>
       ) : (

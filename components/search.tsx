@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import NextLink from 'next/link';
 import { Box, Input, Link, AspectImage, Flex, Text } from '@theme-ui/components';
 import { useLazyQuery } from '@apollo/client';
 import { SearchStripeProducts } from 'lib/queries';
-import NextLink from 'next/link';
 import useDebounce from 'lib/hooks/use-debounce';
-import { ProductPrice } from './products';
+import { ProductPrice } from './product/add-to-cart';
 
 export const Search = () => {
   const searchRef = useRef(null);
@@ -62,7 +62,13 @@ export const Search = () => {
 
   return (
     <Box ref={searchRef} sx={{ position: 'relative' }}>
-      <Input onChange={onChange} onFocus={() => setHasFocus(true)} placeholder="Search products" value={query} />
+      <Input
+        onChange={onChange}
+        onFocus={() => setHasFocus(true)}
+        placeholder="Search products"
+        value={query}
+        sx={{ borderColor: '#ccc' }}
+      />
       {hasFocus && results.length > 0 && (
         <Box
           as="ul"
@@ -103,9 +109,9 @@ export const Search = () => {
                       </Box>
                     )}
                     <Flex sx={{ flexDirection: 'column' }}>
-                      <Text sx={{ fontWeight: 'bold', textDecoration: 'underline' }}>{product.name}</Text>
+                      <Text sx={{ fontWeight: 'bold' }}>{product.name}</Text>
                       {price && (
-                        <Text sx={{ fontSize: '.8em', color: '#666' }}>
+                        <Text sx={{ fontSize: '.6em', color: '#666' }}>
                           <ProductPrice price={price} quantity={1} />
                         </Text>
                       )}

@@ -4,7 +4,7 @@ import { formatPrice } from 'lib/utils/text';
 import { DeleteMySubscription, GetMySubscriptions } from 'lib/queries';
 import { locale } from 'lib/config';
 import { SubmitButton } from './buttons';
-import { ProductImage } from './products';
+import { ProductImage } from './product';
 
 export const SubscriptionItemCard = ({ subscription, subscriptionItem }) => {
   const [setCancelPayload, { error: cancelError, loading: cancelLoading }] = useMutation(DeleteMySubscription, {
