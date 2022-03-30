@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Button, Select, Input, Label, Radio, Flex } from '@theme-ui/components';
 import orderBy from 'lodash/orderBy';
 import { useCart } from 'lib/cart';
@@ -78,6 +78,7 @@ const AddToCartButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 function useAddToCart(product: Stripe_Product) {
   const { prices } = product;
   const oneTimePayment = prices?.find((p) => !p.recurring);
+
   const recurringPayments = orderBy(
     prices?.filter((p) => p.recurring),
     [(v) => intervalOrderMap.indexOf(v.recurring.interval), 'recurring.intervalCount'],
@@ -88,9 +89,22 @@ function useAddToCart(product: Stripe_Product) {
     isCartOpen,
     actions: { addToCart, openCart, toggleCart }
   } = useCart();
-  const [purchaseType, setPurchaseType] = useState(oneTimePayment ? oneTimePurchase : recurringPurchase);
+
+  const defaultPurchaseType = oneTimePayment ? oneTimePurchase : recurringPurchase;
+  const defaultPrice = oneTimePayment ? oneTimePayment : recurringPayments?.[0];
+
+  const [purchaseType, setPurchaseType] = useState(defaultPurchaseType);
   const [quantity, setQuantity] = useState(1);
-  const [price, setPrice] = useState(oneTimePayment ? oneTimePayment : recurringPayments?.[0]);
+  const [price, setPrice] = useState(defaultPrice);
+
+  useEffect(() => {
+    setPrice(defaultPrice);
+  }, [defaultPrice]);
+
+  useEffect(() => {
+    setPurchaseType(defaultPurchaseType);
+  }, [defaultPurchaseType]);
+
   const handleUpdatePurchaseType = (event) => {
     const { value } = event.target;
 

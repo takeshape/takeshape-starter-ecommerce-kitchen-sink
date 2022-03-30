@@ -51,6 +51,10 @@ const securityHeaders = [
 ];
 
 module.exports = {
+  reactStrictMode: true,
+  compiler: {
+    styledComponents: true
+  },
   poweredByHeader: false,
   images: {
     domains: ['files.stripe.com']
