@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { Reviews_ProductReviewsQueryResponse, Stripe_Product } from './takeshape/types';
+import { Reviews_ProductReviewsQueryResponse, Stripe_Product, Mutation } from './takeshape/types';
 
 export interface StripeProducts {
   products: {
@@ -121,9 +121,21 @@ export const GetMyProfile = gql`
           country
         }
       }
+      loyaltyCard {
+        code
+        campaign
+        loyalty_card {
+          points
+          balance
+        }
+      }
     }
   }
 `;
+
+export type UpsertMyProfileResponse = {
+  profile: Mutation['upsertMyProfile'];
+};
 
 export const UpsertMyProfile = gql`
   mutation UpsertMyProfile($name: String, $bio: String, $avatarId: String) {
@@ -146,6 +158,14 @@ export const UpsertMyProfile = gql`
           state
           postal_code
           country
+        }
+      }
+      loyaltyCard {
+        code
+        campaign
+        loyalty_card {
+          points
+          balance
         }
       }
     }
@@ -320,6 +340,19 @@ export const UnsubscribeFromNewsletter = gql`
   mutation UnsubscribeFromNewsletterMutation($listId: String!, $email: String!) {
     Klaviyo_removeMembers(list_id: $listId, input: { emails: [$email] }) {
       result
+    }
+  }
+`;
+
+export const CreateLoyaltyCardOrder = gql`
+  mutation CreateLoyaltyCardOrder(
+    $email: String
+    $amount: Float
+    $status: String
+    $items: [Voucherify_OrderItemInput]
+  ) {
+    order: Voucherify_createOrder(email: $email, amount: $amount, status: $status, items: $items) {
+      id
     }
   }
 `;

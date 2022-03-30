@@ -1,9 +1,16 @@
 import type { NextApiHandler, NextConfig } from 'next';
+import type {
+  MutationVoucherify_CreateOrderArgs,
+  MutationQueueReviewInvitationArgs,
+  Reviews_PostResponse,
+  Voucherify_Order,
+  Voucherify_OrderItemInput
+} from 'lib/takeshape/types';
 import Stripe from 'stripe';
 import { buffer } from 'micro';
 import { stripeSecretKey, stripeWebhookSecret, takeshapeApiUrl, takeshapeWebhookApiKey, siteUrl } from 'lib/config';
 import { createApolloClient } from 'lib/apollo/client';
-import { QueueReviewInvitation } from 'lib/queries';
+import { QueueReviewInvitation, CreateLoyaltyCardOrder } from 'lib/queries';
 
 const stripe = new Stripe(stripeSecretKey, { apiVersion: '2020-08-27' });
 const client = createApolloClient(takeshapeApiUrl, () => takeshapeWebhookApiKey);
@@ -47,7 +54,10 @@ const handler: NextApiHandler = async (req, res) => {
           };
         });
 
-        const { data } = await client.mutate({
+        const queueReviewResponse = await client.mutate<
+          { queueReviewInvitation: Reviews_PostResponse },
+          MutationQueueReviewInvitationArgs
+        >({
           mutation: QueueReviewInvitation,
           variables: {
             name: invoice.customer_name ?? 'Customer',
@@ -57,11 +67,38 @@ const handler: NextApiHandler = async (req, res) => {
           }
         });
 
-        if (data.errors) {
-          throw new Error(data.errors.map((e) => e.message).join());
+        const items = lineItems.map((lineItem): Voucherify_OrderItemInput => {
+          const product = lineItem.price.product as Stripe.Product;
+          return {
+            id: product.id,
+            name: product.name,
+            quantity: lineItem.quantity,
+            price: lineItem.amount
+          };
+        });
+
+        const createLoyaltyCardOrderResponse = await client.mutate<
+          { order: Voucherify_Order },
+          MutationVoucherify_CreateOrderArgs
+        >({
+          mutation: CreateLoyaltyCardOrder,
+          variables: {
+            email: invoice.customer_email,
+            amount: invoice.amount_paid,
+            status: 'PAID',
+            items
+          }
+        });
+
+        if (queueReviewResponse.errors) {
+          throw new Error(queueReviewResponse.errors.map((e) => e.message).join());
         }
 
-        console.info(data);
+        if (createLoyaltyCardOrderResponse.errors) {
+          throw new Error(createLoyaltyCardOrderResponse.errors.map((e) => e.message).join());
+        }
+
+        console.info(`Handled event type ${event.type}`);
         break;
       default:
         console.info(`Unhandled event type ${event.type}`);

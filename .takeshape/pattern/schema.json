@@ -81,6 +81,21 @@
       "options": {
         "endpoint": "https://api.reviews.io"
       }
+    },
+    "voucherify": {
+      "id": "voucherify",
+      "provider": "generic",
+      "title": "Voucherify",
+      "namespace": "Voucherify",
+      "serviceType": "rest",
+      "authenticationType": "bearer",
+      "authentication": "OYJKK7WKrvI131Pi6UCjPjW6mW1rVHJO+p0Hilikj6aE3yqtdFGngblroME60n8N99Oh3K97OzmCluBA4Xcg5lzOEE4LC671mwiRHbI5HRB/mppbDbGClOEkiaR3QjLiskAyOak9Qg==",
+      "options": {
+        "endpoint": "https://us1.api.voucherify.io/",
+        "headers": {
+          "X-App-Id": "7b3f5d07-ebc6-4fb9-a66f-3b94097cfc30"
+        }
+      }
     }
   },
   "indexedShapes": {
@@ -1345,6 +1360,97 @@
       },
       "description": "Delete Profile",
       "args": "DeleteArgs<Profile>"
+    },
+    "Voucherify_createOrder": {
+      "shape": "Voucherify_Order",
+      "args": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PAID",
+              "CREATED",
+              "CANCELED",
+              "FULFILLED"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "@ref": "local:Voucherify_OrderItem"
+            }
+          }
+        }
+      },
+      "resolver": {
+        "name": "rest:post",
+        "service": "voucherify",
+        "path": "v1/orders",
+        "json": {
+          "ops": [
+            {
+              "path": "customer.source_id",
+              "mapping": "$args.email"
+            },
+            {
+              "path": "status",
+              "mapping": "$args.status"
+            },
+            {
+              "path": "amount",
+              "mapping": "$args.amount"
+            },
+            {
+              "path": "items",
+              "mapping": "$args.items"
+            },
+            {
+              "path": "items[*]",
+              "ops": [
+                {
+                  "path": "product_id",
+                  "mapping": [
+                    [
+                      "get",
+                      {
+                        "path": "$parent.$value.id"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "path": "product",
+                  "ops": [
+                    {
+                      "path": "override",
+                      "value": true
+                    },
+                    {
+                      "path": "name",
+                      "mapping": "$parent.$parent.$value.name"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "path": "items[*].id",
+              "op": "remove"
+            },
+            {
+              "path": "items[*].name",
+              "op": "remove"
+            }
+          ]
+        }
+      }
     }
   },
   "shapes": {
@@ -1507,6 +1613,41 @@
         }
       }
     },
+    "Voucherify_OrderItem": {
+      "id": "Voucherify_OrderItem",
+      "name": "Voucherify_OrderItem",
+      "title": "Voucherify_OrderItem",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "Voucherify_Order": {
+      "id": "Voucherify_Order",
+      "name": "Voucherify_Order",
+      "title": "Voucherify_Order",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "Reviews_Stats": {
       "id": "Reviews_Stats",
       "name": "Reviews_Stats",
@@ -1639,6 +1780,88 @@
         ]
       }
     },
+    "Voucherify_LoyaltyCardStats": {
+      "id": "Voucherify_LoyaltyCardStats",
+      "name": "Voucherify_LoyaltyCardStats",
+      "title": "Voucherify_LoyaltyCardStats",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "points": {
+            "type": "integer"
+          },
+          "balance": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "Voucherify_LoyaltyCardAsset": {
+      "id": "Voucherify_LoyaltyCardAsset",
+      "name": "Voucherify_LoyaltyCardAsset",
+      "title": "Voucherify_LoyaltyCardAsset",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Voucherify_LoyaltyCardAssets": {
+      "id": "Voucherify_LoyaltyCardAssets",
+      "name": "Voucherify_LoyaltyCardAssets",
+      "title": "Voucherify_LoyaltyCardAssets",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "qr": {
+            "@ref": "local:Voucherify_LoyaltyCardAsset"
+          },
+          "barcode": {
+            "@ref": "local:Voucherify_LoyaltyCardAsset"
+          }
+        }
+      }
+    },
+    "Voucherify_LoyaltyCard": {
+      "id": "Voucherify_LoyaltyCard",
+      "name": "Voucherify_LoyaltyCard",
+      "title": "Voucherify_LoyaltyCard",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "campaign": {
+            "type": "string"
+          },
+          "campaign_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "loyalty_card": {
+            "@ref": "local:Voucherify_LoyaltyCardStats"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "assets": {
+            "@ref": "local:Voucherify_LoyaltyCardAssets"
+          }
+        }
+      }
+    },
     "Profile": {
       "id": "K1WGTS1Yn",
       "name": "Profile",
@@ -1716,6 +1939,50 @@
                 "serialize": {
                   "template": "/v1/customers/{customer}"
                 }
+              }
+            }
+          },
+          "loyaltyCard": {
+            "title": "Voucherify Loyalty Card",
+            "description": "",
+            "@ref": "local:Voucherify_LoyaltyCard",
+            "@resolver": {
+              "options": {
+                "ignoreErrors": true
+              },
+              "name": "rest:post",
+              "service": "voucherify",
+              "path": {
+                "ops": [
+                  {
+                    "path": "campaignId",
+                    "value": "camp_P4LtxxUSJyNCpRcq5XRmDCi5"
+                  }
+                ],
+                "serialize": {
+                  "template": "v1/loyalties/{campaignId}/members"
+                }
+              },
+              "json": {
+                "ops": [
+                  {
+                    "path": "customer",
+                    "ops": [
+                      {
+                        "path": "source_id",
+                        "mapping": "$source.email"
+                      },
+                      {
+                        "path": "email",
+                        "mapping": "$source.email"
+                      },
+                      {
+                        "path": "name",
+                        "mapping": "$source.name"
+                      }
+                    ]
+                  }
+                ]
               }
             }
           }
