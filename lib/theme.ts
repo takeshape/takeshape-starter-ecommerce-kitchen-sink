@@ -6,6 +6,7 @@ const theme: Theme = {
   ...swiss,
   colors: {
     ...swiss.colors,
+    secondary: '#ccc',
     lightGray: lighten('black', 0.5) as any
   },
   styles: {
@@ -39,6 +40,15 @@ const theme: Theme = {
       fontSize: '0.8em',
       color: 'lightGray',
       lineHeight: '1.6'
+    },
+    shopName: {
+      fontSize: '1.2em',
+      span: {
+        color: 'primary'
+      },
+      '&:hover span': {
+        color: 'text'
+      }
     }
   },
   layout: {
@@ -130,7 +140,8 @@ const theme: Theme = {
     },
     login: {
       cursor: 'pointer',
-      backgroundColor: 'secondary'
+      backgroundColor: 'secondary',
+      fontSize: '.8em'
     },
     logout: {
       cursor: 'pointer',

@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { Heading, Divider, Alert, Container, Spinner, Box } from '@theme-ui/components';
+import { Heading, Divider, Alert, Container, Spinner, Box, Flex } from '@theme-ui/components';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { Page, Section } from 'components/layout';
 import { ProfileForm, CustomerForm } from 'components/forms';
@@ -7,6 +7,7 @@ import { useQuery } from '@apollo/client';
 import { GetMyProfile, GetNewsletters, GetMyLoyaltyCard } from 'lib/queries';
 import { useProfile } from 'lib/takeshape';
 import { NewsletterToggle } from 'components/account/newsletter-toggle';
+import { Logout } from 'components/user';
 
 const AccountPage: NextPage = () => {
   const { isProfileReady } = useProfile();
@@ -17,9 +18,12 @@ const AccountPage: NextPage = () => {
 
   return (
     <Page>
-      <Heading as="h1" sx={{ fontSize: '3rem', marginBottom: '2rem' }}>
-        Account
-      </Heading>
+      <Flex sx={{ width: '100%', gap: '2rem', alignItems: 'baseline' }}>
+        <Heading as="h1" sx={{ fontSize: '3rem', marginBottom: '2rem' }}>
+          Account
+        </Heading>
+        <Logout />
+      </Flex>
 
       <Section sx={{ marginTop: '4rem' }}>
         <Heading variant="smallHeading">TakeShape Profile</Heading>
@@ -28,7 +32,7 @@ const AccountPage: NextPage = () => {
       </Section>
 
       <Section sx={{ marginTop: '4rem' }}>
-        <Heading variant="smallHeading">Newsletter Subscriptions</Heading>
+        <Heading variant="smallHeading">Klavyio Subscriptions</Heading>
         <Divider sx={{ marginBottom: '1rem' }} />
 
         {!newsletterData && <Spinner />}

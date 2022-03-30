@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { FiTrash2, FiShoppingCart } from 'react-icons/fi';
+import { FiTrash2 } from 'react-icons/fi';
+import { BsCart3 } from 'react-icons/bs';
 import { Flex, Box, Divider, Heading, Close, IconButton, Button, Text, Grid, Image } from '@theme-ui/components';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useMutation } from '@apollo/client';
@@ -33,11 +34,13 @@ export const CartIcon = () => {
           onClick={handleCartButton}
         >
           <IconButton aria-label="Toggle cart preview">
-            <FiShoppingCart size={25} title="Cart" />
+            <BsCart3 size={25} title="Cart" />
           </IconButton>
-          <Text as="div" sx={{ fontWeight: 'bold', width: '1rem', textAlign: 'center' }}>
-            {cartQuantity ? cartQuantity : ''}
-          </Text>
+          {cartQuantity && cartQuantity > 0 && (
+            <Text as="div" sx={{ fontWeight: 'bold', width: '1rem', textAlign: 'center' }}>
+              {cartQuantity}
+            </Text>
+          )}
         </Flex>
       ) : (
         ''
