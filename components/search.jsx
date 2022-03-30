@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Box, Input, Link, AspectImage, Flex, Text } from '@theme-ui/components';
 import { useLazyQuery } from '@apollo/client';
 import { SearchStripeProducts } from 'lib/queries';
-import debounce from 'lodash/debounce';
 import NextLink from 'next/link';
 import { ProductPrice } from './products';
 

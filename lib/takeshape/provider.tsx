@@ -1,3 +1,4 @@
+import type { UpsertMyProfileResponse } from 'lib/queries';
 import { useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useMutation } from '@apollo/client';
@@ -8,11 +9,14 @@ import { TakeshapeContext } from './context';
 export const TakeshapeProvider = ({ children }) => {
   const { user } = useAuth0();
 
-  const [upsertMyProfile, { data: profileData, loading: profileUpdating }] = useMutation(UpsertMyProfile, {
-    update: (cache, result) => {
-      cache.writeQuery({ query: GetMyProfile, ...result });
+  const [upsertMyProfile, { data: profileData, loading: profileUpdating }] = useMutation<UpsertMyProfileResponse>(
+    UpsertMyProfile,
+    {
+      update: (cache, result) => {
+        cache.writeQuery({ query: GetMyProfile, data: result.data ?? {} });
+      }
     }
-  });
+  );
 
   useEffect(() => {
     // Logged in
