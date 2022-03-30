@@ -9,7 +9,8 @@ A full-featured e-commerce experience using the best services out there:
 - Auth0 for user authentication
 - Stripe for products, payments and subscriptions
 - Klaviyo for newsletter subscriptions
-- Reviws.io for product reviews
+- Reviews.io for product reviews
+- Voucherify for customer loyalty
 - Next.js to build the pages and bundle it all up
 - Vercel to host it
 - **TakeShape ShapeDB for profile data storage**
