@@ -121,12 +121,24 @@ export const GetMyProfile = gql`
           country
         }
       }
-      loyaltyCard {
-        code
-        campaign
-        loyalty_card {
-          points
-          balance
+    }
+  }
+`;
+
+export const GetMyLoyaltyCard = gql`
+  query GetMyLoyaltyCard {
+    getMyLoyaltyCard {
+      id
+      code
+      campaign
+      loyalty_card {
+        points
+        balance
+      }
+      assets {
+        qr {
+          id
+          url
         }
       }
     }
@@ -158,14 +170,6 @@ export const UpsertMyProfile = gql`
           state
           postal_code
           country
-        }
-      }
-      loyaltyCard {
-        code
-        campaign
-        loyalty_card {
-          points
-          balance
         }
       }
     }

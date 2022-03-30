@@ -1,22 +1,44 @@
+import type { NextPage } from 'next';
+import type { Voucherify_LoyaltyCard } from 'lib/takeshape/types';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { Heading, Divider, Alert, Spinner, Container } from '@theme-ui/components';
 import { Page, Section } from 'components/layout';
 import { SubscriptionList } from 'components/subscriptions';
 import { PaymentList } from 'components/payments';
 import { useQuery } from '@apollo/client';
-import { GetMySubscriptions, GetMyPayments } from 'lib/queries';
+import { GetMySubscriptions, GetMyPayments, GetMyLoyaltyCard } from 'lib/queries';
 import { useProfile } from 'lib/takeshape';
+import LoyaltyCard from 'components/loyalty-card';
 
-function PurchasesPage() {
+const PurchasesPage: NextPage = () => {
   const { isProfileReady } = useProfile();
   const skip = !isProfileReady;
   const { data: subscriptionsData, error: subscriptionsError } = useQuery(GetMySubscriptions, { skip });
   const { data: paymentsData, error: paymentsError } = useQuery(GetMyPayments, { skip });
+  const { data: loyaltyData, error: loyaltyCardError } = useQuery<{ getMyLoyaltyCard: Voucherify_LoyaltyCard }>(
+    GetMyLoyaltyCard,
+    {
+      skip
+    }
+  );
 
   return (
     <Page>
       <Heading as="h1">Purchases</Heading>
       <Divider />
+
+      <Section>
+        {!loyaltyData && <Spinner />}
+
+        {loyaltyData && <LoyaltyCard {...loyaltyData.getMyLoyaltyCard} />}
+
+        {loyaltyCardError && (
+          <>
+            <Alert>Error loading loyalty card</Alert>
+            <pre style={{ color: 'red' }}>{JSON.stringify(loyaltyCardError, null, 2)}</pre>
+          </>
+        )}
+      </Section>
 
       <Section>
         <Heading variant="smallHeading" id="subscriptions">
@@ -55,7 +77,7 @@ function PurchasesPage() {
       </Section>
     </Page>
   );
-}
+};
 
 export default withAuthenticationRequired(PurchasesPage, {
   onRedirecting: () => (

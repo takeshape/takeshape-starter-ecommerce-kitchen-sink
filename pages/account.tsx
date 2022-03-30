@@ -1,13 +1,14 @@
+import type { NextPage } from 'next';
 import { Heading, Divider, Alert, Container, Spinner, Box } from '@theme-ui/components';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { Page, Section } from 'components/layout';
 import { ProfileForm, CustomerForm } from 'components/forms';
 import { useQuery } from '@apollo/client';
-import { GetMyProfile, GetNewsletters } from 'lib/queries';
+import { GetMyProfile, GetNewsletters, GetMyLoyaltyCard } from 'lib/queries';
 import { useProfile } from 'lib/takeshape';
 import { NewsletterToggle } from 'components/newsletter-toggle';
 
-function AccountPage() {
+const AccountPage: NextPage = () => {
   const { isProfileReady } = useProfile();
   const { data: profileData, error: profileError } = useQuery(GetMyProfile, {
     skip: !isProfileReady
@@ -69,7 +70,7 @@ function AccountPage() {
       )}
     </Page>
   );
-}
+};
 
 export default withAuthenticationRequired(AccountPage, {
   onRedirecting: () => (

@@ -112,6 +112,12 @@ const theme: Theme = {
       borderRadius: 2,
       border: '1px solid',
       borderColor: 'muted'
+    },
+    loyalty: {
+      padding: 2,
+      border: '5px dotted',
+      borderColor: 'muted',
+      backgroundColor: 'highlight'
     }
   },
   buttons: {

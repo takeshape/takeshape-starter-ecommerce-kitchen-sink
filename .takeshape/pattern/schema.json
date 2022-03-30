@@ -676,6 +676,75 @@
           "id"
         ]
       }
+    },
+    "getMyLoyaltyCard": {
+      "description": "Get a loyalty card from Voucherify",
+      "shape": "local:Voucherify_LoyaltyCard",
+      "resolver": {
+        "compose": [
+          {
+            "if": "!isEmpty($claims.sub)",
+            "shapeName": "Profile",
+            "name": "takeshape:find",
+            "service": "takeshape:local",
+            "id": "profile",
+            "args": {
+              "ops": [
+                {
+                  "path": "where.id.eq",
+                  "mapping": "$claims.sub"
+                }
+              ]
+            }
+          },
+          {
+            "if": "!isEmpty($resolvers.profile)",
+            "id": "loyaltyCard",
+            "name": "rest:post",
+            "service": "voucherify",
+            "path": {
+              "ops": [
+                {
+                  "path": "campaignId",
+                  "value": "camp_P4LtxxUSJyNCpRcq5XRmDCi5"
+                }
+              ],
+              "serialize": {
+                "template": "v1/loyalties/{campaignId}/members"
+              }
+            },
+            "json": {
+              "ops": [
+                {
+                  "path": "customer",
+                  "ops": [
+                    {
+                      "path": "source_id",
+                      "mapping": "$resolvers.profile.email"
+                    },
+                    {
+                      "path": "email",
+                      "mapping": "$resolvers.profile.email"
+                    },
+                    {
+                      "path": "name",
+                      "mapping": "$resolvers.profile.name"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "results": {
+          "ops": [
+            {
+              "path": "$",
+              "mapping": "$resolvers.loyaltyCard"
+            }
+          ]
+        }
+      }
     }
   },
   "mutations": {
