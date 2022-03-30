@@ -1025,6 +1025,7 @@ export type Profile = TsSearchable & {
   avatar?: Maybe<Asset>;
   stripeCustomerId?: Maybe<Scalars['String']>;
   stripeCustomer?: Maybe<Stripe_Customer>;
+  loyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
   _shapeId?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['ID']>;
   _version?: Maybe<Scalars['Int']>;
@@ -10080,6 +10081,36 @@ export enum Stripe_CustomerTaxIdsObjectProperty {
   List = 'list'
 }
 
+export type Voucherify_LoyaltyCard = {
+  __typename?: 'Voucherify_LoyaltyCard';
+  id?: Maybe<Scalars['String']>;
+  code?: Maybe<Scalars['String']>;
+  campaign?: Maybe<Scalars['String']>;
+  campaign_id?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+  loyalty_card?: Maybe<Voucherify_LoyaltyCardStats>;
+  active?: Maybe<Scalars['Boolean']>;
+  assets?: Maybe<Voucherify_LoyaltyCardAssets>;
+};
+
+export type Voucherify_LoyaltyCardStats = {
+  __typename?: 'Voucherify_LoyaltyCardStats';
+  points?: Maybe<Scalars['Int']>;
+  balance?: Maybe<Scalars['Int']>;
+};
+
+export type Voucherify_LoyaltyCardAssets = {
+  __typename?: 'Voucherify_LoyaltyCardAssets';
+  qr?: Maybe<Voucherify_LoyaltyCardAsset>;
+  barcode?: Maybe<Voucherify_LoyaltyCardAsset>;
+};
+
+export type Voucherify_LoyaltyCardAsset = {
+  __typename?: 'Voucherify_LoyaltyCardAsset';
+  id?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
+};
+
 export type Stripe_ListProductsResponse = {
   __typename?: 'Stripe_ListProductsResponse';
   data?: Maybe<Array<Maybe<Stripe_Product>>>;
@@ -10451,7 +10482,7 @@ export type Mutation = {
   duplicateTsStaticSite?: Maybe<DuplicateTsStaticSiteResult>;
   /** Delete TsStaticSite */
   deleteTsStaticSite?: Maybe<DeleteTsStaticSiteResult>;
-  Klaviyo_getListMembers?: Maybe<Array<Maybe<GetListMemberItem>>>;
+  Voucherify_createOrder?: Maybe<Voucherify_Order>;
   /** Queue a review invitation with Reviews.io */
   queueReviewInvitation?: Maybe<Reviews_PostResponse>;
   /** Upsert my profile. */
@@ -10470,6 +10501,9 @@ export type Mutation = {
   duplicateProfile?: Maybe<DuplicateProfileResult>;
   /** Delete Profile */
   deleteProfile?: Maybe<DeleteProfileResult>;
+  Klaviyo_getListMembers?: Maybe<Array<Maybe<GetListMemberItem>>>;
+  Klaviyo_addMembers?: Maybe<Klaviyo_AddMembersResponse>;
+  Klaviyo_removeMembers?: Maybe<Klaviyo_200Ok>;
 };
 
 
@@ -10545,9 +10579,11 @@ export type MutationDeleteTsStaticSiteArgs = {
 };
 
 
-export type MutationKlaviyo_GetListMembersArgs = {
-  input?: InputMaybe<GetListMembersInput>;
-  list_id: Scalars['String'];
+export type MutationVoucherify_CreateOrderArgs = {
+  email?: InputMaybe<Scalars['String']>;
+  amount?: InputMaybe<Scalars['Float']>;
+  status?: InputMaybe<Scalars['String']>;
+  items?: InputMaybe<Array<InputMaybe<Voucherify_OrderItemInput>>>;
 };
 
 
@@ -10611,6 +10647,24 @@ export type MutationDuplicateProfileArgs = {
 export type MutationDeleteProfileArgs = {
   input: DeleteProfileInput;
   clientMutationId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationKlaviyo_GetListMembersArgs = {
+  input?: InputMaybe<GetListMembersInput>;
+  list_id: Scalars['String'];
+};
+
+
+export type MutationKlaviyo_AddMembersArgs = {
+  input?: InputMaybe<AddListMembersInput>;
+  list_id: Scalars['String'];
+};
+
+
+export type MutationKlaviyo_RemoveMembersArgs = {
+  input?: InputMaybe<Klaviyo_200OkPropertyInput>;
+  list_id: Scalars['String'];
 };
 
 /** A project file stored on s3 */
@@ -10869,19 +10923,16 @@ export type DeleteTsStaticSiteInput = {
   _id: Scalars['ID'];
 };
 
-export type GetListMemberItem = {
-  __typename?: 'GetListMemberItem';
+export type Voucherify_Order = {
+  __typename?: 'Voucherify_Order';
   id?: Maybe<Scalars['String']>;
-  created?: Maybe<Scalars['String']>;
-  email?: Maybe<Scalars['String']>;
-  push_token?: Maybe<Scalars['String']>;
-  phone_number?: Maybe<Scalars['String']>;
 };
 
-export type GetListMembersInput = {
-  emails?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  phone_numbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  push_tokens?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+export type Voucherify_OrderItemInput = {
+  name?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['String']>;
+  quantity?: InputMaybe<Scalars['Int']>;
+  price?: InputMaybe<Scalars['Int']>;
 };
 
 export type Reviews_PostResponse = {
@@ -11600,4 +11651,63 @@ export type DeleteProfileResult = {
 /** delete Profile input */
 export type DeleteProfileInput = {
   _id: Scalars['ID'];
+};
+
+export type GetListMemberItem = {
+  __typename?: 'GetListMemberItem';
+  id?: Maybe<Scalars['String']>;
+  created?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  push_token?: Maybe<Scalars['String']>;
+  phone_number?: Maybe<Scalars['String']>;
+};
+
+export type GetListMembersInput = {
+  emails?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  phone_numbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  push_tokens?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type Klaviyo_AddMembersResponse = {
+  __typename?: 'Klaviyo_AddMembersResponse';
+  items?: Maybe<Array<Maybe<Klaviyo_AddMembersResponseItemsProperty>>>;
+};
+
+export type Klaviyo_AddMembersResponseItemsProperty = {
+  __typename?: 'Klaviyo_AddMembersResponseItemsProperty';
+  id?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  phone_number?: Maybe<Scalars['String']>;
+};
+
+export type AddListMembersInput = {
+  profiles: Array<Klaviyo_AddMembersResponseProfilesPropertyInput>;
+};
+
+export type Klaviyo_AddMembersResponseProfilesPropertyInput = {
+  email?: InputMaybe<Scalars['String']>;
+};
+
+export type Klaviyo_200Ok = {
+  __typename?: 'Klaviyo_200Ok';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+/**
+ *
+ * The profiles that you would like to remove from the list.
+ *
+ * Example:
+ *
+ * {
+ *   "emails":["george.washington@klaviyo.com","abraham.lincoln@klaviyo.com"],
+ *   "phone_numbers":["+13239169023"],
+ *   "push_tokens":["03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2r"]
+ * }
+ *
+ */
+export type Klaviyo_200OkPropertyInput = {
+  emails?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  phone_numbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  push_tokens?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };

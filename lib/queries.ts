@@ -306,3 +306,16 @@ export const QueueReviewInvitation = gql`
     }
   }
 `;
+
+export const CreateLoyaltyCardOrder = gql`
+  mutation CreateLoyaltyCardOrder(
+    $email: String
+    $amount: Float
+    $status: String
+    $items: [Voucherify_OrderItemInput]
+  ) {
+    order: Voucherify_createOrder(email: $email, amount: $amount, status: $status, items: $items) {
+      id
+    }
+  }
+`;

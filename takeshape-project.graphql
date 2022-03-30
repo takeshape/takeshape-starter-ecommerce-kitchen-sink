@@ -1127,6 +1127,9 @@ type Profile implements TSSearchable {
 
   """"""
   stripeCustomer: Stripe_Customer
+
+  """"""
+  loyaltyCard: Voucherify_LoyaltyCard
   _shapeId: String
   _id: ID
   _version: Int
@@ -12702,6 +12705,32 @@ enum Stripe_CustomerTaxIdsObjectProperty {
   list
 }
 
+type Voucherify_LoyaltyCard {
+  id: String
+  code: String
+  campaign: String
+  campaign_id: String
+  type: String
+  loyalty_card: Voucherify_LoyaltyCardStats
+  active: Boolean
+  assets: Voucherify_LoyaltyCardAssets
+}
+
+type Voucherify_LoyaltyCardStats {
+  points: Int
+  balance: Int
+}
+
+type Voucherify_LoyaltyCardAssets {
+  qr: Voucherify_LoyaltyCardAsset
+  barcode: Voucherify_LoyaltyCardAsset
+}
+
+type Voucherify_LoyaltyCardAsset {
+  id: String
+  url: String
+}
+
 type Stripe_ListProductsResponse {
   data: [Stripe_Product]
 
@@ -13082,7 +13111,7 @@ type Mutation {
 
   """Delete TsStaticSite"""
   deleteTsStaticSite(input: DeleteTsStaticSiteInput!, clientMutationId: String): DeleteTsStaticSiteResult
-  Klaviyo_getListMembers(input: GetListMembersInput, list_id: String!): [GetListMemberItem]
+  Voucherify_createOrder(email: String, amount: Float, status: String, items: [Voucherify_OrderItemInput]): Voucherify_Order
 
   """Queue a review invitation with Reviews.io"""
   queueReviewInvitation(name: String, email: String, orderId: String, products: [Reviews_ProductInput]): Reviews_PostResponse
@@ -13110,6 +13139,13 @@ type Mutation {
 
   """Delete Profile"""
   deleteProfile(input: DeleteProfileInput!, clientMutationId: String): DeleteProfileResult
+  Klaviyo_getListMembers(input: GetListMembersInput, list_id: String!): [GetListMemberItem]
+  Klaviyo_addMembers(input: AddListMembersInput, list_id: String!): Klaviyo_AddMembersResponse
+  Klaviyo_removeMembers(
+    "\nThe profiles that you would like to remove from the list. \n\nExample:\n\n{\n  \"emails\":[\"george.washington@klaviyo.com\",\"abraham.lincoln@klaviyo.com\"],\n  \"phone_numbers\":[\"+13239169023\"],\n  \"push_tokens\":[\"03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2r\"]\n}\n"
+    input: Klaviyo_200OkPropertyInput
+    list_id: String!
+  ): Klaviyo_200Ok
 }
 
 """A project file stored on s3"""
@@ -13362,18 +13398,15 @@ input DeleteTsStaticSiteInput {
   _id: ID!
 }
 
-type GetListMemberItem {
+type Voucherify_Order {
   id: String
-  created: String
-  email: String
-  push_token: String
-  phone_number: String
 }
 
-input GetListMembersInput {
-  emails: [String]
-  phone_numbers: [String]
-  push_tokens: [String]
+input Voucherify_OrderItemInput {
+  name: String
+  id: String
+  quantity: Int
+  price: Int
 }
 
 type Reviews_PostResponse {
@@ -14169,4 +14202,47 @@ type DeleteProfileResult {
 """delete Profile input"""
 input DeleteProfileInput {
   _id: ID!
+}
+
+type GetListMemberItem {
+  id: String
+  created: String
+  email: String
+  push_token: String
+  phone_number: String
+}
+
+input GetListMembersInput {
+  emails: [String]
+  phone_numbers: [String]
+  push_tokens: [String]
+}
+
+type Klaviyo_AddMembersResponse {
+  items: [Klaviyo_AddMembersResponseItemsProperty]
+}
+
+type Klaviyo_AddMembersResponseItemsProperty {
+  id: String
+  email: String
+  phone_number: String
+}
+
+input AddListMembersInput {
+  profiles: [Klaviyo_AddMembersResponseProfilesPropertyInput!]!
+}
+
+input Klaviyo_AddMembersResponseProfilesPropertyInput {
+  email: String
+}
+
+type Klaviyo_200Ok {
+  result: JSONObject
+}
+
+"\nThe profiles that you would like to remove from the list. \n\nExample:\n\n{\n  \"emails\":[\"george.washington@klaviyo.com\",\"abraham.lincoln@klaviyo.com\"],\n  \"phone_numbers\":[\"+13239169023\"],\n  \"push_tokens\":[\"03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2r\"]\n}\n"
+input Klaviyo_200OkPropertyInput {
+  emails: [String]
+  phone_numbers: [String]
+  push_tokens: [String]
 }
