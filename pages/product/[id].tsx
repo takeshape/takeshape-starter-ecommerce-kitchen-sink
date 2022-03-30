@@ -1,8 +1,8 @@
 import { NextPage, GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
-import { Heading, Divider } from '@theme-ui/components';
+import { Box, Divider, Flex, Heading, Paragraph } from '@theme-ui/components';
 import { Page } from 'components/layout';
-import { ProductCard } from 'components/products';
+import { ProductImage, ProductAddToCart } from 'components/product';
 import { takeshapeApiUrl, takeshapeAnonymousApiKey } from 'lib/config';
 import { ReviewList } from 'components/reviews';
 import { createApolloClient } from 'lib/apollo';
@@ -35,10 +35,22 @@ const ProductPage: NextPage<ProductPageProps> = (props) => {
 
   return (
     <Page>
-      <Heading as="h1">{product.name ?? 'Product'}</Heading>
+      <Heading as="h2" sx={{ fontSize: '3.2em' }}>
+        {product.name}
+      </Heading>
       <Divider />
-      <ProductCard product={product} />
-      <ReviewList reviews={reviews} stats={stats} />
+      <Flex sx={{ margin: '2rem 0', gap: '2rem' }}>
+        <Box sx={{ flex: '1 1 32rem' }}>
+          <ProductImage images={product.images} />
+        </Box>
+        <Flex sx={{ flex: '1 1 24rem', flexDirection: 'column' }}>
+          <ProductAddToCart product={product} />
+          <Paragraph sx={{ textAlign: 'left' }}>{product.description}</Paragraph>
+          <Box sx={{ fontSize: '.8em' }}>
+            <ReviewList reviews={reviews} stats={stats} />
+          </Box>
+        </Flex>
+      </Flex>
     </Page>
   );
 };

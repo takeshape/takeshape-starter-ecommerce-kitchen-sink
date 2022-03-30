@@ -8,6 +8,7 @@
     "start": "next start",
     "export": "next build && next export",
     "lint": "next lint",
+    "typecheck": "tsc",
     "typegen": "takeshape schema && takeshape types --to ./lib/takeshape/types.d.ts"
   },
   "dependencies": {
