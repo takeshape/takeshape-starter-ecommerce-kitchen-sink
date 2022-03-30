@@ -1,13 +1,5 @@
 import { useState } from 'react';
-import {
-  Box,
-  Button,
-  Select,
-  Input,
-  Label,
-  Radio,
-  Flex
-} from '@theme-ui/components';
+import { Box, Button, Select, Input, Label, Radio, Flex } from '@theme-ui/components';
 import orderBy from 'lodash/orderBy';
 import { useCart } from 'lib/cart';
 import { pluralizeText, formatPrice } from 'lib/utils/text';
@@ -34,12 +26,12 @@ export const ProductPrice = ({ price, quantity }) => {
 
 export const ProductPaymentToggle = ({ purchaseType, onChange }) => {
   return (
-    <Box sx={{margin: '1rem 0'}}>
-      <Label sx={{display: 'flex', alignItems: 'center', marginBottom: '.5rem'}}>
+    <Box sx={{ margin: '1rem 0' }}>
+      <Label sx={{ display: 'flex', alignItems: 'center', marginBottom: '.5rem' }}>
         <Radio value={oneTimePurchase} checked={purchaseType === oneTimePurchase} onChange={onChange} />
         One-Time Purchase
       </Label>
-      <Label sx={{display: 'flex', alignItems: 'center'}}>
+      <Label sx={{ display: 'flex', alignItems: 'center' }}>
         <Radio value={recurringPurchase} checked={purchaseType === recurringPurchase} onChange={onChange} />
         Subscribe &amp; Save!
       </Label>
@@ -48,10 +40,12 @@ export const ProductPaymentToggle = ({ purchaseType, onChange }) => {
 };
 
 export const Subscription = ({ id, currentPrice, recurringPayments, onChange }) => {
-  const inputId = `${id}-subscription`
+  const inputId = `${id}-subscription`;
   return (
-    <Box sx={{margin: '1rem 0'}}>
-      <Label variant="styles.inputLabel" htmlFor={inputId}>Subscription</Label>
+    <Box sx={{ margin: '1rem 0' }}>
+      <Label variant="styles.inputLabel" htmlFor={inputId}>
+        Subscription
+      </Label>
       <Select id={inputId} value={currentPrice.id} onChange={onChange}>
         {recurringPayments.map(({ id, recurring: { interval, intervalCount } }) => (
           <option key={id} value={id}>
@@ -66,19 +60,23 @@ export const Subscription = ({ id, currentPrice, recurringPayments, onChange }) 
 export const Quantity = ({ id, defaultValue, onChange }) => {
   const inputId = `${id}-quantity`;
   return (
-    <Flex variant="styles.product.quantity" sx={{flexWrap: 'wrap'}}>
-      <Label variant="styles.inputLabel" htmlFor={inputId}>Quantity</Label>
+    <Flex variant="styles.product.quantity" sx={{ flexWrap: 'wrap' }}>
+      <Label variant="styles.inputLabel" htmlFor={inputId}>
+        Quantity
+      </Label>
       <Input id={inputId} type="number" min={1} defaultValue={defaultValue ?? 1} onChange={onChange} />
     </Flex>
   );
 };
 
-const AddToCartButton: React.FC<{onClick: () => void}> = ({onClick}) => (
-  <Button sx={{width: '100%', margin: '1rem 0'}} type="button" onClick={onClick}>Add to Cart</Button>
-)
+const AddToCartButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
+  <Button sx={{ width: '100%', margin: '1rem 0' }} type="button" onClick={onClick}>
+    Add to Cart
+  </Button>
+);
 
 function useAddToCart(product: Stripe_Product) {
-  const {prices} = product;
+  const { prices } = product;
   const oneTimePayment = prices?.find((p) => !p.recurring);
   const recurringPayments = orderBy(
     prices?.filter((p) => p.recurring),
@@ -86,7 +84,10 @@ function useAddToCart(product: Stripe_Product) {
     ['asc', 'asc']
   );
   const findPriceById = (priceId) => prices.find((p) => p.id === priceId);
-  const {isCartOpen, actions: { addToCart, openCart, toggleCart }} = useCart();
+  const {
+    isCartOpen,
+    actions: { addToCart, openCart, toggleCart }
+  } = useCart();
   const [purchaseType, setPurchaseType] = useState(oneTimePayment ? oneTimePurchase : recurringPurchase);
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState(oneTimePayment ? oneTimePayment : recurringPayments?.[0]);
@@ -132,10 +133,10 @@ function useAddToCart(product: Stripe_Product) {
     handleUpdatePurchaseType,
     handleUpdateQuantity,
     handleAddToCart
-  }
+  };
 }
 
-const AddToCart: React.FC<{product: Stripe_Product}> = ({product}) => {
+const AddToCart: React.FC<{ product: Stripe_Product }> = ({ product }) => {
   const {
     price,
     quantity,
@@ -149,8 +150,6 @@ const AddToCart: React.FC<{product: Stripe_Product}> = ({product}) => {
   } = useAddToCart(product);
   return (
     <Box>
-      
-
       {oneTimePayment && recurringPayments.length ? (
         <ProductPaymentToggle purchaseType={purchaseType} onChange={handleUpdatePurchaseType} />
       ) : null}
@@ -163,14 +162,14 @@ const AddToCart: React.FC<{product: Stripe_Product}> = ({product}) => {
         />
       ) : null}
 
-      <Flex sx={{alignItems: "flex-end", gap: "1rem"}}>
+      <Flex sx={{ alignItems: 'flex-end', gap: '1rem' }}>
         <Quantity id={product.id} defaultValue={quantity} onChange={handleUpdateQuantity} />
         <ProductPrice quantity={quantity} price={price} />
       </Flex>
 
       <AddToCartButton onClick={handleAddToCart} />
     </Box>
-  )
-}
+  );
+};
 
-export default AddToCart
+export default AddToCart;

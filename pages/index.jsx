@@ -16,15 +16,16 @@ function HomePage({ products, error }) {
   }
   return (
     <Page>
-      <Heading as="h1" sx={{marginBottom: '2rem', fontSize: '3.2em'}}>Products</Heading>
-      {products
-        ? <ProductGrid products={products} />
-        : (
-          <Container variant="layout.loading">
-            <Spinner />
-          </Container>
-        )
-      }      
+      <Heading as="h1" sx={{ marginBottom: '2rem', fontSize: '3.2em' }}>
+        Products
+      </Heading>
+      {products ? (
+        <ProductGrid products={products} />
+      ) : (
+        <Container variant="layout.loading">
+          <Spinner />
+        </Container>
+      )}
     </Page>
   );
 }

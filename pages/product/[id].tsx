@@ -35,19 +35,22 @@ const ProductPage: NextPage<ProductPageProps> = (props) => {
 
   return (
     <Page>
-      <Heading as="h2" sx={{fontSize: '3.2em'}}>{product.name}</Heading>
+      <Heading as="h2" sx={{ fontSize: '3.2em' }}>
+        {product.name}
+      </Heading>
       <Divider />
-      <Flex sx={{margin: '2rem 0', gap: '2rem'}}>
-        <Box sx={{flex: '1 1 32rem'}}>
+      <Flex sx={{ margin: '2rem 0', gap: '2rem' }}>
+        <Box sx={{ flex: '1 1 32rem' }}>
           <ProductImage images={product.images} />
         </Box>
-        <Flex sx={{flex: '1 1 24rem', flexDirection: 'column'}}>
+        <Flex sx={{ flex: '1 1 24rem', flexDirection: 'column' }}>
           <ProductAddToCart product={product} />
-          <Paragraph sx={{textAlign: 'left'}}>{product.description}</Paragraph>
-          <Box sx={{fontSize: '.8em'}}><ReviewList reviews={reviews} stats={stats} /></Box>
+          <Paragraph sx={{ textAlign: 'left' }}>{product.description}</Paragraph>
+          <Box sx={{ fontSize: '.8em' }}>
+            <ReviewList reviews={reviews} stats={stats} />
+          </Box>
         </Flex>
       </Flex>
-      
     </Page>
   );
 };
