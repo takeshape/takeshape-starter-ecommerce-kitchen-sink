@@ -307,6 +307,43 @@ export const QueueReviewInvitation = gql`
   }
 `;
 
+export const GetNewsletters = gql`
+  query GetNewslettersQuery {
+    newsletters: Klaviyo_getLists {
+      items {
+        listId: list_id
+        listName: list_name
+      }
+    }
+  }
+`;
+
+export const GetNewsletterSubscriptionStatus = gql`
+  mutation GetNewsletterSubscriptionStatusMutation($listId: String!, $email: String!) {
+    members: Klaviyo_getListMembers(list_id: $listId, input: { emails: [$email] }) {
+      id
+    }
+  }
+`;
+
+export const SubscribeToNewsletter = gql`
+  mutation SubscribeToNewsletterMutation($listId: String!, $email: String!) {
+    Klaviyo_addMembers(list_id: $listId, input: { profiles: [{ email: $email }] }) {
+      items {
+        id
+      }
+    }
+  }
+`;
+
+export const UnsubscribeFromNewsletter = gql`
+  mutation UnsubscribeFromNewsletterMutation($listId: String!, $email: String!) {
+    Klaviyo_removeMembers(list_id: $listId, input: { emails: [$email] }) {
+      result
+    }
+  }
+`;
+
 export const CreateLoyaltyCardOrder = gql`
   mutation CreateLoyaltyCardOrder(
     $email: String
