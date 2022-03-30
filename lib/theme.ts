@@ -140,7 +140,7 @@ const theme: Theme = {
     },
     login: {
       cursor: 'pointer',
-      backgroundColor: 'secondary',
+      backgroundColor: 'primary',
       fontSize: '.8em'
     },
     logout: {
