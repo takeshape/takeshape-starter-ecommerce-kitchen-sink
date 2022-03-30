@@ -1,16 +1,18 @@
-import { Heading, Divider, Alert, Container, Spinner } from '@theme-ui/components';
+import { Heading, Divider, Alert, Container, Spinner, Box } from '@theme-ui/components';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { Page, Section } from 'components/layout';
 import { ProfileForm, CustomerForm } from 'components/forms';
 import { useQuery } from '@apollo/client';
-import { GetMyProfile } from 'lib/queries';
+import { GetMyProfile, GetNewsletters } from 'lib/queries';
 import { useProfile } from 'lib/takeshape';
+import { NewsletterToggle } from 'components/newsletter-toggle';
 
 function AccountPage() {
   const { isProfileReady } = useProfile();
   const { data: profileData, error: profileError } = useQuery(GetMyProfile, {
     skip: !isProfileReady
   });
+  const { data: newsletterData, error: newsletterError } = useQuery(GetNewsletters, { skip: !isProfileReady });
 
   return (
     <Page>
@@ -33,6 +35,30 @@ function AccountPage() {
         {!profileData && <Spinner />}
 
         {profileData && <CustomerForm customer={profileData.profile?.customer} />}
+      </Section>
+
+      <Section>
+        <Heading variant="smallHeading">Newsletter Subscriptions</Heading>
+        <Divider />
+
+        {!newsletterData && <Spinner />}
+
+        {profileData && newsletterData && (
+          <Box as="ul" sx={{ listStyleType: 'none' }}>
+            {newsletterData.newsletters.items.map((newsletter) => (
+              <Box as="li" key={newsletter.listId}>
+                <NewsletterToggle email={profileData.profile.email} newsletter={newsletter} />
+              </Box>
+            ))}
+          </Box>
+        )}
+
+        {newsletterError && (
+          <>
+            <Alert>Error loading newsletter subscriptions</Alert>
+            <pre style={{ color: 'red' }}>{JSON.stringify(newsletterError, null, 2)}</pre>
+          </>
+        )}
       </Section>
 
       {profileError && (

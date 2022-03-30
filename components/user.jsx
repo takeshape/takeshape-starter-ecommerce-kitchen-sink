@@ -9,12 +9,12 @@ export const Logout = () => {
 
   const handleLogout = useCallback(async () => {
     await resetStore();
-    await logout();
+    logout();
   }, [logout, resetStore]);
 
   return (
     <Button variant="logout" onClick={handleLogout} p={2} mr={2}>
-      Logout
+      Log Out
     </Button>
   );
 };
@@ -24,7 +24,7 @@ export const Login = () => {
 
   return (
     <Button variant="login" onClick={loginWithRedirect} p={2} mr={2}>
-      Login
+      Log In
     </Button>
   );
 };
