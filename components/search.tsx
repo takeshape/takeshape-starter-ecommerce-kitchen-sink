@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Box, Input, Link, AspectImage, Flex, Text } from '@theme-ui/components';
 import { useLazyQuery } from '@apollo/client';
 import { SearchStripeProducts } from 'lib/queries';
-import debounce from 'lodash/debounce';
 import NextLink from 'next/link';
+import useDebounce from 'lib/hooks/use-debounce';
 import { ProductPrice } from './products';
 
 export const Search = () => {
@@ -20,13 +20,15 @@ export const Search = () => {
     [setQuery]
   );
 
+  const debouncedQuery = useDebounce(query, 200);
+
   useEffect(() => {
-    if (query.length > 0) {
-      search({ variables: { query } });
+    if (debouncedQuery.length > 1) {
+      search({ variables: { query: debouncedQuery } });
     } else {
       setResults([]);
     }
-  }, [search, query, setResults]);
+  }, [search, debouncedQuery, setResults]);
 
   useEffect(() => {
     if (loading || !data) {
@@ -104,7 +106,7 @@ export const Search = () => {
                       <Text sx={{ fontWeight: 'bold', textDecoration: 'underline' }}>{product.name}</Text>
                       {price && (
                         <Text sx={{ fontSize: '.8em', color: '#666' }}>
-                          <ProductPrice price={price} />
+                          <ProductPrice price={price} quantity={1} />
                         </Text>
                       )}
                     </Flex>
