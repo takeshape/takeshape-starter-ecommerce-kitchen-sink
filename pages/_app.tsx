@@ -6,8 +6,6 @@ import { AuthorizedApolloProvider } from 'lib/apollo';
 import { CartProvider } from 'lib/cart';
 import { TakeshapeProvider } from 'lib/takeshape';
 import { clientId, domain, scope, audience, takeshapeApiUrl } from 'lib/config';
-import { Global } from '@emotion/react';
-import { css } from '@theme-ui/css';
 
 const onRedirectCallback = (appState) => {
   Router.replace(appState?.returnTo ?? '/');
