@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Button, Select, Input, Label, Radio, Flex } from '@theme-ui/components';
+import { Box, Button, Select, Input, Label, Radio, Flex, Text } from '@theme-ui/components';
 import orderBy from 'lodash/orderBy';
 import { useCart } from 'lib/cart';
 import { pluralizeText, formatPrice } from 'lib/utils/text';
@@ -13,9 +13,11 @@ const intervalOrderMap = ['day', 'week', 'month', 'year'];
 export const ProductPrice = ({ price, quantity }) => {
   quantity = quantity ?? 1;
 
-  const recurringText =
-    price.recurring &&
-    `every ${pluralizeText(price.recurring.intervalCount, price.recurring.interval, `${price.recurring.interval}s`)}`;
+  const recurringText = price.recurring && (
+    <Text as="p" variant="styles.membershipTerm" sx={{ lineHeight: 0 }}>
+      per {pluralizeText(price.recurring.intervalCount, price.recurring.interval, `${price.recurring.interval}s`)}
+    </Text>
+  );
 
   return (
     <Box sx={{ fontWeight: 'bold', fontSize: '1.3em', lineHeight: '1.8', color: 'text' }}>
@@ -166,14 +168,6 @@ const AddToCart: React.FC<{ product: Stripe_Product }> = ({ product }) => {
     <Box>
       {oneTimePayment && recurringPayments.length ? (
         <ProductPaymentToggle purchaseType={purchaseType} onChange={handleUpdatePurchaseType} />
-      ) : null}
-      {recurringPayments.length && purchaseType === recurringPurchase ? (
-        <Subscription
-          id={product.id}
-          currentPrice={price}
-          recurringPayments={recurringPayments}
-          onChange={handleUpdateRecurring}
-        />
       ) : null}
 
       <Flex sx={{ alignItems: 'flex-end', gap: '1rem' }}>
