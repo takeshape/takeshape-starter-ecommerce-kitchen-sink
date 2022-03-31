@@ -2352,6 +2352,103 @@
                 ]
               }
             }
+          },
+          "newsletters": {
+            "title": "Newsletter Subscriptions",
+            "description": "",
+            "type": "array",
+            "items": {
+              "@ref": "local:ProfileNewsletterStatus"
+            },
+            "@resolver": {
+              "name": "rest:get",
+              "id": "lists",
+              "service": "klaviyo",
+              "path": "/v2/lists",
+              "results": {
+                "ops": [
+                  {
+                    "path": "$",
+                    "mapping": "$resolvers[0]"
+                  },
+                  {
+                    "path": "[*].email",
+                    "mapping": "$source.email"
+                  },
+                  {
+                    "path": "[*].listId",
+                    "mapping": "$loop.item.list_id"
+                  },
+                  {
+                    "path": "[*].listName",
+                    "mapping": "$loop.item.list_name"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "ProfileNewsletterStatus": {
+      "id": "ProfileNewsletterStatus",
+      "name": "ProfileNewsletterStatus",
+      "title": "ProfileNewsletterStatus",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "listId": {
+            "type": "string",
+            "description": "",
+            "title": "List ID"
+          },
+          "listName": {
+            "type": "string",
+            "description": "",
+            "title": "List Name"
+          },
+          "subscribed": {
+            "type": "boolean",
+            "description": "",
+            "title": "Subscribed",
+            "@resolver": {
+              "name": "rest:post",
+              "service": "klaviyo",
+              "path": {
+                "ops": [
+                  {
+                    "path": "list_id",
+                    "mapping": "$source.listId"
+                  }
+                ],
+                "serialize": {
+                  "template": "/v2/list/{list_id}/get-members"
+                }
+              },
+              "json": {
+                "ops": [
+                  {
+                    "path": "$.emails[0]",
+                    "mapping": "$source.email"
+                  }
+                ]
+              },
+              "results": {
+                "ops": [
+                  {
+                    "path": "$",
+                    "mapping": [
+                      [
+                        "expressionEval",
+                        {
+                          "expression": "$resolvers[0].length > 0"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              }
+            }
           }
         }
       }
