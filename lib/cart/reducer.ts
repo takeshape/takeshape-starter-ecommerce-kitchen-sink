@@ -36,10 +36,11 @@ const reducer = (state: CartState, action) => {
       };
     case 'REMOVE_FROM_CART': {
       const { cartItemIndex } = action.payload;
-      state.items.splice(cartItemIndex, 1);
+      const itemsCopy = [...state.items];
+      itemsCopy.splice(cartItemIndex, 1);
       return {
         ...state,
-        items: state.items
+        items: itemsCopy
       };
     }
     case 'UPDATE_CART_ITEM': {
