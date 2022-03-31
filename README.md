@@ -15,7 +15,20 @@ A full-featured e-commerce experience using the best services out there:
 - **TakeShape Indexing for query optimization and search**
 - **TakeShape API Mesh to bring all these services together in one easy-to-use GraphQL API**
 
-[![](https://mermaid.ink/img/pako:eNpdkk1zgjAQhv_KTi7FGe307KEzih_1o2rF9iIeUrLIjpAwIdgy4H9vEDzQnJJ3n313s0nJAiWQDdlZ8zSCw8SXYNfoONNKGpQCNvhrlh64MaE0JxgMXqHaSoR5nfCxhtFuUcG4PPALehFP8SmrJXjHLLo1ZuMm6TNDDaPcRNaHAm5IyQpcp1Zeeh1yp5XIA5NVsD56RlOKpybu3uOr8l5oMm79V3d1Wd4L2NyQYmxDy8ZwjyFqzWPr-OY8DuByKYpeB9xqgToDGwAv_84CW7vu0-ZNup20_AZ_shiNQV3B1FnF_EqF6lq2l4E9XsnSFcycdvtM_1AvojQleQaSoapg7tTCVJ5JYhdcq4LHpoCdIlmPaeF8qTyIUFPYXIj1WYI64STs05a14jM7-AR9NrRbwfXFZ768WS5PBTc4FWSUZsPQDgn7jOdGeYUM2NDoHB_QhLj9JklL3f4AC6i5Yw)](https://mermaid-js.github.io/mermaid-live-editor/edit#pako:eNpdkk1zgjAQhv_KTi7FGe307KEzih_1o2rF9iIeUrLIjpAwIdgy4H9vEDzQnJJ3n313s0nJAiWQDdlZ8zSCw8SXYNfoONNKGpQCNvhrlh64MaE0JxgMXqHaSoR5nfCxhtFuUcG4PPALehFP8SmrJXjHLLo1ZuMm6TNDDaPcRNaHAm5IyQpcp1Zeeh1yp5XIA5NVsD56RlOKpybu3uOr8l5oMm79V3d1Wd4L2NyQYmxDy8ZwjyFqzWPr-OY8DuByKYpeB9xqgToDGwAv_84CW7vu0-ZNup20_AZ_shiNQV3B1FnF_EqF6lq2l4E9XsnSFcycdvtM_1AvojQleQaSoapg7tTCVJ5JYhdcq4LHpoCdIlmPaeF8qTyIUFPYXIj1WYI64STs05a14jM7-AR9NrRbwfXFZ768WS5PBTc4FWSUZsPQDgn7jOdGeYUM2NDoHB_QhLj9JklL3f4AC6i5Yw)
+```mermaid
+graph TD
+    A[Frontend NextJS Client] --> |Unified GraphQL API| B{TakeShape's API Mesh}
+    B --> |User Authentication| C(Auth0)
+    B --> |Products| L[Stripe]
+    C --> K{ShapeDB}
+    K --> J{User Profile}
+    J --> |Referrals| H(Referral Candy)
+    J --> |Orders and Subscriptions| D[Stripe]
+    J --> |Newsletter| E(Klaviyo)
+    J --> |Product Reviews| F(Reviews.io)
+    J --> |Shipping info| G(ShipEngine)
+    J --> |Loyalty Points| I(Voucherify)
+```
 
 ## Screenshot
 
