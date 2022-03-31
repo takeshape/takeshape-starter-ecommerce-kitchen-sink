@@ -1,4 +1,4 @@
-import { Container, Divider, Flex, NavLink, IconButton, Box, Text } from '@theme-ui/components';
+import { Container, Divider, Flex, NavLink, Link as ThemeLink, IconButton, Box, Text } from '@theme-ui/components';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -61,9 +61,16 @@ export const Header = () => {
 
 export const Footer = () => {
   return (
-    <Container as="footer" variant="layout.footer">
+    <Container as="footer" variant="layout.footer" sx={{ width: '100%', textAlign: 'center', padding: '8rem 0' }}>
       <Text variant="smallHeading">
-        Made by <Link href="https://www.takeshape.io">TakeShape</Link>
+        Made possible with{' '}
+        <ThemeLink
+          variant="styles.shopName"
+          sx={{ color: 'inherit', textDecoration: 'none' }}
+          href="https://www.takeshape.io"
+        >
+          <span>Take</span>Shape
+        </ThemeLink>
       </Text>
     </Container>
   );

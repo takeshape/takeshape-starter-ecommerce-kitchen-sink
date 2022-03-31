@@ -168,7 +168,7 @@ export const CartSidebar = () => {
               </Button>
               {cartTotal ? (
                 <Box sx={{ flex: '1 1 50%' }}>
-                  <Text as="p" sx={{ fontWeight: 'bold', fontSize: '.6em', lineHeight: '1' }}>
+                  <Text as="p" variant="lineHeading">
                     Subtotal
                   </Text>
                   <Text>{formatPrice(cartCurrency, cartTotal)}</Text>

@@ -35,10 +35,9 @@ const ProductPage: NextPage<ProductPageProps> = (props) => {
 
   return (
     <Page>
-      <Heading as="h2" sx={{ fontSize: '3.2em' }}>
+      <Heading as="h2" variant="styles.pageTitle">
         {product.name}
       </Heading>
-      <Divider />
       <Flex sx={{ margin: '2rem 0', gap: '2rem' }}>
         <Box sx={{ flex: '1 1 32rem' }}>
           <ProductImage images={product.images} />

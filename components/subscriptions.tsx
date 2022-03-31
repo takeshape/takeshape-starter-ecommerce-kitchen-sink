@@ -1,4 +1,4 @@
-import { Grid, Box, Card, Heading, Paragraph, Text, Alert } from '@theme-ui/components';
+import { Grid, Box, Card, Heading, Paragraph, Text, Alert, Flex } from '@theme-ui/components';
 import { useMutation } from '@apollo/client';
 import { formatPrice } from 'lib/utils/text';
 import { DeleteMySubscription, GetMySubscriptions } from 'lib/queries';
@@ -26,47 +26,55 @@ export const SubscriptionItemCard = ({ subscription, subscriptionItem }) => {
   };
 
   return (
-    <Card>
-      <ProductImage images={product.images} />
-      <Heading>{product.name}</Heading>
-      <Paragraph>
-        <Text>
-          {formatPrice(price.currency, price.unitAmount)} / {price.recurring?.interval || ''}
-        </Text>
-      </Paragraph>
-      <Paragraph>
-        <strong>Next Bill:</strong>{' '}
-        <Text>{nextBillDate.toLocaleString(locale, { month: 'long', year: 'numeric', day: 'numeric' })}</Text>
-      </Paragraph>
+    <Card sx={{ display: 'flex', gap: '1rem', width: '100%' }}>
+      <Box sx={{ flex: '0 1 4rem' }}>
+        <ProductImage images={product.images} maxHeight="4rem" />
+      </Box>
+      <Flex
+        sx={{ flex: '1 1 auto', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-start' }}
+      >
+        <Box>
+          <Heading>{product.name}</Heading>
+          <Paragraph>
+            <Text>
+              {formatPrice(price.currency, price.unitAmount)} / {price.recurring?.interval || ''}
+            </Text>
+          </Paragraph>
+        </Box>
+        <Box>
+          <Paragraph>
+            <strong>Next Bill:</strong>{' '}
+            <Text>{nextBillDate.toLocaleString(locale, { month: 'long', year: 'numeric', day: 'numeric' })}</Text>
+          </Paragraph>
+        </Box>
+      </Flex>
+      <Box sx={{ flex: '0 1 auto' }}>
+        {cancelError && (
+          <>
+            <Alert>Error canceling Stripe subscription</Alert>
+            <pre style={{ color: 'red' }}>{JSON.stringify(cancelError, null, 2)}</pre>
+          </>
+        )}
 
-      {cancelError && (
-        <>
-          <Alert>Error canceling Stripe subscription</Alert>
-          <pre style={{ color: 'red' }}>{JSON.stringify(cancelError, null, 2)}</pre>
-        </>
-      )}
-
-      <SubmitButton text="Cancel" onClick={handleCancelSubscription} isSubmitting={cancelLoading} />
+        <SubmitButton text="Cancel" onClick={handleCancelSubscription} isSubmitting={cancelLoading} />
+      </Box>
     </Card>
   );
 };
 
 export const SubscriptionList = ({ subscriptions }) => {
+  if (!subscriptions || !subscriptions.length) return <Paragraph>No subscriptions to display!</Paragraph>;
+  const listItems = subscriptions.map(
+    (subscription) =>
+      subscription.items?.data?.[0] && (
+        <Box as="li" key={subscription.id} sx={{ marginBottom: '1rem' }}>
+          <SubscriptionItemCard subscription={subscription} subscriptionItem={subscription.items.data[0]} />
+        </Box>
+      )
+  );
   return (
-    <>
-      {subscriptions && subscriptions.length ? (
-        <Grid gap={2} columns={3}>
-          {subscriptions.map((subscription) => (
-            <Box key={subscription.id}>
-              {subscription.items?.data?.[0] && (
-                <SubscriptionItemCard subscription={subscription} subscriptionItem={subscription.items.data[0]} />
-              )}
-            </Box>
-          ))}
-        </Grid>
-      ) : (
-        <Paragraph>No subscriptions to display!</Paragraph>
-      )}
-    </>
+    <Box as="ul" sx={{ listStyleType: 'none', padding: 0 }}>
+      {listItems}
+    </Box>
   );
 };

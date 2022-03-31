@@ -41,6 +41,10 @@ const theme: Theme = {
       color: 'lightGray',
       lineHeight: '1.6'
     },
+    pageTitle: {
+      fontSize: '3rem',
+      marginBottom: '2rem'
+    },
     shopName: {
       fontSize: '1.2em',
       span: {
@@ -48,6 +52,20 @@ const theme: Theme = {
       },
       '&:hover span': {
         color: 'text'
+      }
+    },
+    membershipTerm: {
+      fontWeight: 'bold',
+      fontSize: '.6em',
+      lineHeight: '1.6',
+      textTransform: 'uppercase'
+    },
+    membershipItem: {
+      fontFamily: 'Roboto Mono, Menlo, monospace',
+      marginBottom: '1rem',
+      letterSpacing: '1px',
+      '&:last-child': {
+        marginBottom: 0
       }
     }
   },
@@ -125,9 +143,10 @@ const theme: Theme = {
     },
     loyalty: {
       padding: 2,
-      border: '5px dotted',
-      borderColor: 'muted',
-      backgroundColor: 'highlight'
+      border: '1px solid',
+      borderColor: '#ccc',
+      borderRadius: '4px',
+      backgroundColor: 'background'
     }
   },
   buttons: {

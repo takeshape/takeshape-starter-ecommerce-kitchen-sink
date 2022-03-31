@@ -19,7 +19,7 @@ const AccountPage: NextPage = () => {
   return (
     <Page>
       <Flex sx={{ width: '100%', gap: '2rem', alignItems: 'baseline' }}>
-        <Heading as="h1" sx={{ fontSize: '3rem', marginBottom: '2rem' }}>
+        <Heading as="h1" variant="styles.pageTitle">
           Account
         </Heading>
         <Logout />
