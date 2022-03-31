@@ -85,6 +85,18 @@
         }
       }
     },
+    "klaviyo": {
+      "id": "klaviyo",
+      "provider": "klaviyo",
+      "title": "Klaviyo",
+      "namespace": "Klaviyo",
+      "serviceType": "openapi",
+      "authenticationType": "searchParams",
+      "options": {
+        "endpoint": "https://a.klaviyo.com/api/",
+        "spec": "https://klaviyo-openapi.s3.amazonaws.com/spec.json"
+      }
+    },
     "referral-candy": {
       "id": "referral-candy",
       "provider": "generic",
