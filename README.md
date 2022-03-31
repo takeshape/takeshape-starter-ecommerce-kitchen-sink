@@ -20,8 +20,9 @@ A full-featured e-commerce experience using the best services out there:
 ## Screenshot
 
 ![frame_chrome_mac_light](https://user-images.githubusercontent.com/6089482/160959070-a5b62f42-2423-454d-876b-7ea87d6208c5.png)
-![frame_chrome_mac_light (1)](https://user-images.githubusercontent.com/6089482/160959086-f119078f-23c2-4696-8098-823afc9d9f0e.png)
-![frame_chrome_mac_light (2)](https://user-images.githubusercontent.com/6089482/160959065-5ebebb60-b217-4993-8a26-bf6722a19290.png)
+![frame_chrome_mac_light (3)](https://user-images.githubusercontent.com/6089482/160959392-8a5d639d-0ce3-4b2a-9a39-c7b0ea9998bd.png)
+![frame_chrome_mac_light (4)](https://user-images.githubusercontent.com/6089482/160959440-a86615d9-3cf8-4707-bdbd-89f789a6d6c6.png)
+
 
 ## Instructions
 
