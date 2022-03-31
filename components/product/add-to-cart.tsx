@@ -59,14 +59,14 @@ export const Subscription = ({ id, currentPrice, recurringPayments, onChange }) 
   );
 };
 
-export const Quantity = ({ id, defaultValue, onChange }) => {
+export const Quantity = ({ id, value, onChange }) => {
   const inputId = `${id}-quantity`;
   return (
     <Flex variant="styles.product.quantity" sx={{ flexWrap: 'wrap' }}>
       <Label variant="styles.inputLabel" htmlFor={inputId}>
         Quantity
       </Label>
-      <Input id={inputId} type="number" min={1} defaultValue={defaultValue ?? 1} onChange={onChange} />
+      <Input id={inputId} type="number" min={1} value={value ?? 1} onChange={onChange} />
     </Flex>
   );
 };
@@ -171,7 +171,7 @@ const AddToCart: React.FC<{ product: Stripe_Product }> = ({ product }) => {
       ) : null}
 
       <Flex sx={{ alignItems: 'flex-end', gap: '1rem' }}>
-        <Quantity id={product.id} defaultValue={quantity} onChange={handleUpdateQuantity} />
+        <Quantity id={product.id} value={quantity} onChange={handleUpdateQuantity} />
         <ProductPrice quantity={quantity} price={price} />
       </Flex>
 

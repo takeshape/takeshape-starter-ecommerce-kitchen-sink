@@ -61,7 +61,7 @@ const CartItem = ({ product, onChangeQuantity, onClickRemove }) => {
             <strong>{product.name}</strong>
           </div>
           <Flex sx={{ gap: '1rem', alignItems: 'flex-end', margin: '1rem 0' }}>
-            <Quantity id={product.id} defaultValue={product.quantity} onChange={onChangeQuantity} />
+            <Quantity id={product.id} value={product.quantity} onChange={onChangeQuantity} />
             <Box sx={{ fontSize: '.8em' }}>
               <ProductPrice price={product.price} quantity={product.quantity} />
             </Box>

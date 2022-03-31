@@ -1,11 +1,18 @@
-export const initialState = {
+export interface CartState {
+  isCartReady: boolean;
+  isCartOpen: boolean;
+  checkoutResult: any | null;
+  items: any[];
+}
+
+export const initialState: CartState = {
   isCartReady: false,
   isCartOpen: false,
   checkoutResult: null,
   items: []
 };
 
-const reducer = (state, action) => {
+const reducer = (state: CartState, action) => {
   switch (action.type) {
     case 'CART_IS_READY':
       return {
@@ -23,16 +30,29 @@ const reducer = (state, action) => {
         isCartOpen: !state.isCartOpen
       };
     case 'ADD_TO_CART':
+      const items = [...state.items];
+      const itemToAdd = action.payload.cartItem;
+      const itemAlreadyInCart = items.find(
+        (item) => item.id === itemToAdd.id && item.price.recurring === itemToAdd.price.recurring
+      );
+      if (itemAlreadyInCart) {
+        // increase quantity of the item
+        const quantity = itemAlreadyInCart.quantity + itemToAdd.quantity;
+        items[items.indexOf(itemAlreadyInCart)] = { ...itemToAdd, quantity };
+      } else {
+        items.push(itemToAdd);
+      }
       return {
         ...state,
-        items: [...state.items, action.payload.cartItem]
+        items
       };
     case 'REMOVE_FROM_CART': {
       const { cartItemIndex } = action.payload;
-      state.items.splice(cartItemIndex, 1);
+      const items = [...state.items];
+      items.splice(cartItemIndex, 1);
       return {
         ...state,
-        items: state.items
+        items
       };
     }
     case 'UPDATE_CART_ITEM': {
