@@ -1,11 +1,18 @@
-export const initialState = {
+export interface CartState {
+  isCartReady: boolean;
+  isCartOpen: boolean;
+  checkoutResult: any | null;
+  items: any[];
+}
+
+export const initialState: CartState = {
   isCartReady: false,
   isCartOpen: false,
   checkoutResult: null,
   items: []
 };
 
-const reducer = (state, action) => {
+const reducer = (state: CartState, action) => {
   switch (action.type) {
     case 'CART_IS_READY':
       return {
