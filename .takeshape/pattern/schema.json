@@ -750,23 +750,6 @@
           ]
         }
       }
-    },
-    "Klaviyo_getLists": {
-      "shape": "Klaviyo_GetListsResponse",
-      "resolver": {
-        "name": "rest:get",
-        "service": "klaviyo",
-        "path": "/v2/lists",
-        "results": {
-          "ops": [
-            {
-              "path": "items",
-              "mapping": "$resolvers[0]"
-            }
-          ]
-        }
-      },
-      "summary": "Get Lists"
     }
   },
   "mutations": {
@@ -1542,70 +1525,6 @@
             }
           ]
         }
-      }
-    },
-    "Klaviyo_getListMembers": {
-      "shape": {
-        "type": "array",
-        "items": {
-          "@ref": "local:GetListMemberItem"
-        }
-      },
-      "resolver": {
-        "name": "rest:post",
-        "service": "klaviyo",
-        "path": {
-          "ops": [
-            {
-              "path": "list_id",
-              "mapping": "$args.list_id"
-            }
-          ],
-          "serialize": {
-            "template": "/v2/list/{list_id}/get-members",
-            "paths": {
-              "list_id": {
-                "style": "simple"
-              }
-            }
-          }
-        },
-        "body": {
-          "ops": [
-            {
-              "path": "$",
-              "mapping": "$args.input"
-            }
-          ],
-          "serialize": {
-            "content": {
-              "contentType": "application/json"
-            }
-          }
-        },
-        "headers": {
-          "ops": [
-            {
-              "path": "content-type",
-              "value": "application/json"
-            }
-          ]
-        }
-      },
-      "summary": "Check if Profiles Are in a List",
-      "args": {
-        "type": "object",
-        "properties": {
-          "input": {
-            "@ref": "local:GetListMembersInput"
-          },
-          "list_id": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "list_id"
-        ]
       }
     },
     "Klaviyo_addMembers": {
@@ -2481,32 +2400,6 @@
               "type": "string"
             },
             "type": "array"
-          }
-        }
-      }
-    },
-    "GetListMemberItem": {
-      "name": "GetListMemberItem",
-      "title": "GetListMemberItem",
-      "id": "GetListMemberItem",
-      "schema": {
-        "type": "object",
-        "description": "\nThe profiles that you would like to remove from the list. \n\nExample:\n\n{\n  \"emails\":[\"george.washington@klaviyo.com\",\"abraham.lincoln@klaviyo.com\"],\n  \"phone_numbers\":[\"+13239169023\"],\n  \"push_tokens\":[\"03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2r\"]\n}\n",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "created": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "push_token": {
-            "type": "string"
-          },
-          "phone_number": {
-            "type": "string"
           }
         }
       }

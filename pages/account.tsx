@@ -5,7 +5,7 @@ import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { Page, Section } from 'components/layout';
 import { ProfileForm, CustomerForm } from 'components/forms';
 import { useQuery } from '@apollo/client';
-import { GetMyProfile, GetNewsletters, GetMyLoyaltyCard } from 'lib/queries';
+import { GetMyProfile } from 'lib/queries';
 import { useProfile } from 'lib/takeshape';
 import { NewsletterToggle } from 'components/account/newsletter-toggle';
 import { Logout } from 'components/user';
@@ -24,7 +24,6 @@ const AccountPage: NextPage = () => {
   const { data: profileData, error: profileError } = useQuery(GetMyProfile, {
     skip: !isProfileReady
   });
-  const { data: newsletterData, error: newsletterError } = useQuery(GetNewsletters, { skip: !isProfileReady });
   const [referrals, setReferrals] = useState<Referral[]>(referralsFixtureData);
   return (
     <Page>
@@ -46,23 +45,16 @@ const AccountPage: NextPage = () => {
           <Heading variant="smallHeading">Klavyio Subscriptions</Heading>
           <Divider sx={{ marginBottom: '1rem' }} />
 
-          {!newsletterData && <Spinner />}
+          {!profileData && <Spinner />}
 
-          {profileData && newsletterData && (
+          {profileData && (
             <Box as="ul" sx={{ listStyleType: 'none', padding: 0 }}>
-              {newsletterData.newsletters.items.map((newsletter) => (
+              {profileData.profile.newsletters.map((newsletter) => (
                 <Box as="li" key={newsletter.listId} sx={{ marginBottom: '1rem' }}>
                   <NewsletterToggle email={profileData.profile?.email} newsletter={newsletter} />
                 </Box>
               ))}
             </Box>
-          )}
-
-          {newsletterError && (
-            <>
-              <Alert>Error loading newsletter subscriptions</Alert>
-              <pre style={{ color: 'red' }}>{JSON.stringify(newsletterError, null, 2)}</pre>
-            </>
           )}
         </Section>
 

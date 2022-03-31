@@ -121,6 +121,11 @@ export const GetMyProfile = gql`
           country
         }
       }
+      newsletters {
+        listId
+        listName
+        subscribed
+      }
     }
   }
 `;
@@ -171,6 +176,11 @@ export const UpsertMyProfile = gql`
           postal_code
           country
         }
+      }
+      newsletters {
+        listId
+        listName
+        subscribed
       }
     }
   }
@@ -307,25 +317,6 @@ export const QueueReviewInvitation = gql`
     queueReviewInvitation(name: $name, email: $email, orderId: $orderId, products: $products) {
       status
       messages
-    }
-  }
-`;
-
-export const GetNewsletters = gql`
-  query GetNewslettersQuery {
-    newsletters: Klaviyo_getLists {
-      items {
-        listId: list_id
-        listName: list_name
-      }
-    }
-  }
-`;
-
-export const GetNewsletterSubscriptionStatus = gql`
-  mutation GetNewsletterSubscriptionStatusMutation($listId: String!, $email: String!) {
-    members: Klaviyo_getListMembers(list_id: $listId, input: { emails: [$email] }) {
-      id
     }
   }
 `;
