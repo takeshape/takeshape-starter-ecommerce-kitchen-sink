@@ -76,7 +76,7 @@ const theme: Theme = {
       width: '100%'
     },
     main: {
-      maxWidth: 1024,
+      maxWidth: '72rem',
       mx: 'auto',
       py: 3,
       px: 4,
