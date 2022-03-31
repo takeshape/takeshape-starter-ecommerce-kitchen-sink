@@ -19,10 +19,9 @@ A full-featured e-commerce experience using the best services out there:
 
 ## Screenshot
 
-<img width="1044" alt="Screen Shot 2022-03-30 at 18 07 45" src="https://user-images.githubusercontent.com/277401/160939314-346b433a-a705-4faf-8d40-2a8f57c6e86e.png">
-<img width="482" alt="Screen Shot 2022-03-30 at 18 07 56" src="https://user-images.githubusercontent.com/277401/160939324-2e685b2e-3aab-42e9-aaf4-b22bbf625711.png">
-<img width="999" alt="Screen Shot 2022-03-30 at 18 08 40" src="https://user-images.githubusercontent.com/277401/160939337-38840302-7542-42e3-93db-b11364e26a26.png">
-
+![frame_chrome_mac_light](https://user-images.githubusercontent.com/6089482/160959070-a5b62f42-2423-454d-876b-7ea87d6208c5.png)
+![frame_chrome_mac_light (1)](https://user-images.githubusercontent.com/6089482/160959086-f119078f-23c2-4696-8098-823afc9d9f0e.png)
+![frame_chrome_mac_light (2)](https://user-images.githubusercontent.com/6089482/160959065-5ebebb60-b217-4993-8a26-bf6722a19290.png)
 
 ## Instructions
 
