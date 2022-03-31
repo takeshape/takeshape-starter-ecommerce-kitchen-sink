@@ -30,9 +30,21 @@ const reducer = (state: CartState, action) => {
         isCartOpen: !state.isCartOpen
       };
     case 'ADD_TO_CART':
+      const items = [...state.items];
+      const itemToAdd = action.payload.cartItem;
+      const itemAlreadyInCart = items.find(
+        (item) => item.id === itemToAdd.id && item.price.recurring === itemToAdd.price.recurring
+      );
+      if (itemAlreadyInCart) {
+        // increase quantity of the item
+        const quantity = itemAlreadyInCart.quantity + itemToAdd.quantity;
+        items[items.indexOf(itemAlreadyInCart)] = { ...itemToAdd, quantity };
+      } else {
+        items.push(itemToAdd);
+      }
       return {
         ...state,
-        items: [...state.items, action.payload.cartItem]
+        items
       };
     case 'REMOVE_FROM_CART': {
       const { cartItemIndex } = action.payload;
