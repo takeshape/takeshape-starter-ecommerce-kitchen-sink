@@ -2054,6 +2054,47 @@
                 ]
               }
             }
+          },
+          "orders": {
+            "title": "Orders",
+            "description": "",
+            "type": "array",
+            "items": {
+              "@ref": "stripe:Invoice"
+            },
+            "@resolver": {
+              "if": "!isEmpty($source.stripeCustomerId)",
+              "id": "invoices",
+              "name": "rest:get",
+              "service": "stripe",
+              "path": "/v1/invoices",
+              "searchParams": {
+                "ops": [
+                  {
+                    "path": "$",
+                    "mapping": "$args"
+                  },
+                  {
+                    "path": "customer",
+                    "mapping": "$source.stripeCustomerId"
+                  }
+                ],
+                "serialize": {
+                  "defaults": {
+                    "style": "deepObject",
+                    "explode": true
+                  }
+                }
+              },
+              "results": {
+                "ops": [
+                  {
+                    "path": "$",
+                    "mapping": "$resolvers.invoices.data"
+                  }
+                ]
+              }
+            }
           }
         }
       }
