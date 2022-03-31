@@ -32,6 +32,8 @@ export type Query = {
   getTsStaticSite?: Maybe<TsStaticSite>;
   /** Returns a list TsStaticSite in natural order. */
   getTsStaticSiteList?: Maybe<TsStaticSitePaginatedList>;
+  /** Get a loyalty card from Voucherify */
+  getMyLoyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
   /** Get product reviews for an SKU */
   getProductReviews?: Maybe<Reviews_ProductReviewsQueryResponse>;
   /** Fetch Stripe products from the API Index. */
@@ -641,6 +643,36 @@ export type TsWhereTsStaticSiteTriggersInput = {
   status?: InputMaybe<TsWhereStringInput>;
 };
 
+export type Voucherify_LoyaltyCard = {
+  __typename?: 'Voucherify_LoyaltyCard';
+  id?: Maybe<Scalars['String']>;
+  code?: Maybe<Scalars['String']>;
+  campaign?: Maybe<Scalars['String']>;
+  campaign_id?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+  loyalty_card?: Maybe<Voucherify_LoyaltyCardStats>;
+  active?: Maybe<Scalars['Boolean']>;
+  assets?: Maybe<Voucherify_LoyaltyCardAssets>;
+};
+
+export type Voucherify_LoyaltyCardStats = {
+  __typename?: 'Voucherify_LoyaltyCardStats';
+  points?: Maybe<Scalars['Int']>;
+  balance?: Maybe<Scalars['Int']>;
+};
+
+export type Voucherify_LoyaltyCardAssets = {
+  __typename?: 'Voucherify_LoyaltyCardAssets';
+  qr?: Maybe<Voucherify_LoyaltyCardAsset>;
+  barcode?: Maybe<Voucherify_LoyaltyCardAsset>;
+};
+
+export type Voucherify_LoyaltyCardAsset = {
+  __typename?: 'Voucherify_LoyaltyCardAsset';
+  id?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
+};
+
 export type Reviews_ProductReviewsQueryResponse = {
   __typename?: 'Reviews_ProductReviewsQueryResponse';
   reviews?: Maybe<Reviews_ProductReviews>;
@@ -735,6 +767,7 @@ export type Stripe_Product = TsSearchable & {
   /** A URL of a publicly-accessible webpage for this product. */
   url?: Maybe<Scalars['String']>;
   prices?: Maybe<Array<Maybe<Stripe_Price>>>;
+  reviews?: Maybe<Reviews_ProductReviewsQueryResponse>;
   _shapeId?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['ID']>;
   searchSummary?: Maybe<Scalars['String']>;
@@ -10081,36 +10114,6 @@ export enum Stripe_CustomerTaxIdsObjectProperty {
   List = 'list'
 }
 
-export type Voucherify_LoyaltyCard = {
-  __typename?: 'Voucherify_LoyaltyCard';
-  id?: Maybe<Scalars['String']>;
-  code?: Maybe<Scalars['String']>;
-  campaign?: Maybe<Scalars['String']>;
-  campaign_id?: Maybe<Scalars['String']>;
-  type?: Maybe<Scalars['String']>;
-  loyalty_card?: Maybe<Voucherify_LoyaltyCardStats>;
-  active?: Maybe<Scalars['Boolean']>;
-  assets?: Maybe<Voucherify_LoyaltyCardAssets>;
-};
-
-export type Voucherify_LoyaltyCardStats = {
-  __typename?: 'Voucherify_LoyaltyCardStats';
-  points?: Maybe<Scalars['Int']>;
-  balance?: Maybe<Scalars['Int']>;
-};
-
-export type Voucherify_LoyaltyCardAssets = {
-  __typename?: 'Voucherify_LoyaltyCardAssets';
-  qr?: Maybe<Voucherify_LoyaltyCardAsset>;
-  barcode?: Maybe<Voucherify_LoyaltyCardAsset>;
-};
-
-export type Voucherify_LoyaltyCardAsset = {
-  __typename?: 'Voucherify_LoyaltyCardAsset';
-  id?: Maybe<Scalars['String']>;
-  url?: Maybe<Scalars['String']>;
-};
-
 export type Stripe_ListProductsResponse = {
   __typename?: 'Stripe_ListProductsResponse';
   data?: Maybe<Array<Maybe<Stripe_Product>>>;
@@ -10209,6 +10212,8 @@ export type WithContext = {
   getTsStaticSite?: Maybe<TsStaticSite>;
   /** Returns a list TsStaticSite in natural order. */
   getTsStaticSiteList?: Maybe<TsStaticSitePaginatedList>;
+  /** Get a loyalty card from Voucherify */
+  getMyLoyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
   /** Get product reviews for an SKU */
   getProductReviews?: Maybe<Reviews_ProductReviewsQueryResponse>;
   /** Fetch Stripe products from the API Index. */

@@ -29,19 +29,20 @@ export const NewsletterToggle = ({ email, newsletter }) => {
   }, [email, newsletter.listId, subscribe, subscribed, unsubscribe]);
 
   return (
-    <Flex sx={{ justifyContent: 'space-between', alignItems: 'center', py: 2 }}>
-      <Label sx={{ flex: 1 }}>{newsletter.listName}</Label>
+    <Flex sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
       {loading ? (
-        <Spinner />
+        <Spinner size={24} sx={{ flexBasis: '4rem' }} />
       ) : (
-        <Box>
+        <Box sx={{ flexBasis: '4rem' }}>
           <Switch
+            variant="muted"
             checked={subscribed}
             onChange={onChange}
             disabled={(subscribeCalled && subscribeLoading) || (unsubscribeCalled && unsubscribeLoading)}
           />
         </Box>
       )}
+      <Label sx={{ flex: 1, fontSize: '1.2em' }}>{newsletter.listName}</Label>
     </Flex>
   );
 };

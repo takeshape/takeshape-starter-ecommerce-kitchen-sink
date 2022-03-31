@@ -13,7 +13,13 @@ export const Logout = () => {
   }, [logout, resetStore]);
 
   return (
-    <Button variant="logout" onClick={handleLogout} p={2} mr={2}>
+    <Button
+      variant="logout"
+      onClick={handleLogout}
+      p={2}
+      mr={2}
+      sx={{ color: 'primary', backgroundColor: 'background', fontSize: '.8em' }}
+    >
       Log Out
     </Button>
   );

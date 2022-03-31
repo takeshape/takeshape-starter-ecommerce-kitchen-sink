@@ -3,19 +3,30 @@ import { Card, Text, Image, Heading, Box } from '@theme-ui/components';
 
 const LoyaltyCard = ({ code, loyalty_card, assets }: Voucherify_LoyaltyCard) => {
   return (
-    <Card variant="loyalty" sx={{ width: '400px', p: 4 }}>
-      <Box sx={{ display: 'flex', alignContent: 'center', justifyContent: 'center', mb: 4 }}>
-        <Heading sx={{ textAlign: 'center', fontFamily: 'cursive', fontSize: 5 }}>Loyalty Card</Heading>
+    <Card variant="loyalty" sx={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: '1rem' }}>
+      <Text variant="styles.shopName" sx={{ fontWeight: 'bold', flex: '1 1 100%' }}>
+        Kitchen<span>Sink</span> Membership
+      </Text>
+
+      <Box>
+        <Box>
+          <Image src={assets.qr.url} alt="QR Code" height="70px" width="70px" />
+        </Box>
+        <Text as="div" sx={{ textTransform: 'uppercase', fontWeight: 'bold', textAlign: 'center' }}></Text>
       </Box>
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Image src={assets.qr.url} alt="QR Code" />
-        <Text as="div" sx={{ textTransform: 'uppercase', fontWeight: 'bold', textAlign: 'center' }}>
+      <Box as="dl">
+        <Text as="dt" variant="styles.membershipTerm">
+          Member Code
+        </Text>
+        <Text as="dd" variant="styles.membershipItem">
           {code}
         </Text>
-      </Box>
-      <Box sx={{ textAlign: 'center' }}>
-        <Heading sx={{ textTransform: 'uppercase', fontSize: 1 }}>Balance</Heading>
-        <Text sx={{ fontWeight: 'bold' }}>{loyalty_card.balance} points</Text>
+        <Text as="dt" variant="styles.membershipTerm">
+          Balance
+        </Text>
+        <Text as="dd" variant="styles.membershipItem">
+          {loyalty_card.balance} points
+        </Text>
       </Box>
     </Card>
   );

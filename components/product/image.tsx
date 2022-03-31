@@ -14,7 +14,12 @@ const ProductImage: React.FC<ProductImageProps> = (props) => {
     <Image
       alt={alt}
       src={src}
-      sx={{ height: maxHeight, width: '100%', objectFit: 'contain', objectPosition: 'center' }}
+      sx={{
+        height: maxHeight,
+        width: '100%',
+        objectFit: 'contain',
+        objectPosition: 'center'
+      }}
     />
   );
 };

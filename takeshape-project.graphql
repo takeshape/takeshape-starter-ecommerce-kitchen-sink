@@ -88,6 +88,9 @@ type Query {
     where: TSWhereTsStaticSiteInput
   ): TsStaticSitePaginatedList
 
+  """Get a loyalty card from Voucherify"""
+  getMyLoyaltyCard: Voucherify_LoyaltyCard
+
   """Get product reviews for an SKU"""
   getProductReviews(sku: String): Reviews_ProductReviewsQueryResponse
 
@@ -640,6 +643,32 @@ input TSWhereTsStaticSiteTriggersInput {
   status: TSWhereStringInput
 }
 
+type Voucherify_LoyaltyCard {
+  id: String
+  code: String
+  campaign: String
+  campaign_id: String
+  type: String
+  loyalty_card: Voucherify_LoyaltyCardStats
+  active: Boolean
+  assets: Voucherify_LoyaltyCardAssets
+}
+
+type Voucherify_LoyaltyCardStats {
+  points: Int
+  balance: Int
+}
+
+type Voucherify_LoyaltyCardAssets {
+  qr: Voucherify_LoyaltyCardAsset
+  barcode: Voucherify_LoyaltyCardAsset
+}
+
+type Voucherify_LoyaltyCardAsset {
+  id: String
+  url: String
+}
+
 type Reviews_ProductReviewsQueryResponse {
   reviews: Reviews_ProductReviews
   store: Reviews_Store
@@ -759,6 +788,7 @@ type Stripe_Product implements TSSearchable {
   """A URL of a publicly-accessible webpage for this product."""
   url: String
   prices: [Stripe_Price]
+  reviews: Reviews_ProductReviewsQueryResponse
   _shapeId: String
   _id: ID
   searchSummary: String
@@ -12705,32 +12735,6 @@ enum Stripe_CustomerTaxIdsObjectProperty {
   list
 }
 
-type Voucherify_LoyaltyCard {
-  id: String
-  code: String
-  campaign: String
-  campaign_id: String
-  type: String
-  loyalty_card: Voucherify_LoyaltyCardStats
-  active: Boolean
-  assets: Voucherify_LoyaltyCardAssets
-}
-
-type Voucherify_LoyaltyCardStats {
-  points: Int
-  balance: Int
-}
-
-type Voucherify_LoyaltyCardAssets {
-  qr: Voucherify_LoyaltyCardAsset
-  barcode: Voucherify_LoyaltyCardAsset
-}
-
-type Voucherify_LoyaltyCardAsset {
-  id: String
-  url: String
-}
-
 type Stripe_ListProductsResponse {
   data: [Stripe_Product]
 
@@ -12901,6 +12905,9 @@ type WithContext {
     """
     where: TSWhereTsStaticSiteInput
   ): TsStaticSitePaginatedList
+
+  """Get a loyalty card from Voucherify"""
+  getMyLoyaltyCard: Voucherify_LoyaltyCard
 
   """Get product reviews for an SKU"""
   getProductReviews(sku: String): Reviews_ProductReviewsQueryResponse

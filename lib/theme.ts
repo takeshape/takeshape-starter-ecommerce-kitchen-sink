@@ -6,6 +6,7 @@ const theme: Theme = {
   ...swiss,
   colors: {
     ...swiss.colors,
+    secondary: '#ccc',
     lightGray: lighten('black', 0.5) as any
   },
   styles: {
@@ -39,6 +40,33 @@ const theme: Theme = {
       fontSize: '0.8em',
       color: 'lightGray',
       lineHeight: '1.6'
+    },
+    pageTitle: {
+      fontSize: '3rem',
+      marginBottom: '2rem'
+    },
+    shopName: {
+      fontSize: '1.2em',
+      span: {
+        color: 'primary'
+      },
+      '&:hover span': {
+        color: 'text'
+      }
+    },
+    membershipTerm: {
+      fontWeight: 'bold',
+      fontSize: '.6em',
+      lineHeight: '1.6',
+      textTransform: 'uppercase'
+    },
+    membershipItem: {
+      fontFamily: 'Roboto Mono, Menlo, monospace',
+      marginBottom: '1rem',
+      letterSpacing: '1px',
+      '&:last-child': {
+        marginBottom: 0
+      }
     }
   },
   layout: {
@@ -48,7 +76,7 @@ const theme: Theme = {
       width: '100%'
     },
     main: {
-      maxWidth: 1024,
+      maxWidth: '72rem',
       mx: 'auto',
       py: 3,
       px: 4,
@@ -115,9 +143,10 @@ const theme: Theme = {
     },
     loyalty: {
       padding: 2,
-      border: '5px dotted',
-      borderColor: 'muted',
-      backgroundColor: 'highlight'
+      border: '1px solid',
+      borderColor: '#ccc',
+      borderRadius: '4px',
+      backgroundColor: 'background'
     }
   },
   buttons: {
@@ -130,7 +159,8 @@ const theme: Theme = {
     },
     login: {
       cursor: 'pointer',
-      backgroundColor: 'secondary'
+      backgroundColor: 'primary',
+      fontSize: '.8em'
     },
     logout: {
       cursor: 'pointer',
@@ -207,25 +237,30 @@ const theme: Theme = {
     }
   },
   forms: {
-    input: {
-      '&:read-only': {
-        color: 'gray',
-        borderColor: 'gray'
-      },
-      '&:focus:read-only': {
-        borderColor: 'none',
-        boxShadow: 0,
-        outline: 'none'
-      }
+    label: {
+      fontSize: '0.8em',
+      color: 'lightGray',
+      lineHeight: '1.6'
     },
     disabledLabel: {
-      color: 'gray',
-      borderColor: 'gray'
+      fontSize: '0.8em',
+      color: '#999',
+      lineHeight: '1.6'
+    },
+    input: {
+      '&:read-only': {
+        color: '#999'
+      },
+      borderColor: '#ccc'
+    },
+    textarea: {
+      borderColor: '#ccc'
     },
     select: {
+      backgroundColor: '#fff',
+      borderColor: '#ccc',
       '&:disabled': {
-        color: 'gray',
-        borderColor: 'gray'
+        color: 'gray'
       }
     }
   }

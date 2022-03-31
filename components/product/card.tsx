@@ -23,7 +23,7 @@ export const ProductCard = ({ product }) => {
         <Flex sx={{ flex: '1 1 auto', flexDirection: 'column', justifyContent: 'space-between' }}>
           <Heading sx={{ margin: '.5rem 0', fontSize: '2em', lineHeight: '1' }}>
             <NextLink href={`/product/${product.id}`} passHref>
-              <Link sx={{ color: 'inherit', textDecoration: 'none' }}>{name}</Link>
+              <Link sx={{ color: 'inherit', ':hover': { color: 'primary' }, textDecoration: 'none' }}>{name}</Link>
             </NextLink>
           </Heading>
           <AddToCart product={product} />
