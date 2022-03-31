@@ -68,7 +68,6 @@
         "spec": "https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json",
         "useRestfulNames": true
       },
-      "authentication": "R7Wso3SewJO3mfPpm+GsBbTykozdnpJlC+WQZgTxbeHh42EaAzQY/vZOTUATnpFxFz2d291LEz02S+usrGkaOqcJqlMoZ/7XCsmfRHkJXlMDL0JSHGRuyL4y9hssPofuRn1QxTz0BNllceMT6zNZGkfOxVdPP8EiTO/ddzeyN4w5jnJAmFhWy0cA7r7hpnvKojE0qpdOwA=="
     },
     "reviews-io": {
       "id": "reviews-io",
@@ -77,7 +76,6 @@
       "namespace": "Reviews",
       "serviceType": "rest",
       "authenticationType": "searchParams",
-      "authentication": "HhPDszv1Mj8mYQ2ZdqunCvNhxIFsCFU55IuyuSe31llMNC8BENmwQKQ0usM+m81hrj1sJmfNMUyg1l1Jjj6pnj7pMVgHnQ6JQgtceUjJAR/j/BByx1GZ1y0J93lJ5qxOrHexkXLMY7wIBTWs6O+Y",
       "options": {
         "endpoint": "https://api.reviews.io"
       }
@@ -89,7 +87,6 @@
       "namespace": "Voucherify",
       "serviceType": "rest",
       "authenticationType": "bearer",
-      "authentication": "OYJKK7WKrvI131Pi6UCjPjW6mW1rVHJO+p0Hilikj6aE3yqtdFGngblroME60n8N99Oh3K97OzmCluBA4Xcg5lzOEE4LC671mwiRHbI5HRB/mppbDbGClOEkiaR3QjLiskAyOak9Qg==",
       "options": {
         "endpoint": "https://us1.api.voucherify.io/",
         "headers": {
