@@ -1,7 +1,3 @@
-# WARNING
-
-This starter is a work in progress! Do not use for anything important.
-
 # TakeShape Starter E-commerce Kitchen Sink
 
 A full-featured e-commerce experience using the best services out there:
@@ -11,11 +7,28 @@ A full-featured e-commerce experience using the best services out there:
 - Klaviyo for newsletter subscriptions
 - Reviews.io for product reviews
 - Voucherify for customer loyalty
+- Ship Engine for shipping
+- Referral Candy for referrals
 - Next.js to build the pages and bundle it all up
 - Vercel to host it
 - **TakeShape ShapeDB for profile data storage**
 - **TakeShape Indexing for query optimization and search**
 - **TakeShape API Mesh to bring all these services together in one easy-to-use GraphQL API**
+
+```mermaid
+graph TD
+    A[Frontend NextJS Client] --> |Unified GraphQL API| B{TakeShape's API Mesh}
+    B --> |User Authentication| C(Auth0)
+    B --> |Products| L[Stripe]
+    C --> K{ShapeDB}
+    K --> J{User Profile}
+    J --> |Referrals| H(Referral Candy)
+    J --> |Orders and Subscriptions| D[Stripe]
+    J --> |Newsletter| E(Klaviyo)
+    J --> |Product Reviews| F(Reviews.io)
+    J --> |Shipping info| G(ShipEngine)
+    J --> |Loyalty Points| I(Voucherify)
+```
 
 ## Screenshot
 
@@ -47,7 +60,7 @@ A full-featured e-commerce experience using the best services out there:
 
 3. Create a TakeShape project using the pattern in this repo. This button will deploy the project for you:
 
-   - <a href="https://app.takeshape.io/add-to-takeshape?repo=https://github.com/takeshape/takeshape-starter-auth0-stripe/tree/main/.takeshape/pattern"><img alt="Deploy To TakeShape" src="https://camo.githubusercontent.com/1b580e3ce353d235bde0f376ca35b0fb26d685f3750a3013ae4b225dd3aaf344/68747470733a2f2f696d616765732e74616b6573686170652e696f2f32636363633832352d373062652d343331632d396261302d3130616233386563643361372f6465762f38653266376264612d306530382d346564652d613534362d3664663539626536613862622f4465706c6f79253230746f25323054616b65536861706525343032782e706e673f6175746f3d666f726d6174253243636f6d7072657373" width="205" height="38" data-canonical-src="https://images.takeshape.io/2cccc825-70be-431c-9ba0-10ab38ecd3a7/dev/8e2f7bda-0e08-4ede-a546-6df59be6a8bb/Deploy%20to%20TakeShape%402x.png?auto=format%2Ccompress" style="max-width:100%;"></a>
+   - <a href="https://app.takeshape.io/add-to-takeshape?repo=https://github.com/takeshape/takeshape-starter-ecommerce-kitchen-sink/tree/main/.takeshape/pattern"><img alt="Deploy To TakeShape" src="https://camo.githubusercontent.com/1b580e3ce353d235bde0f376ca35b0fb26d685f3750a3013ae4b225dd3aaf344/68747470733a2f2f696d616765732e74616b6573686170652e696f2f32636363633832352d373062652d343331632d396261302d3130616233386563643361372f6465762f38653266376264612d306530382d346564652d613534362d3664663539626536613862622f4465706c6f79253230746f25323054616b65536861706525343032782e706e673f6175746f3d666f726d6174253243636f6d7072657373" width="205" height="38" data-canonical-src="https://images.takeshape.io/2cccc825-70be-431c-9ba0-10ab38ecd3a7/dev/8e2f7bda-0e08-4ede-a546-6df59be6a8bb/Deploy%20to%20TakeShape%402x.png?auto=format%2Ccompress" style="max-width:100%;"></a>
 
 4. With your project imported, you should see an Auth0 and a Stripe service on the dashboard.
 
@@ -108,11 +121,33 @@ A full-featured e-commerce experience using the best services out there:
    - Enter an `Account name` where indicated.
    - **Save** the settings.
 
+### Connecting Other Services
+
+Voucherify, Referral Candy, Reviews.io and Ship Engine are easy to connect as REST services on TakeShape. All three require simple auth headers and tokens. We have [a guide for connecting REST services](https://app.takeshape.io/docs/services/providers/rest/#connect-a-rest-service) in our docs.
+
+Below is a list of guides from each service's documentation for authenticating your API's:
+
+- [Voucherify](https://docs.voucherify.io/docs/authentication)
+- [Ship Engine](https://www.shipengine.com/docs/rest/#headers)
+- [Referral Candy](https://www.referralcandy.com/api#authentication)
+- [Reviews.io](https://api.reviews.co.uk/documentation/index.html#api-_footer)
+
+You can [follow our guide](https://app.takeshape.io/docs/services/providers/rest/#connect-a-rest-service) for more information on setting a REST service up in a TakeShape project.
+#### Klaviyo
+
+![A list of TakeShape services](./readme_images/services.png)
+
+Setting up Klaviyo in your TakeShape project is as simple as selecting it as a service and adding your Klaviyo API key. On your TakeShape project's dashboard, navigate to the Home tab and select Connect Service
+
+![A list of TakeShape services](./readme_images/connect.png)
+
+To find your api key for Klaviyo, log in to your Klaviyo account and access Account → Settings → API Keys.
+
 ### Running the Starter
 
 1. Head over to your trusty terminal or tool of choice.
 
-   - Clone this repo with `git clone https://github.com/takeshape/takeshape-starter-auth0-stripe.git`.
+   - Clone this repo with `git clone https://github.com/takeshape/takeshape-starter-ecommerce-kitchen-sink.git`.
    - `cd` into the folder that the cloning created.
    - Run `mv .env.local-example .env.local` to rename the environment variables file.
    - Run `npm install`.
