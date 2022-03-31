@@ -1,14 +1,5 @@
 {
   "apiVersion": "2",
-  "dataKey": "AQIDAHi9nATJb1LYgj5u7ShOGp43y2H6TuckRKGDlwTU4b6ryQHpD1ExP5EeUSOHKV9LG+ofAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMUCghZNs1AGoyxZ8MAgEQgDuRWxn8sl1YiM0CkUifGRkgeXzEU0/2IDozZfB4uuketCRxaEqcxBzh6l7lrIJAKkPOQGTYQD32doiYog==",
-  "projectId": "79b5254d-5bc3-4034-8b05-e9c2f097de5a",
-  "version": 199,
-  "created": "2021-06-08T13:12:26.923Z",
-  "updated": "2022-03-29T16:27:31.078Z",
-  "defaultLocale": "en-us",
-  "locales": [
-    "en-us"
-  ],
   "workflows": {},
   "forms": {
     "Profile": {
@@ -67,7 +58,7 @@
         "endpoint": "https://api.stripe.com/",
         "spec": "https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json",
         "useRestfulNames": true
-      },
+      }
     },
     "reviews-io": {
       "id": "reviews-io",
@@ -92,6 +83,28 @@
         "headers": {
           "X-App-Id": "7b3f5d07-ebc6-4fb9-a66f-3b94097cfc30"
         }
+      }
+    },
+    "referral-candy": {
+      "id": "referral-candy",
+      "provider": "generic",
+      "title": "Referral Candy",
+      "namespace": "Referral",
+      "serviceType": "rest",
+      "authenticationType": "none",
+      "options": {
+        "endpoint": "https://my.referralcandy.com/api/v1/"
+      }
+    },
+    "ship-engine": {
+      "id": "ship-engine",
+      "provider": "generic",
+      "title": "Ship Engine",
+      "namespace": "Shipping",
+      "serviceType": "rest",
+      "authenticationType": "bearer",
+      "options": {
+        "endpoint": "https://api.shipengine.com"
       }
     }
   },
@@ -149,7 +162,7 @@
           ]
         }
       },
-      "description": "Get product reviews for an SKU",
+      "description": "Get product reviews for an SKU from Reviews.io",
       "args": {
         "type": "object",
         "properties": {
@@ -169,7 +182,7 @@
           "indexedShape": "Stripe_Product"
         }
       },
-      "description": "Fetch Stripe products from the API Index.",
+      "description": "Get Stripe products from the TakeShape API Index",
       "args": "TSListArgs<Stripe_Product>"
     },
     "getMyProfile": {
@@ -187,7 +200,7 @@
           ]
         }
       },
-      "description": "Get my profile"
+      "description": "Get the signed in user's profile from ShapeDB"
     },
     "getMySubscriptions": {
       "shape": {
@@ -249,7 +262,7 @@
           ]
         }
       },
-      "description": "Get my subscriptions",
+      "description": "Get the signed in user's subscriptions from Stripe",
       "args": {
         "type": "object",
         "properties": {
@@ -321,7 +334,7 @@
           ]
         }
       },
-      "description": "Get my invoices",
+      "description": "Get the signed in user's invoices from Stripe",
       "args": {
         "type": "object",
         "properties": {
@@ -434,7 +447,7 @@
           ]
         }
       },
-      "description": "Get my payments",
+      "description": "Get the signed-in user's payments from Stripe",
       "args": {
         "type": "object",
         "properties": {
@@ -456,23 +469,6 @@
           }
         }
       }
-    },
-    "getStripeProducts": {
-      "shape": "Stripe_ListProductsResponse",
-      "resolver": {
-        "name": "rest:get",
-        "service": "stripe",
-        "path": "/v1/products",
-        "searchParams": {
-          "ops": [
-            {
-              "path": "active",
-              "value": "true"
-            }
-          ]
-        }
-      },
-      "description": "Get Stripe products."
     },
     "getProfile": {
       "shape": "Profile",
@@ -742,6 +738,23 @@
           ]
         }
       }
+    },
+    "Klaviyo_getLists": {
+      "shape": "Klaviyo_GetListsResponse",
+      "resolver": {
+        "name": "rest:get",
+        "service": "klaviyo",
+        "path": "/v2/lists",
+        "results": {
+          "ops": [
+            {
+              "path": "items",
+              "mapping": "$resolvers[0]"
+            }
+          ]
+        }
+      },
+      "summary": "Get Lists"
     }
   },
   "mutations": {
@@ -807,6 +820,7 @@
       }
     },
     "upsertMyProfile": {
+      "description": "Upsert the signed-in user's profile, updating ShapeDB and Stripe",
       "shape": "Profile",
       "resolver": {
         "results": {
@@ -1029,7 +1043,6 @@
           }
         ]
       },
-      "description": "Upsert my profile.",
       "args": {
         "type": "object",
         "properties": {
@@ -1046,6 +1059,7 @@
       }
     },
     "upsertMyCustomer": {
+      "description": "Upsert the signed-in user's Stripe customer",
       "shape": "stripe:Customer",
       "resolver": {
         "results": {
@@ -1164,7 +1178,6 @@
           }
         ]
       },
-      "description": "Upsert my Stripe customer.",
       "args": {
         "type": "object",
         "properties": {
@@ -1201,6 +1214,7 @@
       }
     },
     "deleteMySubscription": {
+      "description": "Delete the signed-in user's subscription in Stripe",
       "shape": "stripe:Subscription",
       "resolver": {
         "compose": [
@@ -1246,7 +1260,6 @@
           }
         ]
       },
-      "description": "Delete a Stripe subscription",
       "args": {
         "type": "object",
         "properties": {
@@ -1260,6 +1273,7 @@
       }
     },
     "createMyCheckoutSession": {
+      "description": "Create a Stripe checkout session for the signed-in user",
       "shape": "stripe:CheckoutSession",
       "resolver": {
         "compose": [
@@ -1351,7 +1365,6 @@
           }
         ]
       },
-      "description": "Create a Stripe checkout session.",
       "args": {
         "type": "object",
         "properties": {
@@ -1428,6 +1441,7 @@
       "args": "DeleteArgs<Profile>"
     },
     "Voucherify_createOrder": {
+      "description": "Create an order in Voucherify",
       "shape": "Voucherify_Order",
       "args": {
         "type": "object",
@@ -1516,6 +1530,220 @@
             }
           ]
         }
+      }
+    },
+    "Klaviyo_getListMembers": {
+      "shape": {
+        "type": "array",
+        "items": {
+          "@ref": "local:GetListMemberItem"
+        }
+      },
+      "resolver": {
+        "name": "rest:post",
+        "service": "klaviyo",
+        "path": {
+          "ops": [
+            {
+              "path": "list_id",
+              "mapping": "$args.list_id"
+            }
+          ],
+          "serialize": {
+            "template": "/v2/list/{list_id}/get-members",
+            "paths": {
+              "list_id": {
+                "style": "simple"
+              }
+            }
+          }
+        },
+        "body": {
+          "ops": [
+            {
+              "path": "$",
+              "mapping": "$args.input"
+            }
+          ],
+          "serialize": {
+            "content": {
+              "contentType": "application/json"
+            }
+          }
+        },
+        "headers": {
+          "ops": [
+            {
+              "path": "content-type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "summary": "Check if Profiles Are in a List",
+      "args": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "@ref": "local:GetListMembersInput"
+          },
+          "list_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "list_id"
+        ]
+      }
+    },
+    "Klaviyo_addMembers": {
+      "shape": "Klaviyo_AddMembersResponse",
+      "resolver": {
+        "name": "rest:post",
+        "service": "klaviyo",
+        "path": {
+          "ops": [
+            {
+              "path": "list_id",
+              "mapping": "$args.list_id"
+            }
+          ],
+          "serialize": {
+            "template": "/v2/list/{list_id}/members",
+            "paths": {
+              "list_id": {
+                "style": "simple"
+              }
+            }
+          }
+        },
+        "body": {
+          "ops": [
+            {
+              "path": "$",
+              "mapping": "$args.input"
+            }
+          ],
+          "serialize": {
+            "content": {
+              "contentType": "application/json"
+            }
+          }
+        },
+        "headers": {
+          "ops": [
+            {
+              "path": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "results": {
+          "ops": [
+            {
+              "path": "items",
+              "mapping": "$resolvers[0]"
+            }
+          ]
+        }
+      },
+      "summary": "Add Members to a List",
+      "args": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "@ref": "local:AddListMembersInput"
+          },
+          "list_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "list_id"
+        ]
+      }
+    },
+    "Klaviyo_removeMembers": {
+      "shape": "Klaviyo_200Ok",
+      "resolver": {
+        "name": "rest:delete",
+        "service": "klaviyo",
+        "path": {
+          "ops": [
+            {
+              "path": "list_id",
+              "mapping": "$args.list_id"
+            }
+          ],
+          "serialize": {
+            "template": "/v2/list/{list_id}/members",
+            "paths": {
+              "list_id": {
+                "style": "simple"
+              }
+            }
+          }
+        },
+        "body": {
+          "ops": [
+            {
+              "path": "$",
+              "mapping": "$args.input"
+            }
+          ],
+          "serialize": {
+            "content": {
+              "contentType": "application/json"
+            }
+          }
+        },
+        "headers": {
+          "ops": [
+            {
+              "path": "content-type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "summary": "Remove Profiles From List",
+      "args": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "description": "\nThe profiles that you would like to remove from the list. \n\nExample:\n\n{\n  \"emails\":[\"george.washington@klaviyo.com\",\"abraham.lincoln@klaviyo.com\"],\n  \"phone_numbers\":[\"+13239169023\"],\n  \"push_tokens\":[\"03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2r\"]\n}\n",
+            "properties": {
+              "emails": {
+                "minItems": 0,
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "phone_numbers": {
+                "minItems": 0,
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "push_tokens": {
+                "minItems": 0,
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "list_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "list_id"
+        ]
       }
     }
   },
@@ -1679,41 +1907,6 @@
         }
       }
     },
-    "Voucherify_OrderItem": {
-      "id": "Voucherify_OrderItem",
-      "name": "Voucherify_OrderItem",
-      "title": "Voucherify_OrderItem",
-      "schema": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string"
-          },
-          "quantity": {
-            "type": "integer"
-          },
-          "price": {
-            "type": "integer"
-          }
-        }
-      }
-    },
-    "Voucherify_Order": {
-      "id": "Voucherify_Order",
-      "name": "Voucherify_Order",
-      "title": "Voucherify_Order",
-      "schema": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "Reviews_Stats": {
       "id": "Reviews_Stats",
       "name": "Reviews_Stats",
@@ -1755,95 +1948,39 @@
         }
       }
     },
-    "Stripe_Product": {
-      "id": "Stripe_Product",
-      "name": "Stripe_Product",
-      "title": "Stripe_Product",
+    "Voucherify_OrderItem": {
+      "id": "Voucherify_OrderItem",
+      "name": "Voucherify_OrderItem",
+      "title": "Voucherify_OrderItem",
       "schema": {
-        "extends": [
-          {
-            "@ref": "stripe:Product"
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
           },
-          {
-            "type": "object",
-            "properties": {
-              "prices": {
-                "type": "array",
-                "items": {
-                  "@ref": "stripe:Price"
-                },
-                "@resolver": {
-                  "name": "rest:get",
-                  "service": "stripe",
-                  "path": "/v1/prices",
-                  "searchParams": {
-                    "ops": [
-                      {
-                        "path": "active",
-                        "value": "true"
-                      },
-                      {
-                        "path": "product",
-                        "mapping": "$source.id"
-                      }
-                    ]
-                  },
-                  "results": {
-                    "ops": [
-                      {
-                        "path": "$",
-                        "mapping": "$finalResolver.data"
-                      }
-                    ]
-                  }
-                }
-              }
-            }
+          "id": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "integer"
           }
-        ]
+        }
       }
     },
-    "Stripe_Price": {
-      "id": "Stripe_Price",
-      "name": "Stripe_Price",
-      "title": "Stripe_Price",
+    "Voucherify_Order": {
+      "id": "Voucherify_Order",
+      "name": "Voucherify_Order",
+      "title": "Voucherify_Order",
       "schema": {
-        "extends": [
-          {
-            "@ref": "stripe:Price"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "recurring": {
-                "@ref": "stripe:Recurring"
-              },
-              "product": {
-                "description": "The Stripe product associated with this subscription.",
-                "title": "Stripe Product",
-                "@ref": "stripe:Product",
-                "@resolver": {
-                  "name": "rest:get",
-                  "service": "stripe",
-                  "options": {
-                    "ignoreErrors": true
-                  },
-                  "path": {
-                    "ops": [
-                      {
-                        "path": "product",
-                        "mapping": "$source.product"
-                      }
-                    ],
-                    "serialize": {
-                      "template": "/v1/products/{product}"
-                    }
-                  }
-                }
-              }
-            }
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
           }
-        ]
+        }
       }
     },
     "Voucherify_LoyaltyCardStats": {
@@ -1926,6 +2063,117 @@
             "@ref": "local:Voucherify_LoyaltyCardAssets"
           }
         }
+      }
+    },
+    "Stripe_Product": {
+      "id": "Stripe_Product",
+      "name": "Stripe_Product",
+      "title": "Stripe_Product",
+      "schema": {
+        "extends": [
+          {
+            "@ref": "stripe:Product"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "prices": {
+                "type": "array",
+                "items": {
+                  "@ref": "stripe:Price"
+                },
+                "@resolver": {
+                  "name": "rest:get",
+                  "service": "stripe",
+                  "path": "/v1/prices",
+                  "searchParams": {
+                    "ops": [
+                      {
+                        "path": "active",
+                        "value": "true"
+                      },
+                      {
+                        "path": "product",
+                        "mapping": "$source.id"
+                      }
+                    ]
+                  },
+                  "results": {
+                    "ops": [
+                      {
+                        "path": "$",
+                        "mapping": "$finalResolver.data"
+                      }
+                    ]
+                  }
+                }
+              },
+              "reviews": {
+                "@ref": "local:Reviews_ProductReviewsQueryResponse",
+                "@resolver": {
+                  "name": "rest:get",
+                  "service": "reviews-io",
+                  "path": "/product/review",
+                  "searchParams": {
+                    "ops": [
+                      {
+                        "path": "store",
+                        "value": "www.markcatalano.net"
+                      },
+                      {
+                        "path": "sku",
+                        "mapping": "$source.id"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "Stripe_Price": {
+      "id": "Stripe_Price",
+      "name": "Stripe_Price",
+      "title": "Stripe_Price",
+      "schema": {
+        "extends": [
+          {
+            "@ref": "stripe:Price"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "recurring": {
+                "@ref": "stripe:Recurring"
+              },
+              "product": {
+                "description": "The Stripe product associated with this subscription.",
+                "title": "Stripe Product",
+                "@ref": "stripe:Product",
+                "@resolver": {
+                  "name": "rest:get",
+                  "service": "stripe",
+                  "options": {
+                    "ignoreErrors": true
+                  },
+                  "path": {
+                    "ops": [
+                      {
+                        "path": "product",
+                        "mapping": "$source.product"
+                      }
+                    ],
+                    "serialize": {
+                      "template": "/v1/products/{product}"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "Profile": {
@@ -2094,6 +2342,91 @@
             }
           }
         }
+      }
+    },
+    "GetListMembersInput": {
+      "name": "GetListMembersInput",
+      "id": "GetListMembersInput",
+      "title": "GetListMembersInput",
+      "schema": {
+        "type": "object",
+        "description": "\nThe profiles that you would like to remove from the list. \n\nExample:\n\n{\n  \"emails\":[\"george.washington@klaviyo.com\",\"abraham.lincoln@klaviyo.com\"],\n  \"phone_numbers\":[\"+13239169023\"],\n  \"push_tokens\":[\"03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2r\"]\n}\n",
+        "properties": {
+          "emails": {
+            "minItems": 0,
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "phone_numbers": {
+            "minItems": 0,
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "push_tokens": {
+            "minItems": 0,
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      }
+    },
+    "GetListMemberItem": {
+      "name": "GetListMemberItem",
+      "title": "GetListMemberItem",
+      "id": "GetListMemberItem",
+      "schema": {
+        "type": "object",
+        "description": "\nThe profiles that you would like to remove from the list. \n\nExample:\n\n{\n  \"emails\":[\"george.washington@klaviyo.com\",\"abraham.lincoln@klaviyo.com\"],\n  \"phone_numbers\":[\"+13239169023\"],\n  \"push_tokens\":[\"03df25c845d460bcdad7802d2vf6fc1dfde97283bf75cc993eb6dca835ea2e2r\"]\n}\n",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "created": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "push_token": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AddListMembersInput": {
+      "name": "AddListMembersInput",
+      "title": "AddListMembersInput",
+      "id": "AddListMembersInput",
+      "schema": {
+        "description": "The profiles that you would like to add to the list. Each object in the array must have an `email` or `phone_number`. You can also provide additional properties as key-value pairs.",
+        "properties": {
+          "profiles": {
+            "minItems": 0,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "profiles"
+        ],
+        "type": "object"
       }
     }
   },
