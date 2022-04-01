@@ -750,6 +750,40 @@
           ]
         }
       }
+    },
+    "getMyNewsletterSubscriptions": {
+      "shape": {
+        "type": "array",
+        "items": {
+          "@ref": "local:ProfileNewsletterStatus"
+        }
+      },
+      "resolver": {
+        "if": "!isEmpty($claims.email)",
+        "name": "rest:get",
+        "service": "klaviyo",
+        "path": "/v2/lists",
+        "results": {
+          "ops": [
+            {
+              "path": "$",
+              "mapping": "$resolvers[0]"
+            },
+            {
+              "path": "[*].email",
+              "mapping": "$claims.email"
+            },
+            {
+              "path": "[*].listId",
+              "mapping": "$loop.item.list_id"
+            },
+            {
+              "path": "[*].listName",
+              "mapping": "$loop.item.list_name"
+            }
+          ]
+        }
+      }
     }
   },
   "mutations": {

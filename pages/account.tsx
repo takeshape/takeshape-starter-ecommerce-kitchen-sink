@@ -5,7 +5,7 @@ import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { Page, Section } from 'components/layout';
 import { ProfileForm, CustomerForm } from 'components/forms';
 import { useQuery } from '@apollo/client';
-import { GetMyProfile } from 'lib/queries';
+import { GetMyNewsletterSubscriptons, GetMyProfile } from 'lib/queries';
 import { useProfile } from 'lib/takeshape';
 import { NewsletterToggle } from 'components/account/newsletter-toggle';
 import { Logout } from 'components/user';
@@ -22,6 +22,9 @@ const referralsFixtureData: Referral[] = [
 const AccountPage: NextPage = () => {
   const { isProfileReady } = useProfile();
   const { data: profileData, error: profileError } = useQuery(GetMyProfile, {
+    skip: !isProfileReady
+  });
+  const { data: newsletterData, error: newsletterError } = useQuery(GetMyNewsletterSubscriptons, {
     skip: !isProfileReady
   });
   const [referrals, setReferrals] = useState<Referral[]>(referralsFixtureData);
@@ -45,16 +48,23 @@ const AccountPage: NextPage = () => {
           <Heading variant="smallHeading">Klavyio Subscriptions</Heading>
           <Divider sx={{ marginBottom: '1rem' }} />
 
-          {!profileData && <Spinner />}
+          {(!profileData || !newsletterData) && <Spinner />}
 
-          {profileData && (
+          {profileData && newsletterData && (
             <Box as="ul" sx={{ listStyleType: 'none', padding: 0 }}>
-              {profileData.profile.newsletters.map((newsletter) => (
+              {newsletterData.newsletters.map((newsletter) => (
                 <Box as="li" key={newsletter.listId} sx={{ marginBottom: '1rem' }}>
                   <NewsletterToggle email={profileData.profile?.email} newsletter={newsletter} />
                 </Box>
               ))}
             </Box>
+          )}
+
+          {newsletterError && (
+            <>
+              <Alert>Error loading newsletter subscriptions</Alert>
+              <pre style={{ color: 'red' }}>{JSON.stringify(profileError, null, 2)}</pre>
+            </>
           )}
         </Section>
 

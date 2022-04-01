@@ -121,11 +121,6 @@ export const GetMyProfile = gql`
           country
         }
       }
-      newsletters {
-        listId
-        listName
-        subscribed
-      }
     }
   }
 `;
@@ -176,11 +171,6 @@ export const UpsertMyProfile = gql`
           postal_code
           country
         }
-      }
-      newsletters {
-        listId
-        listName
-        subscribed
       }
     }
   }
@@ -317,6 +307,16 @@ export const QueueReviewInvitation = gql`
     queueReviewInvitation(name: $name, email: $email, orderId: $orderId, products: $products) {
       status
       messages
+    }
+  }
+`;
+
+export const GetMyNewsletterSubscriptons = gql`
+  query GetMyNewsletterSubscriptionsQuery {
+    newsletters: getMyNewsletterSubscriptions {
+      listId
+      listName
+      subscribed
     }
   }
 `;
