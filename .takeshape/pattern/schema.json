@@ -42,10 +42,7 @@
       "title": "auth0",
       "serviceType": "authentication",
       "authenticationType": "none",
-      "options": {
-        "domain": "dev-by9w1mxg.us.auth0.com",
-        "audience": "https://api.takeshape.io/project/79b5254d-5bc3-4034-8b05-e9c2f097de5a/auth-0"
-      }
+      "options": {}
     },
     "stripe": {
       "id": "stripe",
@@ -103,7 +100,7 @@
       "title": "Referral Candy",
       "namespace": "Referral",
       "serviceType": "rest",
-      "authenticationType": "none",
+      "authenticationType": "bearer",
       "options": {
         "endpoint": "https://my.referralcandy.com/api/v1/"
       }
