@@ -1,22 +1,13 @@
 import { useMutation } from '@apollo/client';
-import { Box, Flex, Label, Spinner, Switch } from '@theme-ui/components';
-import { GetNewsletterSubscriptionStatus, SubscribeToNewsletter, UnsubscribeFromNewsletter } from 'lib/queries';
-import { useCallback, useEffect, useState } from 'react';
+import { Box, Flex, Label, Switch } from '@theme-ui/components';
+import { SubscribeToNewsletter, UnsubscribeFromNewsletter } from 'lib/queries';
+import { useCallback, useState } from 'react';
 
 export const NewsletterToggle = ({ email, newsletter }) => {
-  const [getStatus, { data, loading }] = useMutation(GetNewsletterSubscriptionStatus);
   const [subscribe, { called: subscribeCalled, loading: subscribeLoading }] = useMutation(SubscribeToNewsletter);
   const [unsubscribe, { called: unsubscribeCalled, loading: unsubscribeLoading }] =
     useMutation(UnsubscribeFromNewsletter);
-  const [subscribed, setSubscribed] = useState(false);
-
-  useEffect(() => {
-    getStatus({ variables: { listId: newsletter.listId, email } });
-  }, [getStatus, email, newsletter.listId]);
-
-  useEffect(() => {
-    setSubscribed(data?.members.length > 0);
-  }, [data]);
+  const [subscribed, setSubscribed] = useState(newsletter.subscribed);
 
   const onChange = useCallback(() => {
     if (subscribed) {
@@ -30,18 +21,14 @@ export const NewsletterToggle = ({ email, newsletter }) => {
 
   return (
     <Flex sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-      {loading ? (
-        <Spinner size={24} sx={{ flexBasis: '4rem' }} />
-      ) : (
-        <Box sx={{ flexBasis: '4rem' }}>
-          <Switch
-            variant="muted"
-            checked={subscribed}
-            onChange={onChange}
-            disabled={(subscribeCalled && subscribeLoading) || (unsubscribeCalled && unsubscribeLoading)}
-          />
-        </Box>
-      )}
+      <Box sx={{ flexBasis: '4rem' }}>
+        <Switch
+          variant="muted"
+          checked={subscribed}
+          onChange={onChange}
+          disabled={(subscribeCalled && subscribeLoading) || (unsubscribeCalled && unsubscribeLoading)}
+        />
+      </Box>
       <Label sx={{ flex: 1, fontSize: '1.2em' }}>{newsletter.listName}</Label>
     </Flex>
   );

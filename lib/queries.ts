@@ -311,21 +311,12 @@ export const QueueReviewInvitation = gql`
   }
 `;
 
-export const GetNewsletters = gql`
-  query GetNewslettersQuery {
-    newsletters: Klaviyo_getLists {
-      items {
-        listId: list_id
-        listName: list_name
-      }
-    }
-  }
-`;
-
-export const GetNewsletterSubscriptionStatus = gql`
-  mutation GetNewsletterSubscriptionStatusMutation($listId: String!, $email: String!) {
-    members: Klaviyo_getListMembers(list_id: $listId, input: { emails: [$email] }) {
-      id
+export const GetMyNewsletterSubscriptons = gql`
+  query GetMyNewsletterSubscriptionsQuery {
+    newsletters: getMyNewsletterSubscriptions {
+      listId
+      listName
+      subscribed
     }
   }
 `;
