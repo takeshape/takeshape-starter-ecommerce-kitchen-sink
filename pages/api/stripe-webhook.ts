@@ -30,20 +30,28 @@ const handler: NextApiHandler = async (req, res) => {
 
   try {
     switch (event.type) {
-      case 'invoice.paid':
-        const invoice = event.data.object as Stripe.Invoice;
+      case 'checkout.session.completed':
+        const session = event.data.object as Stripe.Checkout.Session;
 
-        if (!invoice.customer_email) {
-          console.warn('No email on invoice');
+        const { payment_status } = session;
+
+        if (payment_status !== 'paid') {
+          console.warn('Session not paid');
           break;
         }
 
-        const lineItemsPromise = invoice.lines.data.map(async (lineItem) =>
-          stripe.invoiceItems.retrieve(lineItem.id, { expand: ['price.product'] })
-        );
-        const lineItems = await Promise.all(lineItemsPromise);
+        const { email, name } = session.customer_details as any;
 
-        const products = lineItems.map((lineItem) => {
+        if (!email) {
+          console.warn('No email on session');
+          break;
+        }
+
+        const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+          expand: ['line_items', 'line_items.data.price.product']
+        });
+
+        const products = fullSession.line_items.data.map((lineItem) => {
           const product = lineItem.price.product as Stripe.Product;
           return {
             sku: product.id,
@@ -60,20 +68,20 @@ const handler: NextApiHandler = async (req, res) => {
         >({
           mutation: QueueReviewInvitation,
           variables: {
-            name: invoice.customer_name ?? 'Customer',
-            email: invoice.customer_email,
-            orderId: invoice.id,
+            name: name ?? 'Checkout Customer',
+            email,
+            orderId: session.id,
             products
           }
         });
 
-        const items = lineItems.map((lineItem): Voucherify_OrderItemInput => {
+        const items = fullSession.line_items.data.map((lineItem): Voucherify_OrderItemInput => {
           const product = lineItem.price.product as Stripe.Product;
           return {
             id: product.id,
             name: product.name,
             quantity: lineItem.quantity,
-            price: lineItem.amount
+            price: lineItem.amount_total
           };
         });
 
@@ -83,8 +91,8 @@ const handler: NextApiHandler = async (req, res) => {
         >({
           mutation: CreateLoyaltyCardOrder,
           variables: {
-            email: invoice.customer_email,
-            amount: invoice.amount_paid,
+            email,
+            amount: session.amount_total,
             status: 'PAID',
             items
           }
