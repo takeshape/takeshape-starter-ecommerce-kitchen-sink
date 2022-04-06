@@ -257,28 +257,6 @@ export const DeleteMySubscription = gql`
   }
 `;
 
-export const GetMyInvoices = gql`
-  query GetMyInvoicesQuery {
-    invoices: getMyInvoices(status: "paid") {
-      id
-      total
-      currency
-      invoicePdf: invoice_pdf
-      paid
-      created
-      lines {
-        data {
-          id
-          amount
-          currency
-          description
-          quantity
-        }
-      }
-    }
-  }
-`;
-
 export const GetMyPayments = gql`
   query GetMyPaymentsQuery {
     payments: getMyPayments(limit: 50, expand: ["data.invoice"]) {
@@ -290,8 +268,29 @@ export const GetMyPayments = gql`
         ... on Stripe_Invoice {
           id
           paid
-          invoicePdf: invoice_pdf
+          invoice_pdf
         }
+      }
+      session {
+        id
+        line_items {
+          data {
+            id
+            amount_total
+            price {
+              product {
+                id
+                description
+                name
+                images
+              }
+            }
+          }
+        }
+      }
+      shipment {
+        tracking_number
+        tracking_status
       }
     }
   }
@@ -348,6 +347,34 @@ export const CreateLoyaltyCardOrder = gql`
   ) {
     order: Voucherify_createOrder(email: $email, amount: $amount, status: $status, items: $items) {
       id
+    }
+  }
+`;
+
+/**
+ * ShipEngine Shipments
+ */
+
+export const CreateShipment = gql`
+  mutation CreateShipment(
+    $carrier_id: String
+    $service_code: String
+    $external_shipment_id: String
+    $ship_to: ShipEngine_AddressInput
+    $ship_from: ShipEngine_AddressInput
+    $packages: [ShipEngine_PackageInput]
+  ) {
+    createShipment(
+      carrier_id: $carrier_id
+      service_code: $service_code
+      external_shipment_id: $external_shipment_id
+      ship_to: $ship_to
+      ship_from: $ship_from
+      packages: $packages
+    ) {
+      shipments {
+        shipment_id
+      }
     }
   }
 `;
