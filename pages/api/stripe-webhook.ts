@@ -134,42 +134,45 @@ const handler: NextApiHandler = async (req, res) => {
             })
             .filter((x) => x);
 
+          console.log(shippingAddress);
+          console.log(packages);
+
           if (!packages.length) {
             console.warn('No shippable items');
             break;
           }
 
-          const createShipmentResponse = await client.mutate<ShipEngine_Label, MutationCreateShipmentArgs>({
-            mutation: CreateShipment,
-            variables: {
-              carrier_id: 'se-2074501',
-              service_code: 'ups_ground',
-              external_shipment_id: session.payment_intent as string,
-              ship_to: {
-                name: session.shipping.name ?? customer.name,
-                phone: shipFrom.phone,
-                address_line1: shippingAddress.line1,
-                postal_code: shippingAddress.postal_code,
-                country_code: shippingAddress.country,
-                city_locality: shippingAddress.city,
-                state_province: shippingAddress.state
-              },
-              ship_from: {
-                name: shipFrom.name,
-                phone: shipFrom.phone,
-                address_line1: shipFrom.addressLine1,
-                postal_code: shipFrom.postalCode,
-                country_code: shipFrom.countryCode,
-                city_locality: shipFrom.cityLocality,
-                state_province: shipFrom.stateProvince
-              },
-              packages
-            }
-          });
+          // const createShipmentResponse = await client.mutate<ShipEngine_Label, MutationCreateShipmentArgs>({
+          //   mutation: CreateShipment,
+          //   variables: {
+          //     carrier_id: 'se-2074501',
+          //     service_code: 'ups_ground',
+          //     external_shipment_id: session.payment_intent as string,
+          //     ship_to: {
+          //       name: session.shipping.name ?? customer.name,
+          //       phone: shipFrom.phone,
+          //       address_line1: shippingAddress.line1,
+          //       postal_code: shippingAddress.postal_code,
+          //       country_code: shippingAddress.country,
+          //       city_locality: shippingAddress.city,
+          //       state_province: shippingAddress.state
+          //     },
+          //     ship_from: {
+          //       name: shipFrom.name,
+          //       phone: shipFrom.phone,
+          //       address_line1: shipFrom.addressLine1,
+          //       postal_code: shipFrom.postalCode,
+          //       country_code: shipFrom.countryCode,
+          //       city_locality: shipFrom.cityLocality,
+          //       state_province: shipFrom.stateProvince
+          //     },
+          //     packages
+          //   }
+          // });
 
-          if (createShipmentResponse.errors) {
-            throw new Error(createShipmentResponse.errors.map((e) => e.message).join());
-          }
+          // if (createShipmentResponse.errors) {
+          //   throw new Error(createShipmentResponse.errors.map((e) => e.message).join());
+          // }
         }
 
         if (queueReviewResponse.errors) {
