@@ -101,8 +101,11 @@ async function handleLoyaltyCard(customer: Stripe.Customer, session: Stripe.Chec
 async function handleShipping(customer: Stripe.Customer, session: Stripe.Checkout.Session) {
   try {
     console.log('shipping address', session.shipping.address);
+    console.log('ship options', session.shipping_options);
 
-    const shippingOption = session.shipping_options.find((o) => o.shipping_rate === session.shipping_rate);
+    const shippingOption = session.shipping_options.find((o) => o.shipping_rate === session.shipping_rate) ?? {
+      shipping_amount: 0
+    };
     const shippingAddress = session.shipping.address ?? customer.shipping.address ?? customer.address;
 
     if (!isValidShippingAddress(shippingAddress)) {
