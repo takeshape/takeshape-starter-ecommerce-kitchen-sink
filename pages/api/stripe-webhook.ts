@@ -199,7 +199,7 @@ const handler: NextApiHandler = async (req, res) => {
 
         const results = await Promise.all(tasks);
 
-        console.info(`Handled event type ${event.type}`);
+        console.info(`Handled event type ${event.type}`, { results });
 
         res.status(200).json({
           data: {
