@@ -38,6 +38,127 @@ export const config: NextConfig = {
   }
 };
 
+async function handleReviews(customer: Stripe.Customer, session: Stripe.Checkout.Session) {
+  try {
+    const products = session.line_items.data.map((lineItem) => {
+      const product = lineItem.price.product as Stripe.Product;
+      return {
+        sku: product.id,
+        name: product.name,
+        description: product.description ?? '',
+        pageUrl: `https://${siteUrl}/${product.id}`,
+        image: product.images[0] ?? ''
+      };
+    });
+
+    const response = await client.mutate<
+      { queueReviewInvitation: Reviews_PostResponse },
+      MutationQueueReviewInvitationArgs
+    >({
+      mutation: QueueReviewInvitation,
+      variables: {
+        name: customer.name ?? 'Checkout Customer',
+        email: customer.email,
+        orderId: session.payment_intent as string,
+        products
+      }
+    });
+
+    return response;
+  } catch (err) {
+    return { errors: [err.message] };
+  }
+}
+
+async function handleLoyaltyCard(customer: Stripe.Customer, session: Stripe.Checkout.Session) {
+  try {
+    const items = session.line_items.data.map((lineItem): Voucherify_OrderItemInput => {
+      const product = lineItem.price.product as Stripe.Product;
+      return {
+        id: product.id,
+        name: product.name,
+        quantity: lineItem.quantity,
+        price: lineItem.amount_subtotal
+      };
+    });
+
+    const response = await client.mutate<{ order: Voucherify_Order }, MutationVoucherify_CreateOrderArgs>({
+      mutation: CreateLoyaltyCardOrder,
+      variables: {
+        email: customer.email,
+        amount: session.amount_subtotal,
+        status: 'PAID',
+        items
+      }
+    });
+
+    return response;
+  } catch (err) {
+    return { errors: [err.message] };
+  }
+}
+
+async function handleShipping(customer: Stripe.Customer, session: Stripe.Checkout.Session) {
+  try {
+    const shippingAddress = session.shipping.address ?? customer.address;
+
+    if (!isValidShippingAddress(shippingAddress)) {
+      return { errors: ['No valid shipping address'] };
+    }
+
+    const packages = session.line_items.data
+      .map((lineItem): ShipEngine_Package => {
+        const product = lineItem.price.product as Stripe.Product;
+        if (product.shippable) {
+          return {
+            weight: {
+              value: product.package_dimensions.weight,
+              unit: 'ounce'
+            }
+          };
+        }
+      })
+      .filter((x) => x);
+
+    if (!packages.length) {
+      return { errors: ['No shippable packages'] };
+    }
+
+    const response = await client.mutate<ShipEngine_Label, MutationCreateShipmentArgs>({
+      mutation: CreateShipment,
+      variables: {
+        carrier_id: 'se-2074501',
+        service_code: 'ups_ground',
+        external_shipment_id: session.payment_intent as string,
+        ship_to: {
+          name: session.shipping.name ?? customer.name,
+          phone: shipFrom.phone,
+          address_line1: shippingAddress.line1,
+          address_line2: shippingAddress.line2,
+          postal_code: shippingAddress.postal_code,
+          country_code: shippingAddress.country,
+          city_locality: shippingAddress.city,
+          state_province: shippingAddress.state
+        },
+        ship_from: {
+          name: shipFrom.name,
+          phone: shipFrom.phone,
+          address_line1: shipFrom.addressLine1,
+          postal_code: shipFrom.postalCode,
+          country_code: shipFrom.countryCode,
+          city_locality: shipFrom.cityLocality,
+          state_province: shipFrom.stateProvince
+        },
+        packages
+      }
+    });
+
+    return response;
+  } catch (err) {
+    return { errors: [err.message] };
+  }
+}
+
 const handler: NextApiHandler = async (req, res) => {
   const { headers } = req;
 
@@ -70,130 +191,31 @@ const handler: NextApiHandler = async (req, res) => {
           expand: ['line_items', 'line_items.data.price.product']
         });
 
-        const products = fullSession.line_items.data.map((lineItem) => {
-          const product = lineItem.price.product as Stripe.Product;
-          return {
-            sku: product.id,
-            name: product.name,
-            description: product.description ?? '',
-            pageUrl: `https://${siteUrl}/${product.id}`,
-            image: product.images[0] ?? ''
-          };
-        });
+        const tasks = [];
 
-        const queueReviewResponse = await client.mutate<
-          { queueReviewInvitation: Reviews_PostResponse },
-          MutationQueueReviewInvitationArgs
-        >({
-          mutation: QueueReviewInvitation,
-          variables: {
-            name: customer.name ?? 'Checkout Customer',
-            email: customer.email,
-            orderId: session.payment_intent as string,
-            products
-          }
-        });
+        tasks.push(async () => handleReviews(customer, fullSession));
+        tasks.push(async () => handleLoyaltyCard(customer, fullSession));
+        tasks.push(async () => handleShipping(customer, fullSession));
 
-        const items = fullSession.line_items.data.map((lineItem): Voucherify_OrderItemInput => {
-          const product = lineItem.price.product as Stripe.Product;
-          return {
-            id: product.id,
-            name: product.name,
-            quantity: lineItem.quantity,
-            price: lineItem.amount_subtotal
-          };
-        });
-
-        const createLoyaltyCardOrderResponse = await client.mutate<
-          { order: Voucherify_Order },
-          MutationVoucherify_CreateOrderArgs
-        >({
-          mutation: CreateLoyaltyCardOrder,
-          variables: {
-            email: customer.email,
-            amount: session.amount_subtotal,
-            status: 'PAID',
-            items
-          }
-        });
-
-        const shippingAddress = session.shipping.address ?? customer.address;
-
-        if (isValidShippingAddress(shippingAddress)) {
-          const packages = fullSession.line_items.data
-            .map((lineItem): ShipEngine_Package => {
-              const product = lineItem.price.product as Stripe.Product;
-              if (product.shippable) {
-                return {
-                  weight: {
-                    value: product.package_dimensions.weight,
-                    unit: 'ounce'
-                  }
-                };
-              }
-            })
-            .filter((x) => x);
-
-          if (!packages.length) {
-            console.warn('No shippable items');
-            break;
-          }
-
-          try {
-            const createShipmentResponse = await client.mutate<ShipEngine_Label, MutationCreateShipmentArgs>({
-              mutation: CreateShipment,
-              variables: {
-                carrier_id: 'se-2074501',
-                service_code: 'ups_ground',
-                external_shipment_id: session.payment_intent as string,
-                ship_to: {
-                  name: session.shipping.name ?? customer.name,
-                  phone: shipFrom.phone,
-                  address_line1: shippingAddress.line1,
-                  address_line2: shippingAddress.line2,
-                  postal_code: shippingAddress.postal_code,
-                  country_code: shippingAddress.country,
-                  city_locality: shippingAddress.city,
-                  state_province: shippingAddress.state
-                },
-                ship_from: {
-                  name: shipFrom.name,
-                  phone: shipFrom.phone,
-                  address_line1: shipFrom.addressLine1,
-                  postal_code: shipFrom.postalCode,
-                  country_code: shipFrom.countryCode,
-                  city_locality: shipFrom.cityLocality,
-                  state_province: shipFrom.stateProvince
-                },
-                packages
-              }
-            });
-
-            if (createShipmentResponse.errors) {
-              throw new Error(createShipmentResponse.errors.map((e) => e.message).join());
-            }
-          } catch (e) {
-            console.log(e);
-          }
-        }
-
-        if (queueReviewResponse.errors) {
-          throw new Error(queueReviewResponse.errors.map((e) => e.message).join());
-        }
-
-        if (createLoyaltyCardOrderResponse.errors) {
-          throw new Error(createLoyaltyCardOrderResponse.errors.map((e) => e.message).join());
-        }
+        const results = await Promise.all(tasks);
 
         console.info(`Handled event type ${event.type}`);
+
+        res.status(200).json({
+          data: {
+            reviews: results[0],
+            loyaltyCard: results[1],
+            shipping: results[2]
+          }
+        });
         break;
       default:
         console.info(`Unhandled event type ${event.type}`);
+        res.status(200).json({ data: null });
     }
-    res.status(200).json({ status: 'ok' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ status: 'error', message: err.message });
+    res.status(500).json({ errors: [err.message] });
   }
 };
 
