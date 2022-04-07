@@ -211,7 +211,7 @@ export const CreateMyCheckoutSession = gql`
   mutation CreateMyCheckoutSession(
     $redirectUrl: String!
     $lineItems: [Stripe_CheckoutSessionLineItemsPropertyInput!]!
-    $mode: String
+    $mode: String!
   ) {
     session: createMyCheckoutSession(lineItems: $lineItems, redirectUrl: $redirectUrl, mode: $mode) {
       id
@@ -277,6 +277,7 @@ export const GetMyPayments = gql`
           data {
             id
             amount_total
+            quantity
             price {
               product {
                 id

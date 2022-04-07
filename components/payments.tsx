@@ -1,6 +1,6 @@
 import type { Stripe_PaymentIntent, Stripe_Invoice, Stripe_Item } from 'lib/takeshape/types';
 import NextLink from 'next/link';
-import { Badge, Flex, Box, Card, IconButton, Paragraph, Link, Heading, Text } from '@theme-ui/components';
+import { Badge, Flex, Box, Card, IconButton, Paragraph, Link, Heading, Text, Grid } from '@theme-ui/components';
 import { formatPrice } from 'lib/utils/text';
 import { format } from 'date-fns';
 import startCase from 'lodash/startCase';
@@ -54,28 +54,31 @@ export interface ProductLineItemProps {
   images?: string[];
   amount: number;
   currency: string;
+  quantity: number;
 }
 
-const ProductLineItem = ({ id, name, description, images, amount, currency }: ProductLineItemProps) => {
+const ProductLineItem = ({ id, name, description, images, quantity, amount, currency }: ProductLineItemProps) => {
   return (
-    <Card sx={{ height: '100%', cursor: 'pointer' }}>
+    <Card sx={{ height: '100%', cursor: 'pointer', p: 0 }}>
       <NextLink href={`/product/${id}`} passHref>
-        <Flex sx={{ height: '100%', flexDirection: 'row', gap: '1rem' }}>
-          <Box sx={{ flexGrow: 1 }}>
-            <Link>
-              <ProductImage maxHeight="75px" images={images} />
+        <Grid gap={2} columns={['1fr 2fr 1fr']}>
+          <Box sx={{ textAlign: 'left' }}>
+            <Link sx={{ display: 'inline-block' }}>
+              <ProductImage maxHeight="60px" images={images} />
             </Link>
           </Box>
-          <Flex sx={{ flexDirection: 'column', flexGrow: 4 }}>
+          <Flex sx={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'left' }}>
             <Heading sx={{ margin: '0', fontSize: '1em', lineHeight: '1' }}>
-              <Link sx={{ color: 'inherit', ':hover': { color: 'primary' }, textDecoration: 'none' }}>{name}</Link>
+              <Link sx={{ color: '#333', ':hover': { color: 'primary' }, textDecoration: 'none' }}>
+                {quantity} x {name}
+              </Link>
             </Heading>
-            <Paragraph sx={{ fontSize: '0.8rem' }}>
+            <Paragraph sx={{ fontSize: '0.7rem', textAlign: 'initial' }}>
               <Text>{description}</Text>
             </Paragraph>
           </Flex>
-          <Box sx={{ flexGrow: 1 }}>{formatPrice(currency, amount)}</Box>
-        </Flex>
+          <Box sx={{ textAlign: 'right' }}>{formatPrice(currency, amount)}</Box>
+        </Grid>
       </NextLink>
     </Card>
   );
@@ -88,12 +91,12 @@ export interface ProductListProps {
 
 const ProductList = ({ lineItems, currency }: ProductListProps) => {
   return (
-    <Card>
+    <Card sx={{ p: 0 }}>
       {lineItems.map((line) => {
-        const { amount_total } = line;
+        const { amount_total, quantity } = line;
         const { id, name, description, images } = line.price.product;
         return (
-          <Box key={line.id}>
+          <Box key={line.id} sx={{ px: 0, py: 2 }}>
             <ProductLineItem
               id={id}
               name={name}
@@ -101,6 +104,7 @@ const ProductList = ({ lineItems, currency }: ProductListProps) => {
               images={images}
               amount={amount_total}
               currency={currency}
+              quantity={quantity}
             />
           </Box>
         );
@@ -134,10 +138,14 @@ export const PaymentItemCard = ({
       </Flex>
       <Box>{session && <ProductList lineItems={session.line_items.data} currency={currency} />}</Box>
       <Flex sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-        <OrderStatus
-          status={(shipment?.tracking_status ?? 'unknown') as OrderStatusProps['status']}
-          trackingNumber={shipment?.tracking_number}
-        />
+        {shipment ? (
+          <OrderStatus
+            status={(shipment.tracking_status ?? 'unknown') as OrderStatusProps['status']}
+            trackingNumber={shipment.tracking_number}
+          />
+        ) : (
+          <Box></Box>
+        )}
         <Paragraph>{formatPrice(currency, amount)}</Paragraph>
       </Flex>
     </Card>

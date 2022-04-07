@@ -1,6 +1,16 @@
+import type { Dispatch, SetStateAction } from 'react';
 import { useState, useEffect } from 'react';
 
-export function useUpload(initialUrl, initialFile) {
+interface UseUploadData {
+  error: string | null;
+  progress: number | null;
+  isLoading: boolean;
+}
+
+export function useUpload(
+  initialUrl = '',
+  initialFile = ''
+): [UseUploadData, Dispatch<SetStateAction<string | undefined>>, Dispatch<SetStateAction<string | undefined>>] {
   const [url, setUrl] = useState(initialUrl);
   const [file, setFile] = useState(initialFile);
 

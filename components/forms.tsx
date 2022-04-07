@@ -190,7 +190,7 @@ const ProfileTextForm = ({ profile }) => {
         <Label htmlFor="name">Name</Label>
         <Input {...register('name')} mb={3} />
         <Label htmlFor="bio">Bio</Label>
-        <Textarea {...register('bio')} rows="4" cols="50"></Textarea>
+        <Textarea {...register('bio')} rows={4} cols={50}></Textarea>
       </Box>
 
       <SubmitButton type="submit" isSubmitting={loading} text="Update" />

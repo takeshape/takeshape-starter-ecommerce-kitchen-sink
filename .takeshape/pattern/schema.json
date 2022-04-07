@@ -1445,10 +1445,6 @@
                 },
                 {
                   "path": "mode",
-                  "value": "payment"
-                },
-                {
-                  "path": "mode",
                   "mapping": "$args.mode"
                 },
                 {
@@ -1530,6 +1526,10 @@
                       "value": 1
                     }
                   ]
+                },
+                {
+                  "path": "shipping_options",
+                  "mapping": [["expressionEval", {"expression": "$args.mode === 'subscription' ? null : undefined"}]]
                 }
               ],
               "serialize": {
@@ -1572,6 +1572,7 @@
           }
         },
         "required": [
+          "mode",
           "lineItems",
           "redirectUrl"
         ]

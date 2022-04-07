@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useAuth0 } from '@auth0/auth0-react';
 import { CartIcon, CartSidebar } from './cart';
 import Notifications from './notifications';
-import { Logout, Login } from './user';
+import { Login } from './user';
 import { Search } from './search';
 import { BsQuestionSquare, BsReceiptCutoff, BsPersonCircle as AccountIcon } from 'react-icons/bs';
 

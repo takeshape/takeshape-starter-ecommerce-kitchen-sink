@@ -9,7 +9,7 @@ const getRedirectUrl = (redirectUrl) => {
 };
 
 export const getCheckoutPayload = (items, redirectUrl) => {
-  return {
+  const payload = {
     lineItems: items?.map((i) => ({
       price: i.price.id,
       quantity: i.quantity
@@ -17,4 +17,7 @@ export const getCheckoutPayload = (items, redirectUrl) => {
     mode: items?.some((i) => i.price.recurring) ? 'subscription' : 'payment',
     redirectUrl: getRedirectUrl(redirectUrl)
   };
+
+  console.log(payload);
+  return payload;
 };
