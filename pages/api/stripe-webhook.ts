@@ -193,15 +193,9 @@ const handler: NextApiHandler = async (req, res) => {
 
         const tasks = [];
 
-        tasks.push(async () => {
-          return await handleReviews(customer, fullSession);
-        });
-        tasks.push(async () => {
-          return await handleLoyaltyCard(customer, fullSession);
-        });
-        tasks.push(async () => {
-          return await handleShipping(customer, fullSession);
-        });
+        tasks.push(handleReviews(customer, fullSession));
+        tasks.push(handleLoyaltyCard(customer, fullSession));
+        tasks.push(handleShipping(customer, fullSession));
 
         const results = await Promise.all(tasks);
 
