@@ -12036,6 +12036,7 @@ export type ShipEngine_AddressInput = {
   name?: InputMaybe<Scalars['String']>;
   phone?: InputMaybe<Scalars['String']>;
   address_line1?: InputMaybe<Scalars['String']>;
+  address_line2?: InputMaybe<Scalars['String']>;
   city_locality?: InputMaybe<Scalars['String']>;
   state_province?: InputMaybe<Scalars['String']>;
   postal_code?: InputMaybe<Scalars['String']>;
