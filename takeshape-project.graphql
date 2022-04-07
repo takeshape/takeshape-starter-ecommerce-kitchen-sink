@@ -12787,10 +12787,18 @@ type ShipEngine_Package {
   tracking_number: String
   label_download: ShipEngine_LabelDownload
   weight: ShipEngine_Weight
+  dimensions: ShipEngine_Dimensions
 }
 
 type ShipEngine_Weight {
   value: Float
+  unit: String
+}
+
+type ShipEngine_Dimensions {
+  length: Float
+  width: Float
+  height: Float
   unit: String
 }
 
@@ -14229,7 +14237,7 @@ type Mutation {
   deleteMySubscription(subscriptionId: String!): Stripe_Subscription
 
   """Create a Stripe checkout session for the signed-in user"""
-  createMyCheckoutSession(redirectUrl: String!, mode: String, lineItems: [Stripe_CheckoutSessionLineItemsPropertyInput!]!): Stripe_CheckoutSession
+  createMyCheckoutSession(redirectUrl: String!, mode: String!, lineItems: [Stripe_CheckoutSessionLineItemsPropertyInput!]!): Stripe_CheckoutSession
 
   """Update Profile"""
   updateProfile(input: UpdateProfileInput!, clientMutationId: String, structure: [ContentStructureInput], locale: String, enableLocaleFallback: Boolean = true): UpdateProfileResult
@@ -14511,6 +14519,7 @@ input ShipEngine_PackageInput {
   tracking_number: String
   label_download: ShipEngine_LabelDownloadInput
   weight: ShipEngine_WeightInput
+  dimensions: ShipEngine_DimensionsInput
 }
 
 input ShipEngine_LabelDownloadInput {
@@ -14522,6 +14531,13 @@ input ShipEngine_LabelDownloadInput {
 
 input ShipEngine_WeightInput {
   value: Float
+  unit: String
+}
+
+input ShipEngine_DimensionsInput {
+  length: Float
+  width: Float
+  height: Float
   unit: String
 }
 

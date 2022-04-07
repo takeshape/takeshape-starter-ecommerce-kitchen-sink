@@ -1462,7 +1462,7 @@
                     },
                     {
                       "path": "fixed_amount.amount",
-                      "value": 1000
+                      "value": 0
                     },
                     {
                       "path": "fixed_amount.currency",
@@ -1470,7 +1470,7 @@
                     },
                     {
                       "path": "display_name",
-                      "value": "Standard shipping"
+                      "value": "Free shipping (UPS Ground)"
                     },
                     {
                       "path": "delivery_estimate.minimum.unit",
@@ -1499,7 +1499,7 @@
                     },
                     {
                       "path": "fixed_amount.amount",
-                      "value": 2000
+                      "value": 1000
                     },
                     {
                       "path": "fixed_amount.currency",
@@ -1507,7 +1507,7 @@
                     },
                     {
                       "path": "display_name",
-                      "value": "Next day air"
+                      "value": "Expedited shipping (UPS 2nd Day Air)"
                     },
                     {
                       "path": "delivery_estimate.minimum.unit",
@@ -1515,7 +1515,7 @@
                     },
                     {
                       "path": "delivery_estimate.minimum.value",
-                      "value": 1
+                      "value": 2
                     },
                     {
                       "path": "delivery_estimate.maximum.unit",
@@ -1523,13 +1523,21 @@
                     },
                     {
                       "path": "delivery_estimate.maximum.value",
-                      "value": 1
+                      "value": 2
                     }
                   ]
                 },
                 {
                   "path": "shipping_options",
                   "mapping": [["expressionEval", {"expression": "$args.mode === 'subscription' ? null : undefined"}]]
+                },
+                {
+                  "path": "customer_update.shipping",
+                  "value": "auto"
+                },
+                {
+                  "path": "customer_update.address",
+                  "value": "auto"
                 }
               ],
               "serialize": {
@@ -2821,6 +2829,32 @@
         }
       }
     },
+    "ShipEngine_Dimensions": {
+      "name": "ShipEngine_Dimensions",
+      "id": "ShipEngine_Dimensions",
+      "title": "ShipEngine_Dimensions",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "length": {
+            "type": "number"
+          },
+          "width": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "inch",
+              "centimeter"
+            ]
+          }
+        }
+      }
+    },
     "ShipEngine_Address": {
       "name": "ShipEngine_Address",
       "id": "ShipEngine_Address",
@@ -2904,6 +2938,9 @@
           },
           "weight": {
             "@ref": "local:ShipEngine_Weight"
+          },
+          "dimensions": {
+            "@ref": "local:ShipEngine_Dimensions"
           }
         }
       }

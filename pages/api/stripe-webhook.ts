@@ -100,7 +100,10 @@ async function handleLoyaltyCard(customer: Stripe.Customer, session: Stripe.Chec
 
 async function handleShipping(customer: Stripe.Customer, session: Stripe.Checkout.Session) {
   try {
-    const shippingAddress = session.shipping.address ?? customer.address;
+    console.log('shipping address', session.shipping.address);
+
+    const shippingOption = session.shipping_options.find((o) => o.shipping_rate === session.shipping_rate);
+    const shippingAddress = session.shipping.address ?? customer.shipping.address ?? customer.address;
 
     if (!isValidShippingAddress(shippingAddress)) {
       return { errors: ['No valid shipping address'] };
@@ -114,6 +117,12 @@ async function handleShipping(customer: Stripe.Customer, session: Stripe.Checkou
             weight: {
               value: product.package_dimensions.weight,
               unit: 'ounce'
+            },
+            dimensions: {
+              unit: 'inch',
+              length: product.package_dimensions.length,
+              width: product.package_dimensions.width,
+              height: product.package_dimensions.height
             }
           };
         }
@@ -128,7 +137,7 @@ async function handleShipping(customer: Stripe.Customer, session: Stripe.Checkou
       mutation: CreateShipment,
       variables: {
         carrier_id: 'se-2074501',
-        service_code: 'ups_ground',
+        service_code: shippingOption.shipping_amount === 0 ? 'ups_ground' : 'ups_2nd_day_air',
         external_shipment_id: session.payment_intent as string,
         ship_to: {
           name: session.shipping.name ?? customer.name,
@@ -152,6 +161,34 @@ async function handleShipping(customer: Stripe.Customer, session: Stripe.Checkou
         packages
       }
     });
+
+    console.log(
+      JSON.stringify({
+        carrier_id: 'se-2074501',
+        service_code: 'ups_ground',
+        external_shipment_id: session.payment_intent as string,
+        ship_to: {
+          name: session.shipping.name ?? customer.name,
+          phone: shipFrom.phone,
+          address_line1: shippingAddress.line1,
+          address_line2: shippingAddress.line2,
+          postal_code: shippingAddress.postal_code,
+          country_code: shippingAddress.country,
+          city_locality: shippingAddress.city,
+          state_province: shippingAddress.state
+        },
+        ship_from: {
+          name: shipFrom.name,
+          phone: shipFrom.phone,
+          address_line1: shipFrom.addressLine1,
+          postal_code: shipFrom.postalCode,
+          country_code: shipFrom.countryCode,
+          city_locality: shipFrom.cityLocality,
+          state_province: shipFrom.stateProvince
+        },
+        packages
+      })
+    );
 
     return response;
   } catch (err) {

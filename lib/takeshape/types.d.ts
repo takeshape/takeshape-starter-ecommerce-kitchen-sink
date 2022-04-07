@@ -10173,11 +10173,20 @@ export type ShipEngine_Package = {
   tracking_number?: Maybe<Scalars['String']>;
   label_download?: Maybe<ShipEngine_LabelDownload>;
   weight?: Maybe<ShipEngine_Weight>;
+  dimensions?: Maybe<ShipEngine_Dimensions>;
 };
 
 export type ShipEngine_Weight = {
   __typename?: 'ShipEngine_Weight';
   value?: Maybe<Scalars['Float']>;
+  unit?: Maybe<Scalars['String']>;
+};
+
+export type ShipEngine_Dimensions = {
+  __typename?: 'ShipEngine_Dimensions';
+  length?: Maybe<Scalars['Float']>;
+  width?: Maybe<Scalars['Float']>;
+  height?: Maybe<Scalars['Float']>;
   unit?: Maybe<Scalars['String']>;
 };
 
@@ -11696,7 +11705,7 @@ export type MutationDeleteMySubscriptionArgs = {
 
 export type MutationCreateMyCheckoutSessionArgs = {
   redirectUrl: Scalars['String'];
-  mode?: InputMaybe<Scalars['String']>;
+  mode: Scalars['String'];
   lineItems: Array<Stripe_CheckoutSessionLineItemsPropertyInput>;
 };
 
@@ -12018,6 +12027,7 @@ export type ShipEngine_PackageInput = {
   tracking_number?: InputMaybe<Scalars['String']>;
   label_download?: InputMaybe<ShipEngine_LabelDownloadInput>;
   weight?: InputMaybe<ShipEngine_WeightInput>;
+  dimensions?: InputMaybe<ShipEngine_DimensionsInput>;
 };
 
 export type ShipEngine_LabelDownloadInput = {
@@ -12029,6 +12039,13 @@ export type ShipEngine_LabelDownloadInput = {
 
 export type ShipEngine_WeightInput = {
   value?: InputMaybe<Scalars['Float']>;
+  unit?: InputMaybe<Scalars['String']>;
+};
+
+export type ShipEngine_DimensionsInput = {
+  length?: InputMaybe<Scalars['Float']>;
+  width?: InputMaybe<Scalars['Float']>;
+  height?: InputMaybe<Scalars['Float']>;
   unit?: InputMaybe<Scalars['String']>;
 };
 
