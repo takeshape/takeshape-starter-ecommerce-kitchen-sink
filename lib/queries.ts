@@ -372,9 +372,7 @@ export const CreateShipment = gql`
       ship_from: $ship_from
       packages: $packages
     ) {
-      shipments {
-        shipment_id
-      }
+      shipment_id
     }
   }
 `;
