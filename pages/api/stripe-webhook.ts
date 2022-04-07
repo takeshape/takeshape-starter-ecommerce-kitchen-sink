@@ -193,9 +193,15 @@ const handler: NextApiHandler = async (req, res) => {
 
         const tasks = [];
 
-        tasks.push(async () => handleReviews(customer, fullSession));
-        tasks.push(async () => handleLoyaltyCard(customer, fullSession));
-        tasks.push(async () => handleShipping(customer, fullSession));
+        tasks.push(async () => {
+          return await handleReviews(customer, fullSession);
+        });
+        tasks.push(async () => {
+          return await handleLoyaltyCard(customer, fullSession);
+        });
+        tasks.push(async () => {
+          return await handleShipping(customer, fullSession);
+        });
 
         const results = await Promise.all(tasks);
 
@@ -213,6 +219,7 @@ const handler: NextApiHandler = async (req, res) => {
         console.info(`Unhandled event type ${event.type}`);
         res.status(200).json({ data: null });
     }
+    return;
   } catch (err) {
     console.error(err);
     res.status(500).json({ errors: [err.message] });
