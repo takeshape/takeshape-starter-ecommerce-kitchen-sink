@@ -17,17 +17,18 @@ A full-featured e-commerce experience using the best services out there:
 
 ```mermaid
 graph TD
-    A[Frontend NextJS Client] --> |Unified GraphQL API| B{TakeShape's API Mesh}
-    B --> |User Authentication| C(Auth0)
-    B --> |Products| L[Stripe]
-    C --> K{ShapeDB}
-    K --> J{User Profile}
-    J --> |Referrals| H(Referral Candy)
-    J --> |Orders and Subscriptions| D[Stripe]
-    J --> |Newsletter| E(Klaviyo)
-    J --> |Product Reviews| F(Reviews.io)
-    J --> |Shipping info| G(ShipEngine)
-    J --> |Loyalty Points| I(Voucherify)
+    A[Frontend NextJS Client] --> |Unified GraphQL API| Mesh{TakeShape's API Mesh}
+    Mesh --> |User Authentication| Auth0
+    Mesh --> P{Products} 
+    P --> Stripe
+    Mesh --> UP{User Profile}
+    UP --> |Referrals| RC(Referral Candy)
+    UP --> |Orders and Subscriptions| Stripe
+    UP --> |Newsletter| Klaviyo
+    P --> |Product Reviews| Reviews.io
+    UP --> |Reviews Written| Reviews.io
+    UP --> |Shipping info| ShipEngine
+    UP --> |Loyalty Points| Voucherify
 ```
 
 ## Screenshot
