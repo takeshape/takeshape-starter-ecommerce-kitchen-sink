@@ -100,9 +100,6 @@ async function handleLoyaltyCard(customer: Stripe.Customer, session: Stripe.Chec
 
 async function handleShipping(customer: Stripe.Customer, session: Stripe.Checkout.Session) {
   try {
-    console.log('shipping address', session.shipping.address);
-    console.log('ship options', session.shipping_options);
-
     const shippingOption = session.shipping_options.find((o) => o.shipping_rate === session.shipping_rate) ?? {
       shipping_amount: 0
     };
@@ -164,34 +161,6 @@ async function handleShipping(customer: Stripe.Customer, session: Stripe.Checkou
         packages
       }
     });
-
-    console.log(
-      JSON.stringify({
-        carrier_id: 'se-2074501',
-        service_code: 'ups_ground',
-        external_shipment_id: session.payment_intent as string,
-        ship_to: {
-          name: session.shipping.name ?? customer.name,
-          phone: shipFrom.phone,
-          address_line1: shippingAddress.line1,
-          address_line2: shippingAddress.line2,
-          postal_code: shippingAddress.postal_code,
-          country_code: shippingAddress.country,
-          city_locality: shippingAddress.city,
-          state_province: shippingAddress.state
-        },
-        ship_from: {
-          name: shipFrom.name,
-          phone: shipFrom.phone,
-          address_line1: shipFrom.addressLine1,
-          postal_code: shipFrom.postalCode,
-          country_code: shipFrom.countryCode,
-          city_locality: shipFrom.cityLocality,
-          state_province: shipFrom.stateProvince
-        },
-        packages
-      })
-    );
 
     return response;
   } catch (err) {

@@ -40,7 +40,7 @@ const PurchasesPage: NextPage = () => {
           </Section>
           <Section>
             <Heading variant="smallHeading" id="payments">
-              Past Payments
+              Past Purchases
             </Heading>
             <Divider />
 
