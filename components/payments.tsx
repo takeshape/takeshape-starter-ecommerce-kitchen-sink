@@ -138,14 +138,10 @@ export const PaymentItemCard = ({
       </Flex>
       <Box>{session && <ProductList lineItems={session.line_items.data} currency={currency} />}</Box>
       <Flex sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-        {shipment ? (
-          <OrderStatus
-            status={(shipment.tracking_status ?? 'unknown') as OrderStatusProps['status']}
-            trackingNumber={shipment.tracking_number}
-          />
-        ) : (
-          <Box></Box>
-        )}
+        <OrderStatus
+          status={(shipment?.tracking_status ?? 'unknown') as OrderStatusProps['status']}
+          trackingNumber={shipment?.tracking_number}
+        />
         <Paragraph>{formatPrice(currency, amount)}</Paragraph>
       </Flex>
     </Card>
