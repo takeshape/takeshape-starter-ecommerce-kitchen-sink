@@ -137,12 +137,10 @@ export const CartSidebar = () => {
   useEffect(() => {
     const sidebar = sidebarRef.current;
     sidebar.addEventListener('mouseenter', clearToggle);
-    sidebar.addEventListener('mouseleave', handleClose);
     return () => {
       sidebar.removeEventListener('mouseenter', clearToggle);
-      sidebar.removeEventListener('mouseleave', handleClose);
     };
-  }, [clearToggle, handleClose, timeout]);
+  }, [clearToggle]);
 
   return (
     <Box as="aside" ref={sidebarRef}>
