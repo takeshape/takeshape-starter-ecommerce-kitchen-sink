@@ -73,9 +73,6 @@ const ProductLineItem = ({ id, name, description, images, quantity, amount, curr
                 {quantity} x {name}
               </Link>
             </Heading>
-            <Paragraph sx={{ fontSize: '0.7rem', textAlign: 'initial' }}>
-              <Text>{description}</Text>
-            </Paragraph>
           </Flex>
           <Box sx={{ textAlign: 'right' }}>{formatPrice(currency, amount)}</Box>
         </Grid>
