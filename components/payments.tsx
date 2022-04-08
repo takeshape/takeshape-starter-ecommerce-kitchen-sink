@@ -64,7 +64,7 @@ const ProductLineItem = ({ id, name, description, images, quantity, amount, curr
         <Grid gap={2} columns={['1fr 2fr 1fr']}>
           <Box sx={{ textAlign: 'left' }}>
             <Link sx={{ display: 'inline-block' }}>
-              <ProductImage maxHeight="60px" images={images} />
+              <ProductImage maxHeight="30px" images={images} />
             </Link>
           </Box>
           <Flex sx={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'left' }}>
