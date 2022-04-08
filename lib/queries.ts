@@ -293,7 +293,7 @@ export const GetMyPayments = gql`
           data {
             id
             amount_total
-            current
+            currency
             quantity
             price {
               product {
