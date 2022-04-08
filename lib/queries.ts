@@ -266,11 +266,13 @@ export const GetMyPayments = gql`
       created
       invoice {
         ... on Stripe_Invoice {
+          object
           id
           lines {
             data {
               id
               amount
+              currency
               quantity
               price {
                 product {
@@ -285,11 +287,13 @@ export const GetMyPayments = gql`
         }
       }
       session {
+        object
         id
         line_items {
           data {
             id
             amount_total
+            current
             quantity
             price {
               product {
