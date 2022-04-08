@@ -1,4 +1,5 @@
 {
+  "$schema": "https://schema.takeshape.io/project-schema",
   "apiVersion": "2",
   "workflows": {},
   "forms": {
@@ -146,6 +147,58 @@
             "product.updated",
             "product.created",
             "product.deleted"
+          ]
+        }
+      ]
+    },
+    "Reviews_ProductReview": {
+      "idField": "product_review_id",
+      "queries": {
+        "list": {
+          "name": "getAllProductReviews",
+          "pagination": {
+            "type": "page",
+            "itemsToIndexPath": "reviews",
+            "pageArg": "page",
+            "pageTotalPath": "total_pages"
+          }
+        }
+      },
+      "triggers": [
+        {
+          "type": "schedule",
+          "query": "list",
+          "interval": 1640
+        }
+      ]
+    },
+    "Stripe_CheckoutSession": {
+      "queries": {
+        "list": {
+          "name": "listCheckoutSessions",
+          "pagination": {
+            "type": "cursor",
+            "cursorPath": "data[(@.length-1)].id",
+            "itemsToIndexPath": "data",
+            "hasMorePath": "has_more",
+            "cursorArg": "starting_after",
+            "pageSizeArg": "limit"
+          },
+          "objectDepthLimit": 1
+        }
+      },
+      "triggers": [
+        {
+          "type": "schedule",
+          "query": "list",
+          "interval": 1440
+        },
+        {
+          "query": "list",
+          "type": "webhook",
+          "service": "stripe",
+          "events": [
+            "checkout.session.completed"
           ]
         }
       ]
@@ -784,6 +837,24 @@
     }
   },
   "mutations": {
+    "createShipment": {
+      "shape": "ShipEngine_Label",
+      "resolver": {
+        "name": "rest:post",
+        "service": "ship-engine",
+        "path": "v1/labels",
+        "json": {
+          "ops": [
+            {
+              "path": "shipment",
+              "mapping": "$args"
+            }
+          ]
+        }
+      },
+      "description": "Create a shipment with ShipEngine.",
+      "args": "ShipEngine_Shipment"
+    },
     "queueReviewInvitation": {
       "shape": "Reviews_PostResponse",
       "resolver": {
@@ -1374,11 +1445,99 @@
                 },
                 {
                   "path": "mode",
-                  "value": "payment"
+                  "mapping": "$args.mode"
                 },
                 {
-                  "path": "mode",
-                  "mapping": "$args.mode"
+                  "path": "shipping_address_collection.allowed_countries",
+                  "value": [
+                    "US"
+                  ]
+                },
+                {
+                  "path": "shipping_options[0].shipping_rate_data",
+                  "ops": [
+                    {
+                      "path": "type",
+                      "value": "fixed_amount"
+                    },
+                    {
+                      "path": "fixed_amount.amount",
+                      "value": 0
+                    },
+                    {
+                      "path": "fixed_amount.currency",
+                      "value": "usd"
+                    },
+                    {
+                      "path": "display_name",
+                      "value": "Free shipping (UPS Ground)"
+                    },
+                    {
+                      "path": "delivery_estimate.minimum.unit",
+                      "value": "business_day"
+                    },
+                    {
+                      "path": "delivery_estimate.minimum.value",
+                      "value": 5
+                    },
+                    {
+                      "path": "delivery_estimate.maximum.unit",
+                      "value": "business_day"
+                    },
+                    {
+                      "path": "delivery_estimate.maximum.value",
+                      "value": 7
+                    }
+                  ]
+                },
+                {
+                  "path": "shipping_options[1].shipping_rate_data",
+                  "ops": [
+                    {
+                      "path": "type",
+                      "value": "fixed_amount"
+                    },
+                    {
+                      "path": "fixed_amount.amount",
+                      "value": 1000
+                    },
+                    {
+                      "path": "fixed_amount.currency",
+                      "value": "usd"
+                    },
+                    {
+                      "path": "display_name",
+                      "value": "Expedited shipping (UPS 2nd Day Air)"
+                    },
+                    {
+                      "path": "delivery_estimate.minimum.unit",
+                      "value": "business_day"
+                    },
+                    {
+                      "path": "delivery_estimate.minimum.value",
+                      "value": 2
+                    },
+                    {
+                      "path": "delivery_estimate.maximum.unit",
+                      "value": "business_day"
+                    },
+                    {
+                      "path": "delivery_estimate.maximum.value",
+                      "value": 2
+                    }
+                  ]
+                },
+                {
+                  "path": "shipping_options",
+                  "mapping": [["expressionEval", {"expression": "$args.mode === 'subscription' ? null : undefined"}]]
+                },
+                {
+                  "path": "customer_update.shipping",
+                  "value": "auto"
+                },
+                {
+                  "path": "customer_update.address",
+                  "value": "auto"
                 }
               ],
               "serialize": {
@@ -1421,6 +1580,7 @@
           }
         },
         "required": [
+          "mode",
           "lineItems",
           "redirectUrl"
         ]
@@ -1706,6 +1866,101 @@
         "required": [
           "list_id"
         ]
+      }
+    },
+    "listCheckoutSessions": {
+      "shape": "Stripe_ListCheckoutSessionsResponse",
+      "resolver": {
+        "name": "rest:get",
+        "service": "stripe",
+        "path": "/v1/checkout/sessions",
+        "searchParams": {
+          "ops": [
+            {
+              "path": "ending_before",
+              "mapping": "$args.ending_before"
+            },
+            {
+              "path": "expand",
+              "value": [
+                "data.line_items"
+              ]
+            },
+            {
+              "path": "expand",
+              "op": "concat",
+              "mapping": "$args.expand"
+            },
+            {
+              "path": "limit",
+              "mapping": "$args.limit"
+            },
+            {
+              "path": "payment_intent",
+              "mapping": "$args.payment_intent"
+            },
+            {
+              "path": "starting_after",
+              "mapping": "$args.starting_after"
+            },
+            {
+              "path": "subscription",
+              "mapping": "$args.subscription"
+            }
+          ],
+          "serialize": {
+            "paths": {
+              "ending_before": {
+                "style": "form"
+              },
+              "expand": {
+                "explode": true,
+                "style": "deepObject"
+              },
+              "limit": {
+                "style": "form"
+              },
+              "payment_intent": {
+                "style": "form"
+              },
+              "starting_after": {
+                "style": "form"
+              },
+              "subscription": {
+                "style": "form"
+              }
+            }
+          }
+        }
+      },
+      "description": "<p>Returns a list of Checkout Sessions.</p>",
+      "args": {
+        "type": "object",
+        "properties": {
+          "ending_before": {
+            "type": "string"
+          },
+          "expand": {
+            "type": "array",
+            "items": {
+              "maxLength": 5000,
+              "type": "string"
+            }
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "payment_intent": {
+            "type": "string"
+          },
+          "starting_after": {
+            "type": "string"
+          },
+          "subscription": {
+            "type": "string"
+          }
+        },
+        "required": []
       }
     }
   },
@@ -2027,6 +2282,178 @@
         }
       }
     },
+    "Stripe_CheckoutSession": {
+      "id": "Stripe_CheckoutSession",
+      "name": "Stripe_CheckoutSession",
+      "title": "Stripe_CheckoutSession",
+      "schema": {
+        "extends": [
+          {
+            "@ref": "stripe:CheckoutSession"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "customer": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "Stripe_Invoice": {
+      "id": "Stripe_Invoice",
+      "name": "Stripe_Invoice",
+      "title": "Stripe_Invoice",
+      "schema": {
+        "extends": [
+          {
+            "@ref": "stripe:Invoice"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "customer": {
+                "type": "string"
+              },
+              "customer_shipping": {
+                "type": "object"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "Stripe_PaymentIntent": {
+      "id": "Stripe_PaymentIntent",
+      "name": "Stripe_PaymentIntent",
+      "title": "Stripe_PaymentIntent",
+      "schema": {
+        "extends": [
+          {
+            "@ref": "stripe:PaymentIntent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "customer": {
+                "type": "string"
+              },
+              "session": {
+                "description": "The Stripe checkout session associated with this payment.",
+                "title": "Stripe Checkout Session",
+                "@ref": "stripe:CheckoutSession",
+                "@resolver": {
+                  "name": "rest:get",
+                  "service": "stripe",
+                  "options": {
+                    "ignoreErrors": true
+                  },
+                  "path": "v1/checkout/sessions",
+                  "searchParams": {
+                    "ops": [
+                      {
+                        "path": "payment_intent",
+                        "mapping": "$source.id"
+                      },
+                      {
+                        "path": "expand",
+                        "value": [
+                          "data.line_items"
+                        ]
+                      }
+                    ],
+                    "serialize": {
+                      "paths": {
+                        "expand": {
+                          "explode": true,
+                          "style": "deepObject"
+                        },
+                        "payment_intent": {
+                          "style": "form"
+                        }
+                      }
+                    }
+                  },
+                  "results": {
+                    "ops": [
+                      {
+                        "path": "$",
+                        "mapping": "$finalResolver.data[0]"
+                      }
+                    ]
+                  }
+                }
+              },
+              "shipment": {
+                "description": "The ShipEngine label associated with this payment.",
+                "title": "ShipEngine Label",
+                "@ref": "local:ShipEngine_Label",
+                "@resolver": {
+                  "name": "rest:get",
+                  "service": "ship-engine",
+                  "options": {
+                    "ignoreErrors": true
+                  },
+                  "path": {
+                    "ops": [
+                      {
+                        "path": "id",
+                        "mapping": "$source.id"
+                      }
+                    ],
+                    "serialize": {
+                      "template": "v1/labels/external_shipment_id/{id}"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "Stripe_SetupIntent": {
+      "id": "Stripe_SetupIntent",
+      "name": "Stripe_SetupIntent",
+      "title": "Stripe_SetupIntent",
+      "schema": {
+        "extends": [
+          {
+            "@ref": "stripe:SetupIntent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "customer": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "Stripe_Subscription": {
+      "id": "Stripe_Subscription",
+      "name": "Stripe_Subscription",
+      "title": "Stripe_Subscription",
+      "schema": {
+        "extends": [
+          {
+            "@ref": "stripe:Subscription"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "customer": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    },
     "Stripe_Product": {
       "id": "Stripe_Product",
       "name": "Stripe_Product",
@@ -2179,7 +2606,7 @@
           },
           "avatar": {
             "description": "",
-            "$ref": "#/shapes/TSRelationship/schema",
+            "@ref": "local:TSRelationship",
             "@relationship": {
               "shapeIds": [
                 "ASSET"
@@ -2398,6 +2825,278 @@
                   }
                 ]
               }
+            }
+          }
+        }
+      }
+    },
+    "ShipEngine_Weight": {
+      "name": "ShipEngine_Weight",
+      "id": "ShipEngine_Weight",
+      "title": "ShipEngine_Weight",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "pound",
+              "ounce",
+              "gram",
+              "kilogram"
+            ]
+          }
+        }
+      }
+    },
+    "ShipEngine_Dimensions": {
+      "name": "ShipEngine_Dimensions",
+      "id": "ShipEngine_Dimensions",
+      "title": "ShipEngine_Dimensions",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "length": {
+            "type": "number"
+          },
+          "width": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "inch",
+              "centimeter"
+            ]
+          }
+        }
+      }
+    },
+    "ShipEngine_Address": {
+      "name": "ShipEngine_Address",
+      "id": "ShipEngine_Address",
+      "title": "ShipEngine_Address",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "address_line1": {
+            "type": "string"
+          },
+          "address_line2": {
+            "type": "string"
+          },
+          "city_locality": {
+            "type": "string"
+          },
+          "state_province": {
+            "type": "string"
+          },
+          "postal_code": {
+            "type": "string"
+          },
+          "country_code": {
+            "type": "string"
+          },
+          "address_residential_indicator": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ShipEngine_LabelDownload": {
+      "name": "ShipEngine_LabelDownload",
+      "id": "ShipEngine_LabelDownload",
+      "title": "ShipEngine_LabelDownload",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string"
+          },
+          "pdf": {
+            "type": "string"
+          },
+          "png": {
+            "type": "string"
+          },
+          "zpl": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ShipEngine_Package": {
+      "name": "ShipEngine_Package",
+      "id": "ShipEngine_Package",
+      "title": "ShipEngine_Package",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "package_id": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "package_code": {
+            "type": "string"
+          },
+          "tracking_number": {
+            "type": "string"
+          },
+          "label_download": {
+            "@ref": "local:ShipEngine_LabelDownload"
+          },
+          "weight": {
+            "@ref": "local:ShipEngine_Weight"
+          },
+          "dimensions": {
+            "@ref": "local:ShipEngine_Dimensions"
+          }
+        }
+      }
+    },
+    "ShipEngine_Shipment": {
+      "name": "ShipEngine_Shipment",
+      "id": "ShipEngine_Shipment",
+      "title": "ShipEngine_Shipment",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "shipment_id": {
+            "type": "string"
+          },
+          "carrier_id": {
+            "type": "string"
+          },
+          "service_code": {
+            "type": "string"
+          },
+          "external_order_id": {
+            "type": "string"
+          },
+          "external_shipment_id": {
+            "type": "string"
+          },
+          "ship_date": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "modified_at": {
+            "type": "string"
+          },
+          "shipment_status": {
+            "type": "string"
+          },
+          "origin_type": {
+            "type": "string"
+          },
+          "insurance_provider": {
+            "type": "string"
+          },
+          "order_source_code": {
+            "type": "string"
+          },
+          "packages": {
+            "type": "array",
+            "items": {
+              "@ref": "local:ShipEngine_Package"
+            }
+          },
+          "ship_to": {
+            "@ref": "local:ShipEngine_Address"
+          },
+          "ship_from": {
+            "@ref": "local:ShipEngine_Address"
+          }
+        }
+      }
+    },
+    "ShipEngine_Label": {
+      "name": "ShipEngine_Label",
+      "id": "ShipEngine_Label",
+      "title": "ShipEngine_Label",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "label_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "shipment_id": {
+            "type": "string"
+          },
+          "ship_date": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "tracking_number": {
+            "type": "string"
+          },
+          "batch_id": {
+            "type": "string"
+          },
+          "carrier_id": {
+            "type": "string"
+          },
+          "charge_event": {
+            "type": "string"
+          },
+          "service_code": {
+            "type": "string"
+          },
+          "package_code": {
+            "type": "string"
+          },
+          "voided_at": {
+            "type": "string"
+          },
+          "label_format": {
+            "type": "string"
+          },
+          "display_scheme": {
+            "type": "string"
+          },
+          "label_layout": {
+            "type": "string"
+          },
+          "label_image_id": {
+            "type": "string"
+          },
+          "carrier_code": {
+            "type": "string"
+          },
+          "tracking_status": {
+            "type": "string"
+          },
+          "label_download": {
+            "@ref": "local:ShipEngine_LabelDownload"
+          },
+          "trackable": {
+            "type": "boolean"
+          },
+          "packages": {
+            "type": "array",
+            "items": {
+              "@ref": "local:ShipEngine_Package"
             }
           }
         }

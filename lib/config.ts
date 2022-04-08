@@ -13,3 +13,13 @@ export const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_K
 export const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 export const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 export const siteUrl = process.env.VERCEL_URL ?? 'localhost:3000';
+
+export const shipFrom = {
+  name: 'KitchenSink',
+  phone: '919-360-0095',
+  addressLine1: '156 Kent St',
+  postalCode: '11222',
+  countryCode: 'US',
+  cityLocality: 'Brooklyn',
+  stateProvince: 'NY'
+};
