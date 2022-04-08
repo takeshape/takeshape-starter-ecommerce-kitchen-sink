@@ -43,7 +43,7 @@ export const OrderStatus = ({ status, trackingNumber }: OrderStatusProps) => {
   return (
     <Flex sx={{ gap: '.5rem' }}>
       <Badge py={1} px={2} backgroundColor={statusObj.color}>
-        {startCase(statusObj.text)}
+        {statusObj.text}
       </Badge>
       {trackingNumber && (
         <Badge py={1} px={2} backgroundColor={statusObj.color}>
