@@ -257,22 +257,6 @@ export const DeleteMySubscription = gql`
   }
 `;
 
-/**
- * Removed while a bug is resolved
- *
- *       invoice {
-        ... on Stripe_Invoice {
-          id
-          paid
-          invoice_pdf
-        }
-      }
- * In order to have a full list including subscription purchases & shipments
- * and one-offs we need both invoices and sessions. We can then extract info
- * from them and normalize to the purchase shown on the account page.
- *
- */
-
 export const GetMyPayments = gql`
   query GetMyPaymentsQuery {
     payments: getMyPayments(limit: 10, expand: ["data.invoice"]) {
@@ -280,6 +264,26 @@ export const GetMyPayments = gql`
       amount
       currency
       created
+      invoice {
+        ... on Stripe_Invoice {
+          id
+          lines {
+            data {
+              id
+              amount
+              quantity
+              price {
+                product {
+                  id
+                  description
+                  name
+                  images
+                }
+              }
+            }
+          }
+        }
+      }
       session {
         id
         line_items {

@@ -1,4 +1,4 @@
-import type { Stripe_PaymentIntent, Stripe_Invoice, Stripe_Item } from 'lib/takeshape/types';
+import type { Stripe_PaymentIntent, Stripe_Invoice, Stripe_Item, Stripe_LineItem } from 'lib/takeshape/types';
 import NextLink from 'next/link';
 import { Badge, Flex, Box, Card, IconButton, Paragraph, Link, Heading, Text, Grid } from '@theme-ui/components';
 import { formatPrice } from 'lib/utils/text';
@@ -85,7 +85,7 @@ const ProductLineItem = ({ id, name, description, images, quantity, amount, curr
 };
 
 export interface ProductListProps {
-  lineItems: Stripe_Item[];
+  lineItems: Stripe_Item[] | Stripe_LineItem[];
   currency: string;
 }
 
@@ -119,6 +119,10 @@ export const PaymentItemCard = ({
   payment: Stripe_PaymentIntent;
 }) => {
   invoice = invoice as Stripe_Invoice;
+  // Only subscriptions will have `session`, and one-off purchases will only have `session`.
+  // We get the same data from both, so we collapse here, preferring the `invoice`.
+  const lineItems = invoice?.lines?.data ?? session?.line_items?.data;
+
   return (
     <Card sx={{ width: '100%' }}>
       <Flex sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
@@ -136,7 +140,7 @@ export const PaymentItemCard = ({
           {invoice?.paid ? <BsCheckCircleFill title="Paid" color="green" size={16} /> : null}
         </Box>
       </Flex>
-      <Box>{session && <ProductList lineItems={session.line_items.data} currency={currency} />}</Box>
+      <Box>{lineItems && <ProductList lineItems={lineItems} currency={currency} />}</Box>
       <Flex sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
         <OrderStatus
           status={(shipment?.tracking_status ?? 'unknown') as OrderStatusProps['status']}
@@ -154,7 +158,7 @@ export const PaymentList = ({ payments }) => {
   }
   return (
     <Flex as="ul" sx={{ flexDirection: 'column', listStyleType: 'none', padding: 0 }}>
-      {payments.map((payment, index) => (
+      {payments.map((payment) => (
         <Box
           as="li"
           key={payment.id}

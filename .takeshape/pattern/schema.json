@@ -2302,6 +2302,29 @@
         ]
       }
     },
+    "Stripe_Invoice": {
+      "id": "Stripe_Invoice",
+      "name": "Stripe_Invoice",
+      "title": "Stripe_Invoice",
+      "schema": {
+        "extends": [
+          {
+            "@ref": "stripe:Invoice"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "customer": {
+                "type": "string"
+              },
+              "customer_shipping": {
+                "type": "object"
+              }
+            }
+          }
+        ]
+      }
+    },
     "Stripe_PaymentIntent": {
       "id": "Stripe_PaymentIntent",
       "name": "Stripe_PaymentIntent",
