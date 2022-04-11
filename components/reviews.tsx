@@ -2,9 +2,9 @@ import StarRatings from 'react-star-ratings';
 import { Box, Divider, Flex, Text } from '@theme-ui/components';
 import { getColor } from '@theme-ui/color';
 import { useThemeUI } from '@theme-ui/core';
-import { Reviews_ProductReview, Reviews_Stats } from 'lib/takeshape/types';
+import { ReviewsIo_ProductReview, ReviewsIo_ListProductReviewsResponseStatsProperty } from 'lib/takeshape/types';
 
-export const Review: React.FC<Reviews_ProductReview> = (props) => {
+export const Review: React.FC<ReviewsIo_ProductReview> = (props) => {
   const { title, review, rating, timeago, date_created } = props;
   const { theme } = useThemeUI();
   return (
@@ -32,8 +32,8 @@ export const Review: React.FC<Reviews_ProductReview> = (props) => {
 };
 
 export interface ReviewListProps {
-  reviews: Reviews_ProductReview[] | null;
-  stats: Reviews_Stats | null;
+  reviews: ReviewsIo_ProductReview[] | null;
+  stats: ReviewsIo_ListProductReviewsResponseStatsProperty | null;
 }
 
 export const ReviewList: React.FC<ReviewListProps> = (props) => {

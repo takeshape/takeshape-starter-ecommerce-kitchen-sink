@@ -1,5 +1,5 @@
+import type { ReviewsIo_ListProductReviewsResponse, Stripe_Product, Mutation } from './takeshape/types';
 import { gql } from '@apollo/client';
-import { Reviews_ProductReviewsQueryResponse, Stripe_Product, Mutation } from './takeshape/types';
 
 export interface StripeProducts {
   products: {
@@ -60,7 +60,7 @@ export interface GetProductArgs {
 
 export type GetProductResponse = {
   product: Stripe_Product;
-  reviews: Reviews_ProductReviewsQueryResponse;
+  reviews: ReviewsIo_ListProductReviewsResponse;
 };
 
 export const GetProduct = gql`
@@ -80,7 +80,7 @@ export const GetProduct = gql`
         }
       }
     }
-    reviews: getProductReviews(sku: $id) {
+    reviews: ReviewsIo_listProductReviews(sku: $id) {
       reviews {
         data {
           date_created
@@ -314,16 +314,18 @@ export const GetMyPayments = gql`
   }
 `;
 
-export const QueueReviewInvitation = gql`
-  mutation QueueReviewInvitationMutation(
+export const CreateInvitation = gql`
+  mutation CreateInvitationMutation(
     $name: String
     $email: String
-    $orderId: String
-    $products: [Reviews_ProductInput]
+    $order_id: String
+    $products: [ReviewsIo_ProductInput]
+    $template_id: String
   ) {
-    queueReviewInvitation(name: $name, email: $email, orderId: $orderId, products: $products) {
+    ReviewsIo_createInvitation(
+      input: { name: $name, email: $email, order_id: $order_id, products: $products, template_id: $template_id }
+    ) {
       status
-      messages
     }
   }
 `;

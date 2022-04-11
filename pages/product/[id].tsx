@@ -1,25 +1,23 @@
+import type {
+  Stripe_Product,
+  ReviewsIo_ListProductReviewsResponseStatsProperty,
+  ReviewsIo_ProductReview
+} from 'lib/takeshape/types';
 import { NextPage, GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
-import { Box, Divider, Flex, Heading, Paragraph } from '@theme-ui/components';
+import { Box, Flex, Heading, Paragraph } from '@theme-ui/components';
 import { Page } from 'components/layout';
 import { ProductImage, ProductAddToCart } from 'components/product';
 import { takeshapeApiUrl, takeshapeAnonymousApiKey } from 'lib/config';
 import { ReviewList } from 'components/reviews';
 import { createApolloClient } from 'lib/apollo';
-import {
-  Stripe_Product,
-  Reviews_ProductReviewsQueryResponse,
-  Reviews_ProductReview,
-  Reviews_Stats,
-  QueryGetProductReviewsArgs
-} from 'lib/takeshape/types';
 import { GetProduct, GetProductArgs, GetProductResponse, GetStripeProducts, StripeProducts } from 'lib/queries';
 import { getSingle } from 'lib/utils/types';
 
 interface ProductPageProps {
   product: Stripe_Product;
-  reviews: Reviews_ProductReview[] | null;
-  stats: Reviews_Stats | null;
+  reviews: ReviewsIo_ProductReview[] | null;
+  stats: ReviewsIo_ListProductReviewsResponseStatsProperty | null;
 }
 
 const ProductPage: NextPage<ProductPageProps> = (props) => {

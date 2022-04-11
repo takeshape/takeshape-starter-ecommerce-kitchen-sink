@@ -2,8 +2,9 @@ import type { SetRequired } from 'type-fest';
 import type { NextApiHandler, NextConfig } from 'next';
 import type {
   MutationVoucherify_CreateOrderArgs,
-  MutationQueueReviewInvitationArgs,
-  Reviews_PostResponse,
+  ReviewsIo_CreateInvitationResponse,
+  ReviewsIo_CreateInvitationResponsePropertyInput,
+  ReviewsIo_InvitationProductInput,
   Voucherify_Order,
   Voucherify_OrderItemInput,
   MutationCreateShipmentArgs,
@@ -21,7 +22,7 @@ import {
   shipFrom
 } from 'lib/config';
 import { createApolloClient } from 'lib/apollo/client';
-import { QueueReviewInvitation, CreateLoyaltyCardOrder, CreateShipment } from 'lib/queries';
+import { CreateInvitation, CreateLoyaltyCardOrder, CreateShipment } from 'lib/queries';
 
 const stripe = new Stripe(stripeSecretKey, { apiVersion: '2020-08-27' });
 const client = createApolloClient(takeshapeApiUrl, () => takeshapeWebhookApiKey);
@@ -40,7 +41,7 @@ export const config: NextConfig = {
 
 async function handleReviews(customer: Stripe.Customer, session: Stripe.Checkout.Session) {
   try {
-    const products = session.line_items.data.map((lineItem) => {
+    const products = session.line_items.data.map((lineItem): ReviewsIo_InvitationProductInput => {
       const product = lineItem.price.product as Stripe.Product;
       return {
         sku: product.id,
@@ -52,14 +53,15 @@ async function handleReviews(customer: Stripe.Customer, session: Stripe.Checkout
     });
 
     const response = await client.mutate<
-      { queueReviewInvitation: Reviews_PostResponse },
-      MutationQueueReviewInvitationArgs
+      ReviewsIo_CreateInvitationResponse,
+      ReviewsIo_CreateInvitationResponsePropertyInput
     >({
-      mutation: QueueReviewInvitation,
+      mutation: CreateInvitation,
       variables: {
         name: customer.name ?? 'Checkout Customer',
         email: customer.email,
-        orderId: session.payment_intent as string,
+        order_id: session.payment_intent as string,
+        template_id: '47970',
         products
       }
     });
