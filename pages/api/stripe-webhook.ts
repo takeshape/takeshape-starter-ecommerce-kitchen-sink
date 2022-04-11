@@ -4,7 +4,7 @@ import type {
   MutationVoucherify_CreateOrderArgs,
   ReviewsIo_CreateInvitationResponse,
   ReviewsIo_CreateInvitationResponsePropertyInput,
-  ReviewsIo_ProductInput,
+  ReviewsIo_InvitationProductInput,
   Voucherify_Order,
   Voucherify_OrderItemInput,
   MutationCreateShipmentArgs,
@@ -41,7 +41,7 @@ export const config: NextConfig = {
 
 async function handleReviews(customer: Stripe.Customer, session: Stripe.Checkout.Session) {
   try {
-    const products = session.line_items.data.map((lineItem): ReviewsIo_ProductInput => {
+    const products = session.line_items.data.map((lineItem): ReviewsIo_InvitationProductInput => {
       const product = lineItem.price.product as Stripe.Product;
       return {
         sku: product.id,
