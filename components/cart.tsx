@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
 import { BsCart3 } from 'react-icons/bs';
 import { Flex, Box, Divider, Heading, Close, IconButton, Button, Text, Grid, Image } from '@theme-ui/components';
@@ -80,9 +80,10 @@ export const CartSidebar = () => {
     items,
     isCartOpen,
     isCartReady,
-    actions: { removeFromCart, updateCartItem, toggleCart }
+    timeout,
+    actions: { removeFromCart, updateCartItem, closeCart }
   } = useCart();
-
+  const sidebarRef = useRef<HTMLDivElement>();
   const { user, loginWithRedirect } = useAuth0();
   const [setCheckoutPayload, { data: checkoutData }] = useMutation(CreateMyCheckoutSession);
   const cartCurrency = items?.[0]?.price?.currency ?? '';
@@ -121,13 +122,28 @@ export const CartSidebar = () => {
     }
   }, [checkoutData]);
 
-  const handleCloseButton = (event) => {
-    event.preventDefault();
-    toggleCart();
-  };
+  const handleClose = useCallback(
+    (event) => {
+      event.preventDefault();
+      closeCart();
+    },
+    [closeCart]
+  );
+
+  const clearToggle = useCallback(() => {
+    clearTimeout(timeout);
+  }, [timeout]);
+
+  useEffect(() => {
+    const sidebar = sidebarRef.current;
+    sidebar.addEventListener('mouseenter', clearToggle);
+    return () => {
+      sidebar.removeEventListener('mouseenter', clearToggle);
+    };
+  }, [clearToggle]);
 
   return (
-    <Box as="aside">
+    <Box as="aside" ref={sidebarRef}>
       {isCartReady ? (
         <Flex
           style={{
@@ -140,7 +156,7 @@ export const CartSidebar = () => {
               sx={{ backgroundColor: 'white', padding: '1rem', marginBottom: '2rem', position: 'sticky', top: '0' }}
             >
               <Heading sx={{ margin: 0, flex: '1 1 auto' }}>Your Cart</Heading>
-              <Close sx={{ pointer: 'cursor', ':hover': { color: 'primary' } }} onClick={handleCloseButton} />
+              <Close sx={{ pointer: 'cursor', ':hover': { color: 'primary' } }} onClick={handleClose} />
             </Flex>
             <Flex variant="cart.itemList" sx={{ flex: '1 1 auto', flexDirection: 'column' }}>
               {items.map((product, index) => (

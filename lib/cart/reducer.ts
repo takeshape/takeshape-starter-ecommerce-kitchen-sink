@@ -22,7 +22,13 @@ const reducer = (state: CartState, action) => {
     case 'OPEN_CART':
       return {
         ...state,
-        isCartOpen: true
+        isCartOpen: true,
+        timeout: action.timeout
+      };
+    case 'CLOSE_CART':
+      return {
+        ...state,
+        isCartOpen: false
       };
     case 'TOGGLE_CART':
       return {
