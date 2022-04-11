@@ -134,8 +134,8 @@ function useAddToCart(product: Stripe_Product) {
     addToCart({ ...product, price, quantity });
 
     if (!isCartOpen) {
-      openCart();
-      setTimeout(() => toggleCart(), showCartTimeout);
+      const timeout = setTimeout(() => toggleCart(), showCartTimeout);
+      openCart(timeout);
     }
   };
 
