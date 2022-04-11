@@ -150,27 +150,6 @@
           ]
         }
       ]
-    },
-    "Reviews_ProductReview": {
-      "idField": "product_review_id",
-      "queries": {
-        "list": {
-          "name": "getAllProductReviews",
-          "pagination": {
-            "type": "page",
-            "itemsToIndexPath": "reviews",
-            "pageArg": "page",
-            "pageTotalPath": "total_pages"
-          }
-        }
-      },
-      "triggers": [
-        {
-          "type": "schedule",
-          "query": "list",
-          "interval": 1640
-        }
-      ]
     }
   },
   "queries": {
