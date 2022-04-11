@@ -171,37 +171,6 @@
           "interval": 1640
         }
       ]
-    },
-    "Stripe_CheckoutSession": {
-      "queries": {
-        "list": {
-          "name": "listCheckoutSessions",
-          "pagination": {
-            "type": "cursor",
-            "cursorPath": "data[(@.length-1)].id",
-            "itemsToIndexPath": "data",
-            "hasMorePath": "has_more",
-            "cursorArg": "starting_after",
-            "pageSizeArg": "limit"
-          },
-          "objectDepthLimit": 1
-        }
-      },
-      "triggers": [
-        {
-          "type": "schedule",
-          "query": "list",
-          "interval": 1440
-        },
-        {
-          "query": "list",
-          "type": "webhook",
-          "service": "stripe",
-          "events": [
-            "checkout.session.completed"
-          ]
-        }
-      ]
     }
   },
   "queries": {
@@ -333,95 +302,6 @@
             "items": {
               "type": "string"
             }
-          }
-        }
-      }
-    },
-    "getMyInvoices": {
-      "shape": {
-        "type": "array",
-        "items": {
-          "@ref": "stripe:Invoice"
-        }
-      },
-      "resolver": {
-        "compose": [
-          {
-            "if": "!isEmpty($claims.sub)",
-            "id": "profile",
-            "name": "takeshape:find",
-            "service": "takeshape:local",
-            "shapeName": "Profile",
-            "args": {
-              "ops": [
-                {
-                  "path": "where.id.eq",
-                  "mapping": "$claims.sub"
-                }
-              ]
-            }
-          },
-          {
-            "if": "!isEmpty($resolvers.profile.stripeCustomerId)",
-            "id": "invoices",
-            "name": "rest:get",
-            "service": "stripe",
-            "path": "/v1/invoices",
-            "searchParams": {
-              "ops": [
-                {
-                  "path": "$",
-                  "mapping": "$args"
-                },
-                {
-                  "path": "customer",
-                  "mapping": "$resolvers.profile.stripeCustomerId"
-                }
-              ],
-              "serialize": {
-                "defaults": {
-                  "style": "deepObject",
-                  "explode": true
-                }
-              }
-            }
-          }
-        ],
-        "results": {
-          "ops": [
-            {
-              "path": "$",
-              "mapping": "$resolvers.invoices.data"
-            }
-          ]
-        }
-      },
-      "description": "Get the signed in user's invoices from Stripe",
-      "args": {
-        "type": "object",
-        "properties": {
-          "expand": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "draft",
-              "open",
-              "paid",
-              "uncollectable",
-              "void"
-            ]
-          },
-          "limit": {
-            "type": "number"
-          },
-          "created": {},
-          "startingAfter": {
-            "type": "string"
           }
         }
       }
@@ -2348,7 +2228,8 @@
                   "name": "rest:get",
                   "service": "stripe",
                   "options": {
-                    "ignoreErrors": true
+                    "ignoreErrors": true,
+                    "ttl": 3600
                   },
                   "path": "v1/checkout/sessions",
                   "searchParams": {
@@ -2394,7 +2275,8 @@
                   "name": "rest:get",
                   "service": "ship-engine",
                   "options": {
-                    "ignoreErrors": true
+                    "ignoreErrors": true,
+                    "ttl": 60
                   },
                   "path": {
                     "ops": [
@@ -2545,7 +2427,8 @@
                   "name": "rest:get",
                   "service": "stripe",
                   "options": {
-                    "ignoreErrors": true
+                    "ignoreErrors": true,
+                    "ttl": 3600
                   },
                   "path": {
                     "ops": [
@@ -2556,6 +2439,88 @@
                     ],
                     "serialize": {
                       "template": "/v1/products/{product}"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "Stripe_InvoiceLinesProperty": {
+      "id": "Stripe_InvoiceLinesProperty",
+      "name": "Stripe_InvoiceLinesProperty",
+      "title": "Stripe_InvoiceLinesProperty",
+      "schema": {
+        "extends": [
+          {
+            "@ref": "stripe:InvoiceLinesProperty"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "price": {
+                "description": "The Stripe price associated with this line item.",
+                "title": "Stripe Price",
+                "@ref": "stripe:Price",
+                "@resolver": {
+                  "name": "rest:get",
+                  "service": "stripe",
+                  "options": {
+                    "ignoreErrors": true,
+                    "ttl": 3600
+                  },
+                  "path": {
+                    "ops": [
+                      {
+                        "path": "price",
+                        "mapping": "$source.price"
+                      }
+                    ],
+                    "serialize": {
+                      "template": "/v1/prices/{price}"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "Stripe_CheckoutSessionLineItemsProperty": {
+      "id": "Stripe_CheckoutSessionLineItemsProperty",
+      "name": "Stripe_CheckoutSessionLineItemsProperty",
+      "title": "Stripe_CheckoutSessionLineItemsProperty",
+      "schema": {
+        "extends": [
+          {
+            "@ref": "stripe:CheckoutSessionLineItemsProperty"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "price": {
+                "description": "The Stripe price associated with this line item.",
+                "title": "Stripe Price",
+                "@ref": "stripe:Price",
+                "@resolver": {
+                  "name": "rest:get",
+                  "service": "stripe",
+                  "options": {
+                    "ignoreErrors": true,
+                    "ttl": 3600
+                  },
+                  "path": {
+                    "ops": [
+                      {
+                        "path": "price",
+                        "mapping": "$source.price"
+                      }
+                    ],
+                    "serialize": {
+                      "template": "/v1/prices/{price}"
                     }
                   }
                 }

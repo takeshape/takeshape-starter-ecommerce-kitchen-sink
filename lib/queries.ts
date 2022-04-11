@@ -259,7 +259,7 @@ export const DeleteMySubscription = gql`
 
 export const GetMyPayments = gql`
   query GetMyPaymentsQuery {
-    payments: getMyPayments(limit: 10, expand: ["data.invoice"]) {
+    payments: getMyPayments(limit: 5, expand: ["data.invoice"]) {
       id
       amount
       currency
