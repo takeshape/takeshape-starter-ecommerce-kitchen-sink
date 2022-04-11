@@ -60,13 +60,16 @@
     },
     "reviews-io": {
       "id": "reviews-io",
-      "provider": "generic",
-      "title": "Reviews.io",
-      "namespace": "Reviews",
-      "serviceType": "rest",
+      "provider": "reviewsIo",
+      "title": "REVIEWS.io",
+      "namespace": "ReviewsIo",
+      "serviceType": "openapi",
       "authenticationType": "searchParams",
       "options": {
-        "endpoint": "https://api.reviews.io"
+        "endpoint": "https://api.reviews.io/",
+        "storeId": "",
+        "spec": "https://raw.githubusercontent.com/takeshape/openapi-specs/main/specs/reviews.io/v0.1.0.yml",
+        "useRestfulNames": true
       }
     },
     "voucherify": {
