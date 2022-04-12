@@ -18,6 +18,5 @@ export const getCheckoutPayload = (items, redirectUrl) => {
     redirectUrl: getRedirectUrl(redirectUrl)
   };
 
-  console.log(payload);
   return payload;
 };
