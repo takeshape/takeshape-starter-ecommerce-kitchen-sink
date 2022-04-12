@@ -68,7 +68,7 @@
       "options": {
         "endpoint": "https://api.reviews.io/",
         "storeId": "",
-        "spec": "https://raw.githubusercontent.com/takeshape/openapi-specs/main/specs/reviews.io/v0.1.0.yml",
+        "spec": "https://raw.githubusercontent.com/takeshape/openapi-specs/main/specs/reviews.io/v0.1.0-2.yml",
         "useRestfulNames": true
       }
     },

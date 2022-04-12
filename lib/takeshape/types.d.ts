@@ -32,20 +32,15 @@ export type Query = {
   getTsStaticSite?: Maybe<TsStaticSite>;
   /** Returns a list TsStaticSite in natural order. */
   getTsStaticSiteList?: Maybe<TsStaticSitePaginatedList>;
+  ReviewsIo_listProductReviews?: Maybe<ReviewsIo_ListProductReviewsResponse>;
   /** Get Stripe products from the TakeShape API Index */
   getIndexedProductList?: Maybe<Stripe_ProductPaginatedList>;
-  /** Get Stripe payment intents from the TakeShape API Index */
-  getIndexedPaymentIntents?: Maybe<Stripe_PaymentIntentPaginatedList>;
   /** Get the signed in user's profile from ShapeDB */
   getMyProfile?: Maybe<Profile>;
   /** Get the signed in user's subscriptions from Stripe */
   getMySubscriptions?: Maybe<Array<Maybe<Stripe_Subscription>>>;
-  /** Get the signed in user's invoices from Stripe */
-  getMyInvoices?: Maybe<Array<Maybe<Stripe_Invoice>>>;
   /** Get the signed-in user's payments from Stripe */
   getMyPayments?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
-  /** Get the signed-in user's payments from Stripe */
-  getMyPayments_TEST?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
   /** Get a profile by ID */
   getProfile?: Maybe<Profile>;
   /** Returns a list of profiles in natural order. */
@@ -56,14 +51,7 @@ export type Query = {
   Stripe_getProduct?: Maybe<Stripe_Product>;
   /** Get a loyalty card from Voucherify */
   getMyLoyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
-  Klaviyo_getLists?: Maybe<Klaviyo_GetListsResponse>;
   getMyNewsletterSubscriptions?: Maybe<Array<Maybe<ProfileNewsletterStatus>>>;
-  /** <p>Returns a list of Checkout Sessions.</p> */
-  listCheckoutSessions?: Maybe<Stripe_ListCheckoutSessionsResponse>;
-  /** <p>Returns a list of PaymentIntents.</p> */
-  Stripe_listPaymentIntents?: Maybe<Stripe_ListPaymentIntentsResponse>;
-  ReviewsIo_listProductReviews?: Maybe<ReviewsIo_ListProductReviewsResponse>;
-  ReviewsIo_listAllProductReviews?: Maybe<ReviewsIo_ListProductReviewAllsResponse>;
   searchAssetIndex?: Maybe<AssetSearchResults>;
   searchTsStaticSiteIndex?: Maybe<TsStaticSiteSearchResults>;
   searchProfileIndex?: Maybe<ProfileSearchResults>;
@@ -150,6 +138,24 @@ export type QueryGetTsStaticSiteListArgs = {
 
 
 /** Root of the Schema */
+export type QueryReviewsIo_ListProductReviewsArgs = {
+  sku?: InputMaybe<Scalars['String']>;
+  mpn?: InputMaybe<Scalars['String']>;
+  page?: InputMaybe<Scalars['String']>;
+  per_page?: InputMaybe<Scalars['String']>;
+  photos?: InputMaybe<Scalars['Int']>;
+  verified_only?: InputMaybe<Scalars['Int']>;
+  comments_only?: InputMaybe<Scalars['Int']>;
+  minRating?: InputMaybe<Scalars['Int']>;
+  include_unpublished_images?: InputMaybe<Scalars['Int']>;
+  include_moderated?: InputMaybe<Scalars['Int']>;
+  order_id?: InputMaybe<Scalars['String']>;
+  min_date?: InputMaybe<Scalars['String']>;
+  max_date?: InputMaybe<Scalars['String']>;
+};
+
+
+/** Root of the Schema */
 export type QueryGetIndexedProductListArgs = {
   terms?: InputMaybe<Scalars['String']>;
   from?: InputMaybe<Scalars['Int']>;
@@ -164,32 +170,8 @@ export type QueryGetIndexedProductListArgs = {
 
 
 /** Root of the Schema */
-export type QueryGetIndexedPaymentIntentsArgs = {
-  terms?: InputMaybe<Scalars['String']>;
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  filter?: InputMaybe<Scalars['JSONObject']>;
-  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
-  where?: InputMaybe<TsWhereStripePaymentIntentInput>;
-};
-
-
-/** Root of the Schema */
 export type QueryGetMySubscriptionsArgs = {
   expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-};
-
-
-/** Root of the Schema */
-export type QueryGetMyInvoicesArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  status?: InputMaybe<Scalars['String']>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  startingAfter?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -200,16 +182,6 @@ export type QueryGetMyPaymentsArgs = {
   created?: InputMaybe<Scalars['JSON']>;
   startingAfter?: InputMaybe<Scalars['String']>;
   endingBefore?: InputMaybe<Scalars['String']>;
-};
-
-
-/** Root of the Schema */
-export type QueryGetMyPayments_TestArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-  ending_before?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -253,59 +225,6 @@ export type QueryStripe_ListProductsArgs = {
 export type QueryStripe_GetProductArgs = {
   expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   id: Scalars['String'];
-};
-
-
-/** Root of the Schema */
-export type QueryListCheckoutSessionsArgs = {
-  ending_before?: InputMaybe<Scalars['String']>;
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  payment_intent?: InputMaybe<Scalars['String']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-  subscription?: InputMaybe<Scalars['String']>;
-};
-
-
-/** Root of the Schema */
-export type QueryStripe_ListPaymentIntentsArgs = {
-  created?: InputMaybe<Scalars['JSON']>;
-  customer?: InputMaybe<Scalars['String']>;
-  ending_before?: InputMaybe<Scalars['String']>;
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-};
-
-
-/** Root of the Schema */
-export type QueryReviewsIo_ListProductReviewsArgs = {
-  sku?: InputMaybe<Scalars['String']>;
-  mpn?: InputMaybe<Scalars['String']>;
-  page?: InputMaybe<Scalars['String']>;
-  per_page?: InputMaybe<Scalars['String']>;
-  photos?: InputMaybe<Scalars['Int']>;
-  verified_only?: InputMaybe<Scalars['Int']>;
-  comments_only?: InputMaybe<Scalars['Int']>;
-  minRating?: InputMaybe<Scalars['Int']>;
-  include_unpublished_images?: InputMaybe<Scalars['Int']>;
-  include_moderated?: InputMaybe<Scalars['Int']>;
-  order_id?: InputMaybe<Scalars['String']>;
-  min_date?: InputMaybe<Scalars['String']>;
-  max_date?: InputMaybe<Scalars['String']>;
-};
-
-
-/** Root of the Schema */
-export type QueryReviewsIo_ListAllProductReviewsArgs = {
-  order_id?: InputMaybe<Scalars['String']>;
-  page?: InputMaybe<Scalars['String']>;
-  per_page?: InputMaybe<Scalars['String']>;
-  photos?: InputMaybe<Scalars['Int']>;
-  include_moderated?: InputMaybe<Scalars['Int']>;
-  include_no_comments?: InputMaybe<Scalars['Int']>;
-  min_date?: InputMaybe<Scalars['String']>;
-  max_date?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -721,6 +640,124 @@ export type TsWhereTsStaticSiteTriggersInput = {
   status?: InputMaybe<TsWhereStringInput>;
 };
 
+export type ReviewsIo_ListProductReviewsResponse = {
+  __typename?: 'ReviewsIo_ListProductReviewsResponse';
+  write_review_link?: Maybe<Scalars['String']>;
+  word?: Maybe<Scalars['String']>;
+  stats?: Maybe<ReviewsIo_ListProductReviewsResponseStatsProperty>;
+  store?: Maybe<ReviewsIo_ListProductReviewsResponseStoreProperty>;
+  reviews?: Maybe<ReviewsIo_ListProductReviewsResponseReviewsProperty>;
+  products?: Maybe<Array<Maybe<ReviewsIo_ListProductReviewsResponseProductsProperty>>>;
+  ratings?: Maybe<Array<Maybe<Scalars['JSONObject']>>>;
+  settings?: Maybe<Array<Maybe<Scalars['JSONObject']>>>;
+};
+
+export type ReviewsIo_ListProductReviewsResponseStatsProperty = {
+  __typename?: 'ReviewsIo_ListProductReviewsResponseStatsProperty';
+  average?: Maybe<Scalars['Float']>;
+  count?: Maybe<Scalars['Int']>;
+};
+
+export type ReviewsIo_ListProductReviewsResponseStoreProperty = {
+  __typename?: 'ReviewsIo_ListProductReviewsResponseStoreProperty';
+  name?: Maybe<Scalars['String']>;
+  logo?: Maybe<Scalars['String']>;
+};
+
+export type ReviewsIo_ListProductReviewsResponseReviewsProperty = {
+  __typename?: 'ReviewsIo_ListProductReviewsResponseReviewsProperty';
+  total?: Maybe<Scalars['Int']>;
+  per_page?: Maybe<Scalars['Int']>;
+  current_page?: Maybe<Scalars['Int']>;
+  last_page?: Maybe<Scalars['Int']>;
+  from?: Maybe<Scalars['Int']>;
+  to?: Maybe<Scalars['Int']>;
+  data?: Maybe<Array<Maybe<ReviewsIo_ProductReview>>>;
+};
+
+export type ReviewsIo_ProductReview = {
+  __typename?: 'ReviewsIo_ProductReview';
+  product_review_id?: Maybe<Scalars['Int']>;
+  product_make?: Maybe<Scalars['String']>;
+  order_id?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  sku?: Maybe<Scalars['String']>;
+  review?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
+  rating?: Maybe<Scalars['Int']>;
+  date_created?: Maybe<Scalars['String']>;
+  votes?: Maybe<Scalars['String']>;
+  flags?: Maybe<Scalars['String']>;
+  timeago?: Maybe<Scalars['String']>;
+  date_formatted?: Maybe<Scalars['String']>;
+  product?: Maybe<ReviewsIo_Product>;
+  ratings?: Maybe<Array<Maybe<ReviewsIo_ProductReviewRatingsProperty>>>;
+  reviewer?: Maybe<ReviewsIo_Reviewer>;
+  images?: Maybe<Array<Maybe<Scalars['JSONObject']>>>;
+  replies?: Maybe<Array<Maybe<Scalars['JSONObject']>>>;
+  tags?: Maybe<Array<Maybe<Scalars['String']>>>;
+  author?: Maybe<ReviewsIo_ProductReviewAuthorProperty>;
+};
+
+export type ReviewsIo_Product = {
+  __typename?: 'ReviewsIo_Product';
+  /** Product unique ID */
+  sku?: Maybe<Scalars['String']>;
+  /** Product name */
+  name?: Maybe<Scalars['String']>;
+  /** Product description */
+  description?: Maybe<Scalars['String']>;
+  /** Product image URL */
+  image_url?: Maybe<Scalars['String']>;
+  /** Product MPN */
+  mpn?: Maybe<Scalars['String']>;
+  /** Product GTIN */
+  gtin?: Maybe<Scalars['String']>;
+  /** Product brand */
+  brand?: Maybe<Scalars['String']>;
+  /** Product category */
+  category?: Maybe<Scalars['String']>;
+  /** Product custom property */
+  custom?: Maybe<Scalars['String']>;
+  /** Product page url */
+  pageUrl?: Maybe<Scalars['String']>;
+};
+
+export type ReviewsIo_ProductReviewRatingsProperty = {
+  __typename?: 'ReviewsIo_ProductReviewRatingsProperty';
+  name?: Maybe<Scalars['String']>;
+  score?: Maybe<Scalars['String']>;
+};
+
+export type ReviewsIo_Reviewer = {
+  __typename?: 'ReviewsIo_Reviewer';
+  user_id?: Maybe<Scalars['Int']>;
+  first_name?: Maybe<Scalars['String']>;
+  last_name?: Maybe<Scalars['String']>;
+  verified_buyer?: Maybe<ReviewsIo_ReviewerVerifiedBuyerProperty>;
+  address?: Maybe<Scalars['String']>;
+  profile_picture?: Maybe<Scalars['String']>;
+  gravatar?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  name_formatted?: Maybe<Scalars['String']>;
+};
+
+export enum ReviewsIo_ReviewerVerifiedBuyerProperty {
+  Yes = 'yes',
+  No = 'no'
+}
+
+export type ReviewsIo_ProductReviewAuthorProperty = {
+  __typename?: 'ReviewsIo_ProductReviewAuthorProperty';
+  email?: Maybe<Scalars['String']>;
+};
+
+export type ReviewsIo_ListProductReviewsResponseProductsProperty = {
+  __typename?: 'ReviewsIo_ListProductReviewsResponseProductsProperty';
+  sku?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+};
+
 export type Stripe_ProductPaginatedList = {
   __typename?: 'Stripe_ProductPaginatedList';
   items: Array<Stripe_Product>;
@@ -928,94 +965,6 @@ export enum Stripe_PriceTypeProperty {
   Recurring = 'recurring'
 }
 
-export type ReviewsIo_ListProductReviewsResponse = {
-  __typename?: 'ReviewsIo_ListProductReviewsResponse';
-  write_review_link?: Maybe<Scalars['String']>;
-  word?: Maybe<Scalars['String']>;
-  stats?: Maybe<ReviewsIo_ListProductReviewsResponseStatsProperty>;
-  store?: Maybe<ReviewsIo_ListProductReviewsResponseStoreProperty>;
-  reviews?: Maybe<ReviewsIo_ListProductReviewsResponseReviewsProperty>;
-  products?: Maybe<Array<Maybe<Scalars['JSONObject']>>>;
-  ratings?: Maybe<Array<Maybe<Scalars['JSONObject']>>>;
-  settings?: Maybe<Array<Maybe<Scalars['JSONObject']>>>;
-};
-
-export type ReviewsIo_ListProductReviewsResponseStatsProperty = {
-  __typename?: 'ReviewsIo_ListProductReviewsResponseStatsProperty';
-  average?: Maybe<Scalars['String']>;
-  count?: Maybe<Scalars['Int']>;
-};
-
-export type ReviewsIo_ListProductReviewsResponseStoreProperty = {
-  __typename?: 'ReviewsIo_ListProductReviewsResponseStoreProperty';
-  name?: Maybe<Scalars['String']>;
-  logo?: Maybe<Scalars['String']>;
-};
-
-export type ReviewsIo_ListProductReviewsResponseReviewsProperty = {
-  __typename?: 'ReviewsIo_ListProductReviewsResponseReviewsProperty';
-  total?: Maybe<Scalars['Int']>;
-  per_page?: Maybe<Scalars['Int']>;
-  current_page?: Maybe<Scalars['Int']>;
-  last_page?: Maybe<Scalars['Int']>;
-  from?: Maybe<Scalars['Int']>;
-  to?: Maybe<Scalars['Int']>;
-  data?: Maybe<Array<Maybe<ReviewsIo_ProductReview>>>;
-};
-
-export type ReviewsIo_ProductReview = {
-  __typename?: 'ReviewsIo_ProductReview';
-  product_review_id?: Maybe<Scalars['Int']>;
-  product_make?: Maybe<Scalars['String']>;
-  order_id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  sku?: Maybe<Scalars['String']>;
-  review?: Maybe<Scalars['String']>;
-  title?: Maybe<Scalars['String']>;
-  rating?: Maybe<Scalars['Int']>;
-  date_created?: Maybe<Scalars['String']>;
-  votes?: Maybe<Scalars['String']>;
-  flags?: Maybe<Scalars['String']>;
-  timeago?: Maybe<Scalars['String']>;
-  date_formatted?: Maybe<Scalars['String']>;
-  product?: Maybe<Scalars['String']>;
-  ratings?: Maybe<Array<Maybe<ReviewsIo_ProductReviewRatingsProperty>>>;
-  reviewer?: Maybe<ReviewsIo_Reviewer>;
-  images?: Maybe<Array<Maybe<Scalars['JSONObject']>>>;
-  replies?: Maybe<Array<Maybe<Scalars['JSONObject']>>>;
-  tags?: Maybe<Array<Maybe<Scalars['String']>>>;
-  author?: Maybe<ReviewsIo_ProductReviewAuthorProperty>;
-};
-
-export type ReviewsIo_ProductReviewRatingsProperty = {
-  __typename?: 'ReviewsIo_ProductReviewRatingsProperty';
-  name?: Maybe<Scalars['String']>;
-  score?: Maybe<Scalars['String']>;
-};
-
-export type ReviewsIo_Reviewer = {
-  __typename?: 'ReviewsIo_Reviewer';
-  user_id?: Maybe<Scalars['Int']>;
-  first_name?: Maybe<Scalars['String']>;
-  last_name?: Maybe<Scalars['String']>;
-  verified_buyer?: Maybe<ReviewsIo_ReviewerVerifiedBuyerProperty>;
-  address?: Maybe<Scalars['String']>;
-  profile_picture?: Maybe<Scalars['String']>;
-  gravatar?: Maybe<Scalars['String']>;
-  email?: Maybe<Scalars['String']>;
-  name_formatted?: Maybe<Scalars['String']>;
-};
-
-export enum ReviewsIo_ReviewerVerifiedBuyerProperty {
-  Yes = 'yes',
-  No = 'no'
-}
-
-export type ReviewsIo_ProductReviewAuthorProperty = {
-  __typename?: 'ReviewsIo_ProductReviewAuthorProperty';
-  email?: Maybe<Scalars['String']>;
-};
-
 export type TsWhereStripeProductInput = {
   active?: InputMaybe<TsWhereBooleanInput>;
   created?: InputMaybe<TsWhereIntegerInput>;
@@ -1028,9 +977,12 @@ export type TsWhereStripeProductInput = {
   package_dimensions?: InputMaybe<TsWhereStripe_PackageDimensionsInput>;
   shippable?: InputMaybe<TsWhereBooleanInput>;
   statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  tax_code?: InputMaybe<TsWhereStripe_TaxCodeWrappedStringUnionInput>;
   unit_label?: InputMaybe<TsWhereStringInput>;
   updated?: InputMaybe<TsWhereIntegerInput>;
   url?: InputMaybe<TsWhereStringInput>;
+  prices?: InputMaybe<TsWhereStripe_PriceInput>;
+  reviews?: InputMaybe<TsWhereReviewsIo_ListProductReviewsResponseInput>;
   _shapeId?: InputMaybe<TsWhereIdInput>;
   _id?: InputMaybe<TsWhereIdInput>;
   AND?: InputMaybe<Array<InputMaybe<TsWhereStripeProductInput>>>;
@@ -1078,44 +1030,22 @@ export type TsWhereInput = {
   environmentVariables?: InputMaybe<TsWhereTsStaticSiteEnvironmentVariablesInput>;
   triggers?: InputMaybe<TsWhereTsStaticSiteTriggersInput>;
   templateHash?: InputMaybe<TsWhereStringInput>;
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  amount_capturable?: InputMaybe<TsWhereIntegerInput>;
-  amount_received?: InputMaybe<TsWhereIntegerInput>;
-  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
-  automatic_payment_methods?: InputMaybe<TsWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput>;
-  canceled_at?: InputMaybe<TsWhereIntegerInput>;
-  cancellation_reason?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  charges?: InputMaybe<TsWhereStripe_PaymentIntentChargesInput>;
-  client_secret?: InputMaybe<TsWhereStringInput>;
-  confirmation_method?: InputMaybe<TsWhereInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  last_payment_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  next_action?: InputMaybe<TsWhereStripe_PaymentIntentNextActionInput>;
-  object?: InputMaybe<TsWhereInput>;
-  payment_method_options?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodOptionsInput>;
-  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
-  processing?: InputMaybe<TsWhereStripe_PaymentIntentProcessingInput>;
-  receipt_email?: InputMaybe<TsWhereStringInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
-  status?: InputMaybe<TsWhereInput>;
-  transfer_data?: InputMaybe<TsWhereStripe_TransferDataInput>;
-  transfer_group?: InputMaybe<TsWhereStringInput>;
   active?: InputMaybe<TsWhereBooleanInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
   images?: InputMaybe<TsWhereStripe_ProductImagesInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
   name?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
   package_dimensions?: InputMaybe<TsWhereStripe_PackageDimensionsInput>;
   shippable?: InputMaybe<TsWhereBooleanInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  tax_code?: InputMaybe<TsWhereStripe_TaxCodeWrappedStringUnionInput>;
   unit_label?: InputMaybe<TsWhereStringInput>;
   updated?: InputMaybe<TsWhereIntegerInput>;
   url?: InputMaybe<TsWhereStringInput>;
+  prices?: InputMaybe<TsWhereStripe_PriceInput>;
+  reviews?: InputMaybe<TsWhereReviewsIo_ListProductReviewsResponseInput>;
   email?: InputMaybe<TsWhereStringInput>;
   bio?: InputMaybe<TsWhereStringInput>;
   avatar?: InputMaybe<TsWhereAssetRelationshipInput>;
@@ -1125,1423 +1055,177 @@ export type TsWhereInput = {
   NOT?: InputMaybe<TsWhereInput>;
 };
 
-export type TsWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput = {
-  enabled?: InputMaybe<TsWhereBooleanInput>;
-};
-
-export type TsWhereStripe_PaymentIntentChargesInput = {
-  data?: InputMaybe<TsWhereStripe_ChargeInput>;
-  has_more?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_ChargeInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  amount_captured?: InputMaybe<TsWhereIntegerInput>;
-  amount_refunded?: InputMaybe<TsWhereIntegerInput>;
-  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
-  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
-  calculated_statement_descriptor?: InputMaybe<TsWhereStringInput>;
-  captured?: InputMaybe<TsWhereBooleanInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  disputed?: InputMaybe<TsWhereBooleanInput>;
-  failure_code?: InputMaybe<TsWhereStringInput>;
-  failure_message?: InputMaybe<TsWhereStringInput>;
-  fraud_details?: InputMaybe<TsWhereStripe_ChargeFraudDetailsInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  outcome?: InputMaybe<TsWhereStripe_ChargeOutcomeInput>;
-  paid?: InputMaybe<TsWhereBooleanInput>;
-  payment_method?: InputMaybe<TsWhereStringInput>;
-  payment_method_details?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInput>;
-  receipt_email?: InputMaybe<TsWhereStringInput>;
-  receipt_number?: InputMaybe<TsWhereStringInput>;
-  receipt_url?: InputMaybe<TsWhereStringInput>;
-  refunded?: InputMaybe<TsWhereBooleanInput>;
-  refunds?: InputMaybe<TsWhereStripe_PaymentIntentRefundsInput>;
-  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
-  status?: InputMaybe<TsWhereInput>;
-  transfer_data?: InputMaybe<TsWhereStripe_ChargeTransferDataInput>;
-  transfer_group?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_BillingDetailsInput = {
-  address?: InputMaybe<TsWhereStripe_AddressInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  phone?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_AddressInput = {
-  city?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  line1?: InputMaybe<TsWhereStringInput>;
-  line2?: InputMaybe<TsWhereStringInput>;
-  postal_code?: InputMaybe<TsWhereStringInput>;
-  state?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_ChargeFraudDetailsInput = {
-  stripe_report?: InputMaybe<TsWhereStringInput>;
-  user_report?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_ChargeOutcomeInput = {
-  network_status?: InputMaybe<TsWhereStringInput>;
-  reason?: InputMaybe<TsWhereStringInput>;
-  risk_level?: InputMaybe<TsWhereStringInput>;
-  risk_score?: InputMaybe<TsWhereIntegerInput>;
-  seller_message?: InputMaybe<TsWhereStringInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsInput = {
-  ach_credit_transfer?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAchCreditTransferInput>;
-  ach_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAchDebitInput>;
-  acss_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAcssDebitInput>;
-  afterpay_clearpay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAfterpayClearpayInput>;
-  alipay?: InputMaybe<TsWhereStripe_PaymentFlowsPrivatePaymentMethodsAlipayDetailsInput>;
-  au_becs_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAuBecsDebitInput>;
-  bacs_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBacsDebitInput>;
-  bancontact?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBancontactInput>;
-  boleto?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBoletoInput>;
-  card?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInput>;
-  card_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentInput>;
-  eps?: InputMaybe<TsWhereStripe_PaymentMethodDetailsEpsInput>;
-  fpx?: InputMaybe<TsWhereStripe_PaymentMethodDetailsFpxInput>;
-  giropay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsGiropayInput>;
-  grabpay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsGrabpayInput>;
-  ideal?: InputMaybe<TsWhereStripe_PaymentMethodDetailsIdealInput>;
-  interac_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInteracPresentInput>;
-  klarna?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKlarnaInput>;
-  konbini?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKonbiniInput>;
-  multibanco?: InputMaybe<TsWhereStripe_PaymentMethodDetailsMultibancoInput>;
-  oxxo?: InputMaybe<TsWhereStripe_PaymentMethodDetailsOxxoInput>;
-  p24?: InputMaybe<TsWhereStripe_PaymentMethodDetailsP24Input>;
-  paynow?: InputMaybe<TsWhereStripe_PaymentMethodDetailsPaynowInput>;
-  sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsSepaDebitInput>;
-  sofort?: InputMaybe<TsWhereStripe_PaymentMethodDetailsSofortInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-  us_bank_account?: InputMaybe<TsWhereStripe_PaymentMethodDetailsUsBankAccountInput>;
-  wechat_pay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsWechatPayInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsAchCreditTransferInput = {
-  account_number?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-  swift_code?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsAchDebitInput = {
-  account_holder_type?: InputMaybe<TsWhereInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsAcssDebitInput = {
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  institution_number?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  mandate?: InputMaybe<TsWhereStringInput>;
-  transit_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsAfterpayClearpayInput = {
-  reference?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentFlowsPrivatePaymentMethodsAlipayDetailsInput = {
-  buyer_id?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  transaction_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsAuBecsDebitInput = {
-  bsb_number?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  mandate?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsBacsDebitInput = {
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  mandate?: InputMaybe<TsWhereStringInput>;
-  sort_code?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsBancontactInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  bic?: InputMaybe<TsWhereStringInput>;
-  iban_last4?: InputMaybe<TsWhereStringInput>;
-  preferred_language?: InputMaybe<TsWhereInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsBoletoInput = {
-  tax_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardInput = {
-  brand?: InputMaybe<TsWhereStringInput>;
-  checks?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardChecksInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  installments?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  mandate?: InputMaybe<TsWhereStringInput>;
-  network?: InputMaybe<TsWhereStringInput>;
-  three_d_secure?: InputMaybe<TsWhereStripe_ThreeDSecureDetailsInput>;
-  wallet?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardChecksInput = {
-  address_line1_check?: InputMaybe<TsWhereStringInput>;
-  address_postal_code_check?: InputMaybe<TsWhereStringInput>;
-  cvc_check?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardInstallmentsInput = {
-  plan?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput = {
-  count?: InputMaybe<TsWhereIntegerInput>;
-  interval?: InputMaybe<TsWhereInput>;
-  type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_ThreeDSecureDetailsInput = {
-  authentication_flow?: InputMaybe<TsWhereInput>;
-  result?: InputMaybe<TsWhereInput>;
-  result_reason?: InputMaybe<TsWhereInput>;
-  version?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardWalletInput = {
-  dynamic_last4?: InputMaybe<TsWhereStringInput>;
-  masterpass?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletMasterpassInput>;
-  type?: InputMaybe<TsWhereInput>;
-  visa_checkout?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletVisaCheckoutInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardWalletMasterpassInput = {
-  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardWalletVisaCheckoutInput = {
-  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardPresentInput = {
-  amount_authorized?: InputMaybe<TsWhereIntegerInput>;
-  brand?: InputMaybe<TsWhereStringInput>;
-  capture_before?: InputMaybe<TsWhereIntegerInput>;
-  cardholder_name?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  emv_auth_data?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  generated_card?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  network?: InputMaybe<TsWhereStringInput>;
-  overcapture_supported?: InputMaybe<TsWhereBooleanInput>;
-  read_method?: InputMaybe<TsWhereInput>;
-  receipt?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentReceiptInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardPresentReceiptInput = {
-  account_type?: InputMaybe<TsWhereInput>;
-  application_cryptogram?: InputMaybe<TsWhereStringInput>;
-  application_preferred_name?: InputMaybe<TsWhereStringInput>;
-  authorization_code?: InputMaybe<TsWhereStringInput>;
-  authorization_response_code?: InputMaybe<TsWhereStringInput>;
-  cardholder_verification_method?: InputMaybe<TsWhereStringInput>;
-  dedicated_file_name?: InputMaybe<TsWhereStringInput>;
-  terminal_verification_results?: InputMaybe<TsWhereStringInput>;
-  transaction_status_information?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsEpsInput = {
-  bank?: InputMaybe<TsWhereInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsFpxInput = {
-  bank?: InputMaybe<TsWhereInput>;
-  transaction_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsGiropayInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  bic?: InputMaybe<TsWhereStringInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsGrabpayInput = {
-  transaction_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsIdealInput = {
-  bank?: InputMaybe<TsWhereInput>;
-  bic?: InputMaybe<TsWhereInput>;
-  iban_last4?: InputMaybe<TsWhereStringInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsInteracPresentInput = {
-  brand?: InputMaybe<TsWhereStringInput>;
-  cardholder_name?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  emv_auth_data?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  generated_card?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  network?: InputMaybe<TsWhereStringInput>;
-  preferred_locales?: InputMaybe<TsWhereStripe_PaymentIntentPreferredLocalesInput>;
-  read_method?: InputMaybe<TsWhereInput>;
-  receipt?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInteracPresentReceiptInput>;
-};
-
-export type TsWhereStripe_PaymentIntentPreferredLocalesInput = {
-  /** Exact match */
-  eq?: InputMaybe<Scalars['String']>;
-  /** Array of possible exact match values. */
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Full text searching with fuzzy matching. */
-  match?: InputMaybe<Scalars['String']>;
-  /** Regular expression string matching. Use of * wildcards could degrade performance. */
-  regexp?: InputMaybe<Scalars['String']>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsInteracPresentReceiptInput = {
-  account_type?: InputMaybe<TsWhereInput>;
-  application_cryptogram?: InputMaybe<TsWhereStringInput>;
-  application_preferred_name?: InputMaybe<TsWhereStringInput>;
-  authorization_code?: InputMaybe<TsWhereStringInput>;
-  authorization_response_code?: InputMaybe<TsWhereStringInput>;
-  cardholder_verification_method?: InputMaybe<TsWhereStringInput>;
-  dedicated_file_name?: InputMaybe<TsWhereStringInput>;
-  terminal_verification_results?: InputMaybe<TsWhereStringInput>;
-  transaction_status_information?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsKlarnaInput = {
-  payment_method_category?: InputMaybe<TsWhereStringInput>;
-  preferred_locale?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsKonbiniInput = {
-  store?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKonbiniStoreInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsKonbiniStoreInput = {
-  chain?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsMultibancoInput = {
-  entity?: InputMaybe<TsWhereStringInput>;
-  reference?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsOxxoInput = {
-  number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsP24Input = {
-  bank?: InputMaybe<TsWhereInput>;
-  reference?: InputMaybe<TsWhereStringInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsPaynowInput = {
-  reference?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsSepaDebitInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  branch_code?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  mandate?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsSofortInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  bic?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  iban_last4?: InputMaybe<TsWhereStringInput>;
-  preferred_language?: InputMaybe<TsWhereInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsUsBankAccountInput = {
-  account_holder_type?: InputMaybe<TsWhereInput>;
-  account_type?: InputMaybe<TsWhereInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsWechatPayInput = {
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  transaction_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentRefundsInput = {
-  data?: InputMaybe<TsWhereStripe_RefundInput>;
-  has_more?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_RefundInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  failure_reason?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  next_action?: InputMaybe<TsWhereStripe_RefundNextActionInput>;
-  object?: InputMaybe<TsWhereInput>;
-  reason?: InputMaybe<TsWhereInput>;
-  receipt_number?: InputMaybe<TsWhereStringInput>;
-  status?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_RefundNextActionInput = {
-  display_details?: InputMaybe<TsWhereStripe_RefundNextActionDisplayDetailsInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_RefundNextActionDisplayDetailsInput = {
-  email_sent?: InputMaybe<TsWhereStripe_EmailSentInput>;
-  expires_at?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_EmailSentInput = {
-  email_sent_at?: InputMaybe<TsWhereIntegerInput>;
-  email_sent_to?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_ShippingInput = {
-  address?: InputMaybe<TsWhereStripe_AddressInput>;
-  carrier?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  phone?: InputMaybe<TsWhereStringInput>;
-  tracking_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_ChargeTransferDataInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_ApiErrorsInput = {
-  charge?: InputMaybe<TsWhereStringInput>;
-  code?: InputMaybe<TsWhereStringInput>;
-  decline_code?: InputMaybe<TsWhereStringInput>;
-  doc_url?: InputMaybe<TsWhereStringInput>;
-  message?: InputMaybe<TsWhereStringInput>;
-  param?: InputMaybe<TsWhereStringInput>;
-  payment_intent?: InputMaybe<TsWhereStripe_PaymentIntentInput>;
-  payment_method?: InputMaybe<TsWhereStripe_PaymentMethodInput>;
-  payment_method_type?: InputMaybe<TsWhereStringInput>;
-  setup_intent?: InputMaybe<TsWhereStripe_SetupIntentInput>;
-  source?: InputMaybe<TsWhereStripe_BankAccountStripe_CardStripe_SourceUnionInput>;
-  type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentIntentInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  amount_capturable?: InputMaybe<TsWhereIntegerInput>;
-  amount_received?: InputMaybe<TsWhereIntegerInput>;
-  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
-  automatic_payment_methods?: InputMaybe<TsWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput>;
-  canceled_at?: InputMaybe<TsWhereIntegerInput>;
-  cancellation_reason?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  charges?: InputMaybe<TsWhereStripe_PaymentIntentChargesInput>;
-  client_secret?: InputMaybe<TsWhereStringInput>;
-  confirmation_method?: InputMaybe<TsWhereInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  last_payment_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  next_action?: InputMaybe<TsWhereStripe_PaymentIntentNextActionInput>;
-  object?: InputMaybe<TsWhereInput>;
-  payment_method_options?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodOptionsInput>;
-  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
-  processing?: InputMaybe<TsWhereStripe_PaymentIntentProcessingInput>;
-  receipt_email?: InputMaybe<TsWhereStringInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
-  status?: InputMaybe<TsWhereInput>;
-  transfer_data?: InputMaybe<TsWhereStripe_TransferDataInput>;
-  transfer_group?: InputMaybe<TsWhereStringInput>;
-  _shapeId?: InputMaybe<TsWhereIdInput>;
-  _id?: InputMaybe<TsWhereIdInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionInput = {
-  alipay_handle_redirect?: InputMaybe<TsWhereStripe_PaymentIntentNextActionAlipayHandleRedirectInput>;
-  boleto_display_details?: InputMaybe<TsWhereStripe_PaymentIntentNextActionBoletoInput>;
-  card_await_notification?: InputMaybe<TsWhereStripe_PaymentIntentNextActionCardAwaitNotificationInput>;
-  konbini_display_details?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniInput>;
-  oxxo_display_details?: InputMaybe<TsWhereStripe_PaymentIntentNextActionDisplayOxxoDetailsInput>;
-  paynow_display_qr_code?: InputMaybe<TsWhereStripe_PaymentIntentNextActionPaynowDisplayQrCodeInput>;
-  redirect_to_url?: InputMaybe<TsWhereStripe_PaymentIntentNextActionRedirectToUrlInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-  verify_with_microdeposits?: InputMaybe<TsWhereStripe_PaymentIntentNextActionVerifyWithMicrodepositsInput>;
-  wechat_pay_display_qr_code?: InputMaybe<TsWhereStripe_PaymentIntentNextActionWechatPayDisplayQrCodeInput>;
-  wechat_pay_redirect_to_android_app?: InputMaybe<TsWhereStripe_PaymentIntentNextActionWechatPayRedirectToAndroidAppInput>;
-  wechat_pay_redirect_to_ios_app?: InputMaybe<TsWhereStripe_PaymentIntentNextActionWechatPayRedirectToIosAppInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionAlipayHandleRedirectInput = {
-  native_data?: InputMaybe<TsWhereStringInput>;
-  native_url?: InputMaybe<TsWhereStringInput>;
-  return_url?: InputMaybe<TsWhereStringInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionBoletoInput = {
-  expires_at?: InputMaybe<TsWhereIntegerInput>;
-  hosted_voucher_url?: InputMaybe<TsWhereStringInput>;
-  number?: InputMaybe<TsWhereStringInput>;
-  pdf?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionCardAwaitNotificationInput = {
-  charge_attempt_at?: InputMaybe<TsWhereIntegerInput>;
-  customer_approval_required?: InputMaybe<TsWhereBooleanInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionKonbiniInput = {
-  expires_at?: InputMaybe<TsWhereIntegerInput>;
-  hosted_voucher_url?: InputMaybe<TsWhereStringInput>;
-  stores?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniStoresInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionKonbiniStoresInput = {
-  familymart?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniFamilymartInput>;
-  lawson?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniLawsonInput>;
-  ministop?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniMinistopInput>;
-  seicomart?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniSeicomartInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionKonbiniFamilymartInput = {
-  confirmation_number?: InputMaybe<TsWhereStringInput>;
-  payment_code?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionKonbiniLawsonInput = {
-  confirmation_number?: InputMaybe<TsWhereStringInput>;
-  payment_code?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionKonbiniMinistopInput = {
-  confirmation_number?: InputMaybe<TsWhereStringInput>;
-  payment_code?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionKonbiniSeicomartInput = {
-  confirmation_number?: InputMaybe<TsWhereStringInput>;
-  payment_code?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionDisplayOxxoDetailsInput = {
-  expires_after?: InputMaybe<TsWhereIntegerInput>;
-  hosted_voucher_url?: InputMaybe<TsWhereStringInput>;
-  number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionPaynowDisplayQrCodeInput = {
-  data?: InputMaybe<TsWhereStringInput>;
-  image_url_png?: InputMaybe<TsWhereStringInput>;
-  image_url_svg?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionRedirectToUrlInput = {
-  return_url?: InputMaybe<TsWhereStringInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionVerifyWithMicrodepositsInput = {
-  arrival_date?: InputMaybe<TsWhereIntegerInput>;
-  hosted_verification_url?: InputMaybe<TsWhereStringInput>;
-  microdeposit_type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionWechatPayDisplayQrCodeInput = {
-  data?: InputMaybe<TsWhereStringInput>;
-  image_data_url?: InputMaybe<TsWhereStringInput>;
-  image_url_png?: InputMaybe<TsWhereStringInput>;
-  image_url_svg?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionWechatPayRedirectToAndroidAppInput = {
-  app_id?: InputMaybe<TsWhereStringInput>;
-  nonce_str?: InputMaybe<TsWhereStringInput>;
-  package?: InputMaybe<TsWhereStringInput>;
-  partner_id?: InputMaybe<TsWhereStringInput>;
-  prepay_id?: InputMaybe<TsWhereStringInput>;
-  sign?: InputMaybe<TsWhereStringInput>;
-  timestamp?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentNextActionWechatPayRedirectToIosAppInput = {
-  native_url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentPaymentMethodOptionsInput = {
-  acss_debit?: InputMaybe<TsWhere4c5fc35133092d01c0a6f6273b32acefUnionInput>;
-  afterpay_clearpay?: InputMaybe<TsWhere69c699ae4c023cdd5081fd0b275d2314UnionInput>;
-  alipay?: InputMaybe<TsWhere0c15571704f92e4deef74bf2861e3048UnionInput>;
-  au_becs_debit?: InputMaybe<TsWhered0f94d051a53ade5163af84b3fd6b0f7UnionInput>;
-  bacs_debit?: InputMaybe<TsWhere55b3d4514248bce7ac082bbc0da1833aUnionInput>;
-  bancontact?: InputMaybe<TsWhereac15fe59c1b71bd6db2d201a4acee09dUnionInput>;
-  boleto?: InputMaybe<TsWhere076b30d85cca1aae72305dffd8194343UnionInput>;
-  card?: InputMaybe<TsWhere6181441ba9fb7eee556dd3a4a9d229e4UnionInput>;
-  card_present?: InputMaybe<TsWherea245e0776494a0d51fe046b0453d38afUnionInput>;
-  eps?: InputMaybe<TsWheref973d307d812f0dfb771bc8122e5c599UnionInput>;
-  fpx?: InputMaybe<TsWhereabae1b112405e8b3c0dbfa673a54aaadUnionInput>;
-  giropay?: InputMaybe<TsWhere8cc56b75820487c13c502fada2896d16UnionInput>;
-  grabpay?: InputMaybe<TsWhereeaab7727acdc782ba4b7fd55f1d34914UnionInput>;
-  ideal?: InputMaybe<TsWherebc8c021d852b37c55e33cd17b5bc5c8eUnionInput>;
-  interac_present?: InputMaybe<TsWhere0790e0b407fa40ec44faa0c0093547c0UnionInput>;
-  klarna?: InputMaybe<TsWhere431e685e94c88a23966c5e39578fd407UnionInput>;
-  konbini?: InputMaybe<TsWhere00ef7207d1f936d9dfffc7da2b87c7a0UnionInput>;
-  oxxo?: InputMaybe<TsWhere3ec3443ea1c1a903147c0d61800da976UnionInput>;
-  p24?: InputMaybe<TsWherea35be11d8b3a6f85cf29c066bd2baeecUnionInput>;
-  paynow?: InputMaybe<TsWhere3755b88328836d5c8b19acd047bf83f5UnionInput>;
-  sepa_debit?: InputMaybe<TsWhere1ef47aea767cbab0a37f27b4392256afUnionInput>;
-  sofort?: InputMaybe<TsWhere29eab390824f828a021e12d845868bf5UnionInput>;
-  us_bank_account?: InputMaybe<TsWheree8df26123b430c2df83da95f1b7d7d58UnionInput>;
-  wechat_pay?: InputMaybe<TsWheref3a2f1202624d0cdb50285826cb85a9eUnionInput>;
-};
-
-export type TsWhere4c5fc35133092d01c0a6f6273b32acefUnionInput = {
-  mandate_options?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodOptionsMandateOptionsAcssDebitInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentIntentPaymentMethodOptionsMandateOptionsAcssDebitInput = {
-  custom_mandate_url?: InputMaybe<TsWhereStringInput>;
-  interval_description?: InputMaybe<TsWhereStringInput>;
-  payment_schedule?: InputMaybe<TsWhereInput>;
-  transaction_type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere69c699ae4c023cdd5081fd0b275d2314UnionInput = {
-  capture_method?: InputMaybe<TsWhereInput>;
-  reference?: InputMaybe<TsWhereStringInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere0c15571704f92e4deef74bf2861e3048UnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhered0f94d051a53ade5163af84b3fd6b0f7UnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere55b3d4514248bce7ac082bbc0da1833aUnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereac15fe59c1b71bd6db2d201a4acee09dUnionInput = {
-  preferred_language?: InputMaybe<TsWhereInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere076b30d85cca1aae72305dffd8194343UnionInput = {
-  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere6181441ba9fb7eee556dd3a4a9d229e4UnionInput = {
-  capture_method?: InputMaybe<TsWhereInput>;
-  installments?: InputMaybe<TsWhereStripe_PaymentMethodOptionsCardInstallmentsInput>;
-  mandate_options?: InputMaybe<TsWhereStripe_PaymentMethodOptionsCardMandateOptionsInput>;
-  network?: InputMaybe<TsWhereInput>;
-  request_three_d_secure?: InputMaybe<TsWhereInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodOptionsCardInstallmentsInput = {
-  available_plans?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput>;
-  enabled?: InputMaybe<TsWhereBooleanInput>;
-  plan?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput>;
-};
-
-export type TsWhereStripe_PaymentMethodOptionsCardMandateOptionsInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  amount_type?: InputMaybe<TsWhereInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  end_date?: InputMaybe<TsWhereIntegerInput>;
-  interval?: InputMaybe<TsWhereInput>;
-  interval_count?: InputMaybe<TsWhereIntegerInput>;
-  reference?: InputMaybe<TsWhereStringInput>;
-  start_date?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWherea245e0776494a0d51fe046b0453d38afUnionInput = {
-  request_extended_authorization?: InputMaybe<TsWhereBooleanInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWheref973d307d812f0dfb771bc8122e5c599UnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereabae1b112405e8b3c0dbfa673a54aaadUnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere8cc56b75820487c13c502fada2896d16UnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereeaab7727acdc782ba4b7fd55f1d34914UnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWherebc8c021d852b37c55e33cd17b5bc5c8eUnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere0790e0b407fa40ec44faa0c0093547c0UnionInput = {
-  capture_method?: InputMaybe<TsWhereInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere431e685e94c88a23966c5e39578fd407UnionInput = {
-  capture_method?: InputMaybe<TsWhereInput>;
-  preferred_locale?: InputMaybe<TsWhereStringInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere00ef7207d1f936d9dfffc7da2b87c7a0UnionInput = {
-  confirmation_number?: InputMaybe<TsWhereStringInput>;
-  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
-  expires_at?: InputMaybe<TsWhereIntegerInput>;
-  product_description?: InputMaybe<TsWhereStringInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere3ec3443ea1c1a903147c0d61800da976UnionInput = {
-  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWherea35be11d8b3a6f85cf29c066bd2baeecUnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere3755b88328836d5c8b19acd047bf83f5UnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere1ef47aea767cbab0a37f27b4392256afUnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere29eab390824f828a021e12d845868bf5UnionInput = {
-  preferred_language?: InputMaybe<TsWhereInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWheree8df26123b430c2df83da95f1b7d7d58UnionInput = {
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWheref3a2f1202624d0cdb50285826cb85a9eUnionInput = {
-  app_id?: InputMaybe<TsWhereStringInput>;
-  client?: InputMaybe<TsWhereInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentIntentPaymentMethodTypesInput = {
-  /** Exact match */
-  eq?: InputMaybe<Scalars['String']>;
-  /** Array of possible exact match values. */
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Full text searching with fuzzy matching. */
-  match?: InputMaybe<Scalars['String']>;
-  /** Regular expression string matching. Use of * wildcards could degrade performance. */
-  regexp?: InputMaybe<Scalars['String']>;
-};
-
-export type TsWhereStripe_PaymentIntentProcessingInput = {
-  card?: InputMaybe<TsWhereStripe_PaymentIntentCardProcessingInput>;
-  type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentIntentCardProcessingInput = {
-  customer_notification?: InputMaybe<TsWhereStripe_PaymentIntentProcessingCustomerNotificationInput>;
-};
-
-export type TsWhereStripe_PaymentIntentProcessingCustomerNotificationInput = {
-  approval_requested?: InputMaybe<TsWhereBooleanInput>;
-  completes_at?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_TransferDataInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_PaymentMethodInput = {
-  acss_debit?: InputMaybe<TsWhereStripe_PaymentMethodAcssDebitInput>;
-  au_becs_debit?: InputMaybe<TsWhereStripe_PaymentMethodAuBecsDebitInput>;
-  bacs_debit?: InputMaybe<TsWhereStripe_PaymentMethodBacsDebitInput>;
-  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
-  boleto?: InputMaybe<TsWhereStripe_PaymentMethodBoletoInput>;
-  card?: InputMaybe<TsWhereStripe_PaymentMethodCardInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  eps?: InputMaybe<TsWhereStripe_PaymentMethodEpsInput>;
-  fpx?: InputMaybe<TsWhereStripe_PaymentMethodFpxInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  ideal?: InputMaybe<TsWhereStripe_PaymentMethodIdealInput>;
-  klarna?: InputMaybe<TsWhereStripe_PaymentMethodKlarnaInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  p24?: InputMaybe<TsWhereStripe_PaymentMethodP24Input>;
-  sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodSepaDebitInput>;
-  sofort?: InputMaybe<TsWhereStripe_PaymentMethodSofortInput>;
-  type?: InputMaybe<TsWhereInput>;
-  us_bank_account?: InputMaybe<TsWhereStripe_PaymentMethodUsBankAccountInput>;
-};
-
-export type TsWhereStripe_PaymentMethodAcssDebitInput = {
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  institution_number?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  transit_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodAuBecsDebitInput = {
-  bsb_number?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodBacsDebitInput = {
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  sort_code?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodBoletoInput = {
-  tax_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardInput = {
-  brand?: InputMaybe<TsWhereStringInput>;
-  checks?: InputMaybe<TsWhereStripe_PaymentMethodCardChecksInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  generated_from?: InputMaybe<TsWhereStripe_PaymentMethodCardGeneratedCardInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  networks?: InputMaybe<TsWhereStripe_NetworksInput>;
-  three_d_secure_usage?: InputMaybe<TsWhereStripe_ThreeDSecureUsageInput>;
-  wallet?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardChecksInput = {
-  address_line1_check?: InputMaybe<TsWhereStringInput>;
-  address_postal_code_check?: InputMaybe<TsWhereStringInput>;
-  cvc_check?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardGeneratedCardInput = {
-  charge?: InputMaybe<TsWhereStringInput>;
-  payment_method_details?: InputMaybe<TsWhereStripe_CardGeneratedFromPaymentMethodDetailsInput>;
-};
-
-export type TsWhereStripe_CardGeneratedFromPaymentMethodDetailsInput = {
-  card_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_NetworksInput = {
-  available?: InputMaybe<TsWhereStripe_PaymentIntentAvailableInput>;
-  preferred?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentAvailableInput = {
-  /** Exact match */
-  eq?: InputMaybe<Scalars['String']>;
-  /** Array of possible exact match values. */
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Full text searching with fuzzy matching. */
-  match?: InputMaybe<Scalars['String']>;
-  /** Regular expression string matching. Use of * wildcards could degrade performance. */
-  regexp?: InputMaybe<Scalars['String']>;
-};
-
-export type TsWhereStripe_ThreeDSecureUsageInput = {
-  supported?: InputMaybe<TsWhereBooleanInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardWalletInput = {
-  dynamic_last4?: InputMaybe<TsWhereStringInput>;
-  masterpass?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletMasterpassInput>;
-  type?: InputMaybe<TsWhereInput>;
-  visa_checkout?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletVisaCheckoutInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardWalletMasterpassInput = {
-  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardWalletVisaCheckoutInput = {
-  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
-};
-
-export type TsWhereStripe_PaymentMethodEpsInput = {
-  bank?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodFpxInput = {
-  bank?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodIdealInput = {
-  bank?: InputMaybe<TsWhereInput>;
-  bic?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodKlarnaInput = {
-  dob?: InputMaybe<TsWhereStripe_PaymentFlowsPrivatePaymentMethodsKlarnaDobInput>;
-};
-
-export type TsWhereStripe_PaymentFlowsPrivatePaymentMethodsKlarnaDobInput = {
-  day?: InputMaybe<TsWhereIntegerInput>;
-  month?: InputMaybe<TsWhereIntegerInput>;
-  year?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_PaymentMethodP24Input = {
-  bank?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodSepaDebitInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  branch_code?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodSofortInput = {
-  country?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodUsBankAccountInput = {
-  account_holder_type?: InputMaybe<TsWhereInput>;
-  account_type?: InputMaybe<TsWhereInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SetupIntentInput = {
-  cancellation_reason?: InputMaybe<TsWhereInput>;
-  client_secret?: InputMaybe<TsWhereStringInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  last_setup_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  next_action?: InputMaybe<TsWhereStripe_SetupIntentNextActionInput>;
-  object?: InputMaybe<TsWhereInput>;
-  payment_method_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsInput>;
-  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
-  status?: InputMaybe<TsWhereInput>;
-  usage?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SetupIntentNextActionInput = {
-  redirect_to_url?: InputMaybe<TsWhereStripe_SetupIntentNextActionRedirectToUrlInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-  verify_with_microdeposits?: InputMaybe<TsWhereStripe_SetupIntentNextActionVerifyWithMicrodepositsInput>;
-};
-
-export type TsWhereStripe_SetupIntentNextActionRedirectToUrlInput = {
-  return_url?: InputMaybe<TsWhereStringInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SetupIntentNextActionVerifyWithMicrodepositsInput = {
-  arrival_date?: InputMaybe<TsWhereIntegerInput>;
-  hosted_verification_url?: InputMaybe<TsWhereStringInput>;
-  microdeposit_type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_SetupIntentPaymentMethodOptionsInput = {
-  acss_debit?: InputMaybe<TsWhere6c955fa05d8df9184cc18d8841c3705dUnionInput>;
-  card?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsCardInput>;
-  sepa_debit?: InputMaybe<TsWhere256af04705b008a07ca5c137b490ba88UnionInput>;
-  us_bank_account?: InputMaybe<TsWhere5e84458a02fb07e8c3d5d9b0bb3e5d99UnionInput>;
-};
-
-export type TsWhere6c955fa05d8df9184cc18d8841c3705dUnionInput = {
-  currency?: InputMaybe<TsWhereInput>;
-  mandate_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsMandateOptionsAcssDebitInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_SetupIntentPaymentMethodOptionsMandateOptionsAcssDebitInput = {
-  custom_mandate_url?: InputMaybe<TsWhereStringInput>;
-  interval_description?: InputMaybe<TsWhereStringInput>;
-  payment_schedule?: InputMaybe<TsWhereInput>;
-  transaction_type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_SetupIntentPaymentMethodOptionsCardInput = {
-  mandate_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsCardMandateOptionsInput>;
-  request_three_d_secure?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_SetupIntentPaymentMethodOptionsCardMandateOptionsInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  amount_type?: InputMaybe<TsWhereInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  end_date?: InputMaybe<TsWhereIntegerInput>;
-  interval?: InputMaybe<TsWhereInput>;
-  interval_count?: InputMaybe<TsWhereIntegerInput>;
-  reference?: InputMaybe<TsWhereStringInput>;
-  start_date?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhere256af04705b008a07ca5c137b490ba88UnionInput = {
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere5e84458a02fb07e8c3d5d9b0bb3e5d99UnionInput = {
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_BankAccountStripe_CardStripe_SourceUnionInput = {
-  account_holder_name?: InputMaybe<TsWhereStringInput>;
-  account_holder_type?: InputMaybe<TsWhereStringInput>;
-  account_type?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  default_for_currency?: InputMaybe<TsWhereBooleanInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  object?: InputMaybe<TsWhereInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-  status?: InputMaybe<TsWhereStringInput>;
-  address_city?: InputMaybe<TsWhereStringInput>;
-  address_country?: InputMaybe<TsWhereStringInput>;
-  address_line1?: InputMaybe<TsWhereStringInput>;
-  address_line1_check?: InputMaybe<TsWhereStringInput>;
-  address_line2?: InputMaybe<TsWhereStringInput>;
-  address_state?: InputMaybe<TsWhereStringInput>;
-  address_zip?: InputMaybe<TsWhereStringInput>;
-  address_zip_check?: InputMaybe<TsWhereStringInput>;
-  brand?: InputMaybe<TsWhereStringInput>;
-  cvc_check?: InputMaybe<TsWhereStringInput>;
-  dynamic_last4?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  tokenization_method?: InputMaybe<TsWhereStringInput>;
-  ach_credit_transfer?: InputMaybe<TsWhereStripe_SourceTypeAchCreditTransferInput>;
-  ach_debit?: InputMaybe<TsWhereStripe_SourceTypeAchDebitInput>;
-  acss_debit?: InputMaybe<TsWhereStripe_SourceTypeAcssDebitInput>;
-  alipay?: InputMaybe<TsWhereStripe_SourceTypeAlipayInput>;
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  au_becs_debit?: InputMaybe<TsWhereStripe_SourceTypeAuBecsDebitInput>;
-  bancontact?: InputMaybe<TsWhereStripe_SourceTypeBancontactInput>;
-  card?: InputMaybe<TsWhereStripe_SourceTypeCardInput>;
-  card_present?: InputMaybe<TsWhereStripe_SourceTypeCardPresentInput>;
-  client_secret?: InputMaybe<TsWhereStringInput>;
-  code_verification?: InputMaybe<TsWhereStripe_SourceCodeVerificationFlowInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  eps?: InputMaybe<TsWhereStripe_SourceTypeEpsInput>;
-  flow?: InputMaybe<TsWhereStringInput>;
-  giropay?: InputMaybe<TsWhereStripe_SourceTypeGiropayInput>;
-  ideal?: InputMaybe<TsWhereStripe_SourceTypeIdealInput>;
-  klarna?: InputMaybe<TsWhereStripe_SourceTypeKlarnaInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  multibanco?: InputMaybe<TsWhereStripe_SourceTypeMultibancoInput>;
-  owner?: InputMaybe<TsWhereStripe_SourceOwnerInput>;
-  p24?: InputMaybe<TsWhereStripe_SourceTypeP24Input>;
-  receiver?: InputMaybe<TsWhereStripe_SourceReceiverFlowInput>;
-  redirect?: InputMaybe<TsWhereStripe_SourceRedirectFlowInput>;
-  sepa_debit?: InputMaybe<TsWhereStripe_SourceTypeSepaDebitInput>;
-  sofort?: InputMaybe<TsWhereStripe_SourceTypeSofortInput>;
-  source_order?: InputMaybe<TsWhereStripe_SourceOrderInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-  three_d_secure?: InputMaybe<TsWhereStripe_SourceTypeThreeDSecureInput>;
-  type?: InputMaybe<TsWhereInput>;
-  usage?: InputMaybe<TsWhereStringInput>;
-  wechat?: InputMaybe<TsWhereStripe_SourceTypeWechatInput>;
-};
-
-export type TsWhereStripe_SourceTypeAchCreditTransferInput = {
-  account_number?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  refund_account_holder_name?: InputMaybe<TsWhereStringInput>;
-  refund_account_holder_type?: InputMaybe<TsWhereStringInput>;
-  refund_routing_number?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-  swift_code?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeAchDebitInput = {
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeAcssDebitInput = {
-  bank_address_city?: InputMaybe<TsWhereStringInput>;
-  bank_address_line_1?: InputMaybe<TsWhereStringInput>;
-  bank_address_line_2?: InputMaybe<TsWhereStringInput>;
-  bank_address_postal_code?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  category?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeAlipayInput = {
-  data_string?: InputMaybe<TsWhereStringInput>;
-  native_url?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeAuBecsDebitInput = {
-  bsb_number?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeBancontactInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  bic?: InputMaybe<TsWhereStringInput>;
-  iban_last4?: InputMaybe<TsWhereStringInput>;
-  preferred_language?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeCardInput = {
-  address_line1_check?: InputMaybe<TsWhereStringInput>;
-  address_zip_check?: InputMaybe<TsWhereStringInput>;
-  brand?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  cvc_check?: InputMaybe<TsWhereStringInput>;
-  dynamic_last4?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  three_d_secure?: InputMaybe<TsWhereStringInput>;
-  tokenization_method?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeCardPresentInput = {
-  application_cryptogram?: InputMaybe<TsWhereStringInput>;
-  application_preferred_name?: InputMaybe<TsWhereStringInput>;
-  authorization_code?: InputMaybe<TsWhereStringInput>;
-  authorization_response_code?: InputMaybe<TsWhereStringInput>;
-  brand?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  cvm_type?: InputMaybe<TsWhereStringInput>;
-  data_type?: InputMaybe<TsWhereStringInput>;
-  dedicated_file_name?: InputMaybe<TsWhereStringInput>;
-  emv_auth_data?: InputMaybe<TsWhereStringInput>;
-  evidence_customer_signature?: InputMaybe<TsWhereStringInput>;
-  evidence_transaction_certificate?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  pos_device_id?: InputMaybe<TsWhereStringInput>;
-  pos_entry_mode?: InputMaybe<TsWhereStringInput>;
-  read_method?: InputMaybe<TsWhereStringInput>;
-  reader?: InputMaybe<TsWhereStringInput>;
-  terminal_verification_results?: InputMaybe<TsWhereStringInput>;
-  transaction_status_information?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceCodeVerificationFlowInput = {
-  attempts_remaining?: InputMaybe<TsWhereIntegerInput>;
-  status?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeEpsInput = {
-  reference?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeGiropayInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  bic?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeIdealInput = {
-  bank?: InputMaybe<TsWhereStringInput>;
-  bic?: InputMaybe<TsWhereStringInput>;
-  iban_last4?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeKlarnaInput = {
-  background_image_url?: InputMaybe<TsWhereStringInput>;
-  client_token?: InputMaybe<TsWhereStringInput>;
-  first_name?: InputMaybe<TsWhereStringInput>;
-  last_name?: InputMaybe<TsWhereStringInput>;
-  locale?: InputMaybe<TsWhereStringInput>;
-  logo_url?: InputMaybe<TsWhereStringInput>;
-  page_title?: InputMaybe<TsWhereStringInput>;
-  pay_later_asset_urls_descriptive?: InputMaybe<TsWhereStringInput>;
-  pay_later_asset_urls_standard?: InputMaybe<TsWhereStringInput>;
-  pay_later_name?: InputMaybe<TsWhereStringInput>;
-  pay_later_redirect_url?: InputMaybe<TsWhereStringInput>;
-  pay_now_asset_urls_descriptive?: InputMaybe<TsWhereStringInput>;
-  pay_now_asset_urls_standard?: InputMaybe<TsWhereStringInput>;
-  pay_now_name?: InputMaybe<TsWhereStringInput>;
-  pay_now_redirect_url?: InputMaybe<TsWhereStringInput>;
-  pay_over_time_asset_urls_descriptive?: InputMaybe<TsWhereStringInput>;
-  pay_over_time_asset_urls_standard?: InputMaybe<TsWhereStringInput>;
-  pay_over_time_name?: InputMaybe<TsWhereStringInput>;
-  pay_over_time_redirect_url?: InputMaybe<TsWhereStringInput>;
-  payment_method_categories?: InputMaybe<TsWhereStringInput>;
-  purchase_country?: InputMaybe<TsWhereStringInput>;
-  purchase_type?: InputMaybe<TsWhereStringInput>;
-  redirect_url?: InputMaybe<TsWhereStringInput>;
-  shipping_delay?: InputMaybe<TsWhereIntegerInput>;
-  shipping_first_name?: InputMaybe<TsWhereStringInput>;
-  shipping_last_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeMultibancoInput = {
-  entity?: InputMaybe<TsWhereStringInput>;
-  reference?: InputMaybe<TsWhereStringInput>;
-  refund_account_holder_address_city?: InputMaybe<TsWhereStringInput>;
-  refund_account_holder_address_country?: InputMaybe<TsWhereStringInput>;
-  refund_account_holder_address_line1?: InputMaybe<TsWhereStringInput>;
-  refund_account_holder_address_line2?: InputMaybe<TsWhereStringInput>;
-  refund_account_holder_address_postal_code?: InputMaybe<TsWhereStringInput>;
-  refund_account_holder_address_state?: InputMaybe<TsWhereStringInput>;
-  refund_account_holder_name?: InputMaybe<TsWhereStringInput>;
-  refund_iban?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceOwnerInput = {
-  address?: InputMaybe<TsWhereStripe_AddressInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  phone?: InputMaybe<TsWhereStringInput>;
-  verified_address?: InputMaybe<TsWhereStripe_AddressInput>;
-  verified_email?: InputMaybe<TsWhereStringInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-  verified_phone?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeP24Input = {
-  reference?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceReceiverFlowInput = {
-  address?: InputMaybe<TsWhereStringInput>;
-  amount_charged?: InputMaybe<TsWhereIntegerInput>;
-  amount_received?: InputMaybe<TsWhereIntegerInput>;
-  amount_returned?: InputMaybe<TsWhereIntegerInput>;
-  refund_attributes_method?: InputMaybe<TsWhereStringInput>;
-  refund_attributes_status?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceRedirectFlowInput = {
-  failure_reason?: InputMaybe<TsWhereStringInput>;
-  return_url?: InputMaybe<TsWhereStringInput>;
-  status?: InputMaybe<TsWhereStringInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeSepaDebitInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  branch_code?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  mandate_reference?: InputMaybe<TsWhereStringInput>;
-  mandate_url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeSofortInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  bic?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  iban_last4?: InputMaybe<TsWhereStringInput>;
-  preferred_language?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceOrderInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  items?: InputMaybe<TsWhereStripe_SourceOrderItemInput>;
-  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
-};
-
-export type TsWhereStripe_SourceOrderItemInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  parent?: InputMaybe<TsWhereStringInput>;
-  quantity?: InputMaybe<TsWhereIntegerInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeThreeDSecureInput = {
-  address_line1_check?: InputMaybe<TsWhereStringInput>;
-  address_zip_check?: InputMaybe<TsWhereStringInput>;
-  authenticated?: InputMaybe<TsWhereBooleanInput>;
-  brand?: InputMaybe<TsWhereStringInput>;
-  card?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  cvc_check?: InputMaybe<TsWhereStringInput>;
-  dynamic_last4?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  three_d_secure?: InputMaybe<TsWhereStringInput>;
-  tokenization_method?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SourceTypeWechatInput = {
-  prepay_id?: InputMaybe<TsWhereStringInput>;
-  qr_code_url?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-};
-
 export type TsWhereStripe_PackageDimensionsInput = {
   height?: InputMaybe<TsWhereNumberInput>;
   length?: InputMaybe<TsWhereNumberInput>;
   weight?: InputMaybe<TsWhereNumberInput>;
   width?: InputMaybe<TsWhereNumberInput>;
+};
+
+export type TsWhereStripe_TaxCodeWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PriceInput = {
+  active?: InputMaybe<TsWhereBooleanInput>;
+  billing_scheme?: InputMaybe<TsWhereInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  lookup_key?: InputMaybe<TsWhereStringInput>;
+  nickname?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  product?: InputMaybe<TsWhereStripe_ProductInput>;
+  recurring?: InputMaybe<TsWhereStripe_RecurringInput>;
+  tax_behavior?: InputMaybe<TsWhereInput>;
+  tiers?: InputMaybe<TsWhereStripe_PriceTierInput>;
+  tiers_mode?: InputMaybe<TsWhereInput>;
+  transform_quantity?: InputMaybe<TsWhereStripe_TransformQuantityInput>;
+  type?: InputMaybe<TsWhereInput>;
+  unit_amount?: InputMaybe<TsWhereIntegerInput>;
+  unit_amount_decimal?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ProductInput = {
+  active?: InputMaybe<TsWhereBooleanInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  images?: InputMaybe<TsWhereStripe_ProductImagesInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  package_dimensions?: InputMaybe<TsWhereStripe_PackageDimensionsInput>;
+  shippable?: InputMaybe<TsWhereBooleanInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  tax_code?: InputMaybe<TsWhereStripe_TaxCodeWrappedStringUnionInput>;
+  unit_label?: InputMaybe<TsWhereStringInput>;
+  updated?: InputMaybe<TsWhereIntegerInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+  prices?: InputMaybe<TsWhereStripe_PriceInput>;
+  reviews?: InputMaybe<TsWhereReviewsIo_ListProductReviewsResponseInput>;
+  _shapeId?: InputMaybe<TsWhereIdInput>;
+  _id?: InputMaybe<TsWhereIdInput>;
+};
+
+export type TsWhereReviewsIo_ListProductReviewsResponseInput = {
+  write_review_link?: InputMaybe<TsWhereStringInput>;
+  word?: InputMaybe<TsWhereStringInput>;
+  stats?: InputMaybe<TsWhereStripe_ProductStatsInput>;
+  store?: InputMaybe<TsWhereStripe_ProductStoreInput>;
+  reviews?: InputMaybe<TsWhereStripe_ProductReviewsInput>;
+  products?: InputMaybe<TsWhereStripe_ProductProductsInput>;
+};
+
+export type TsWhereStripe_ProductStatsInput = {
+  average?: InputMaybe<TsWhereNumberInput>;
+  count?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_ProductStoreInput = {
+  name?: InputMaybe<TsWhereStringInput>;
+  logo?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ProductReviewsInput = {
+  total?: InputMaybe<TsWhereIntegerInput>;
+  per_page?: InputMaybe<TsWhereIntegerInput>;
+  current_page?: InputMaybe<TsWhereIntegerInput>;
+  last_page?: InputMaybe<TsWhereIntegerInput>;
+  from?: InputMaybe<TsWhereIntegerInput>;
+  to?: InputMaybe<TsWhereIntegerInput>;
+  data?: InputMaybe<TsWhereReviewsIo_ProductReviewInput>;
+};
+
+export type TsWhereReviewsIo_ProductReviewInput = {
+  product_review_id?: InputMaybe<TsWhereIntegerInput>;
+  product_make?: InputMaybe<TsWhereStringInput>;
+  order_id?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  sku?: InputMaybe<TsWhereStringInput>;
+  review?: InputMaybe<TsWhereStringInput>;
+  title?: InputMaybe<TsWhereStringInput>;
+  rating?: InputMaybe<TsWhereIntegerInput>;
+  date_created?: InputMaybe<TsWhereStringInput>;
+  votes?: InputMaybe<TsWhereStringInput>;
+  flags?: InputMaybe<TsWhereStringInput>;
+  timeago?: InputMaybe<TsWhereStringInput>;
+  date_formatted?: InputMaybe<TsWhereStringInput>;
+  product?: InputMaybe<TsWhereReviewsIo_ProductInput>;
+  reviewer?: InputMaybe<TsWhereReviewsIo_ReviewerInput>;
+  images?: InputMaybe<TsWhereStripe_ProductImagesInput>;
+  tags?: InputMaybe<TsWhereStripe_ProductTagsInput>;
+  author?: InputMaybe<TsWhereStripe_ProductAuthorInput>;
+};
+
+export type TsWhereReviewsIo_ProductInput = {
+  sku?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  image_url?: InputMaybe<TsWhereStringInput>;
+  mpn?: InputMaybe<TsWhereStringInput>;
+  gtin?: InputMaybe<TsWhereStringInput>;
+  brand?: InputMaybe<TsWhereStringInput>;
+  category?: InputMaybe<TsWhereStringInput>;
+  custom?: InputMaybe<TsWhereStringInput>;
+  pageUrl?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereReviewsIo_ReviewerInput = {
+  user_id?: InputMaybe<TsWhereIntegerInput>;
+  first_name?: InputMaybe<TsWhereStringInput>;
+  last_name?: InputMaybe<TsWhereStringInput>;
+  verified_buyer?: InputMaybe<TsWhereInput>;
+  address?: InputMaybe<TsWhereStringInput>;
+  profile_picture?: InputMaybe<TsWhereStringInput>;
+  gravatar?: InputMaybe<TsWhereStringInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name_formatted?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ProductTagsInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_ProductAuthorInput = {
+  email?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ProductProductsInput = {
+  sku?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_RecurringInput = {
+  aggregate_usage?: InputMaybe<TsWhereInput>;
+  interval?: InputMaybe<TsWhereInput>;
+  interval_count?: InputMaybe<TsWhereIntegerInput>;
+  usage_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PriceTierInput = {
+  flat_amount?: InputMaybe<TsWhereIntegerInput>;
+  flat_amount_decimal?: InputMaybe<TsWhereStringInput>;
+  unit_amount?: InputMaybe<TsWhereIntegerInput>;
+  unit_amount_decimal?: InputMaybe<TsWhereStringInput>;
+  up_to?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_TransformQuantityInput = {
+  divide_by?: InputMaybe<TsWhereIntegerInput>;
+  round?: InputMaybe<TsWhereInput>;
 };
 
 export type TsWhereAssetRelationshipInput = {
@@ -2567,253 +1251,200 @@ export type TsWhereAssetRelationshipInput = {
   s3Key?: InputMaybe<TsWhereStringInput>;
 };
 
-export type Stripe_PaymentIntentPaginatedList = {
-  __typename?: 'Stripe_PaymentIntentPaginatedList';
-  items: Array<Stripe_PaymentIntent>;
-  total: Scalars['Int'];
-};
-
-export type Stripe_PaymentIntent = TsSearchable & {
-  __typename?: 'Stripe_PaymentIntent';
-  /** Amount intended to be collected by this PaymentIntent. A positive integer representing how much to charge in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal) (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency). The minimum amount is $0.50 US or [equivalent in charge currency](https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts). The amount value supports up to eight digits (e.g., a value of 99999999 for a USD charge of $999,999.99). */
-  amount?: Maybe<Scalars['Int']>;
-  /** Amount that can be captured from this PaymentIntent. */
-  amount_capturable?: Maybe<Scalars['Int']>;
-  /** Amount that was collected by this PaymentIntent. */
-  amount_received?: Maybe<Scalars['Int']>;
-  application?: Maybe<Stripe_PaymentIntentApplicationProperty>;
-  /** The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total payment amount. For more information, see the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts). */
-  application_fee_amount?: Maybe<Scalars['Int']>;
-  automatic_payment_methods?: Maybe<Stripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntent>;
-  /** Populated when `status` is `canceled`, this is the time at which the PaymentIntent was canceled. Measured in seconds since the Unix epoch. */
-  canceled_at?: Maybe<Scalars['Int']>;
-  /** Reason for cancellation of this PaymentIntent, either user-provided (`duplicate`, `fraudulent`, `requested_by_customer`, or `abandoned`) or generated by Stripe internally (`failed_invoice`, `void_invoice`, or `automatic`). */
-  cancellation_reason?: Maybe<Stripe_PaymentIntentCancellationReasonProperty>;
-  /** Controls when the funds will be captured from the customer's account. */
-  capture_method?: Maybe<Stripe_PaymentIntentCaptureMethodProperty>;
-  /** Charges that were created by this PaymentIntent, if any. */
-  charges?: Maybe<Stripe_PaymentIntentChargesProperty>;
-  /**
-   * The client secret of this PaymentIntent. Used for client-side retrieval using a publishable key.
-   *
-   * The client secret can be used to complete a payment from your frontend. It should not be stored, logged, embedded in URLs, or exposed to anyone other than the customer. Make sure that you have TLS enabled on any page that includes the client secret.
-   *
-   * Refer to our docs to [accept a payment](https://stripe.com/docs/payments/accept-a-payment?integration=elements) and learn about how `client_secret` should be handled.
-   */
-  client_secret?: Maybe<Scalars['String']>;
-  confirmation_method?: Maybe<Stripe_PaymentIntentConfirmationMethodProperty>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
-  currency?: Maybe<Scalars['String']>;
-  customer?: Maybe<Scalars['String']>;
-  /** An arbitrary string attached to the object. Often useful for displaying to users. */
-  description?: Maybe<Scalars['String']>;
-  /** Unique identifier for the object. */
+export type Profile = TsSearchable & {
+  __typename?: 'Profile';
   id?: Maybe<Scalars['String']>;
-  invoice?: Maybe<Stripe_PaymentIntentInvoiceProperty>;
-  last_payment_error?: Maybe<Stripe_ApiErrors>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. For more information, see the [documentation](https://stripe.com/docs/payments/payment-intents/creating-payment-intents#storing-information-in-metadata). */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  next_action?: Maybe<Stripe_PaymentIntentNextAction>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_PaymentIntentObjectProperty>;
-  on_behalf_of?: Maybe<Stripe_PaymentIntentOnBehalfOfProperty>;
-  payment_method?: Maybe<Stripe_PaymentIntentPaymentMethodProperty>;
-  payment_method_options?: Maybe<Stripe_PaymentIntentPaymentMethodOptions>;
-  /** The list of payment method types (e.g. card) that this PaymentIntent is allowed to use. */
-  payment_method_types?: Maybe<Array<Maybe<Scalars['String']>>>;
-  processing?: Maybe<Stripe_PaymentIntentProcessing>;
-  /** Email address that the receipt for the resulting payment will be sent to. If `receipt_email` is specified for a payment in live mode, a receipt will be sent regardless of your [email settings](https://dashboard.stripe.com/account/emails). */
-  receipt_email?: Maybe<Scalars['String']>;
-  review?: Maybe<Stripe_PaymentIntentReviewProperty>;
-  /**
-   * Indicates that you intend to make future payments with this PaymentIntent's payment method.
-   *
-   * Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
-   *
-   * When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
-   */
-  setup_future_usage?: Maybe<Stripe_PaymentIntentSetupFutureUsageProperty>;
-  shipping?: Maybe<Stripe_Shipping>;
-  /** For non-card charges, you can use this value as the complete description that appears on your customers’ statements. Must contain at least one letter, maximum 22 characters. */
-  statement_descriptor?: Maybe<Scalars['String']>;
-  /** Provides information about a card payment that customers see on their statements. Concatenated with the prefix (shortened descriptor) or statement descriptor that’s set on the account to form the complete statement descriptor. Maximum 22 characters for the concatenated descriptor. */
-  statement_descriptor_suffix?: Maybe<Scalars['String']>;
-  /** Status of this PaymentIntent, one of `requires_payment_method`, `requires_confirmation`, `requires_action`, `processing`, `requires_capture`, `canceled`, or `succeeded`. Read more about each PaymentIntent [status](https://stripe.com/docs/payments/intents#intent-statuses). */
-  status?: Maybe<Stripe_PaymentIntentStatusProperty>;
-  transfer_data?: Maybe<Stripe_TransferData>;
-  /** A string that identifies the resulting payment as part of a group. See the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts) for details. */
-  transfer_group?: Maybe<Scalars['String']>;
-  /** The Stripe checkout session associated with this payment. */
-  session?: Maybe<Stripe_CheckoutSession>;
-  /** The ShipEngine label associated with this payment. */
-  shipment?: Maybe<ShipEngine_Label>;
+  name?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  bio?: Maybe<Scalars['String']>;
+  avatar?: Maybe<Asset>;
+  stripeCustomerId?: Maybe<Scalars['String']>;
+  stripeCustomer?: Maybe<Stripe_Customer>;
+  loyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
+  orders?: Maybe<Array<Maybe<Stripe_Invoice>>>;
+  newsletters?: Maybe<Array<Maybe<ProfileNewsletterStatus>>>;
   _shapeId?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['ID']>;
+  _version?: Maybe<Scalars['Int']>;
+  _shapeName?: Maybe<Scalars['String']>;
+  _createdAt?: Maybe<Scalars['String']>;
+  _createdBy?: Maybe<TsUser>;
+  _updatedAt?: Maybe<Scalars['String']>;
+  _updatedBy?: Maybe<TsUser>;
+  _schemaVersion?: Maybe<Scalars['Float']>;
+  /** @deprecated Use _status instead */
+  _enabled?: Maybe<Scalars['Boolean']>;
+  /** @deprecated Use a custom date field instead */
+  _enabledAt?: Maybe<Scalars['String']>;
+  _status?: Maybe<DefaultWorkflow>;
+  _contentTypeId?: Maybe<Scalars['String']>;
+  _contentTypeName?: Maybe<Scalars['String']>;
   searchSummary?: Maybe<Scalars['String']>;
 };
 
-export type Stripe_PaymentIntentApplicationProperty = WrappedString | Stripe_Application;
 
-export type Stripe_Application = {
-  __typename?: 'Stripe_Application';
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** The name of the application. */
-  name?: Maybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_ApplicationObjectProperty>;
+export type ProfileAvatarArgs = {
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
 };
 
-export enum Stripe_ApplicationObjectProperty {
-  Application = 'application'
-}
-
-export type Stripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntent = {
-  __typename?: 'Stripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntent';
-  /** Automatically calculates compatible payment methods */
-  enabled?: Maybe<Scalars['Boolean']>;
-};
-
-export enum Stripe_PaymentIntentCancellationReasonProperty {
-  Abandoned = 'abandoned',
-  Automatic = 'automatic',
-  Duplicate = 'duplicate',
-  FailedInvoice = 'failed_invoice',
-  Fraudulent = 'fraudulent',
-  RequestedByCustomer = 'requested_by_customer',
-  VoidInvoice = 'void_invoice'
-}
-
-export enum Stripe_PaymentIntentCaptureMethodProperty {
-  Automatic = 'automatic',
-  Manual = 'manual'
-}
-
-/** Charges that were created by this PaymentIntent, if any. */
-export type Stripe_PaymentIntentChargesProperty = {
-  __typename?: 'Stripe_PaymentIntentChargesProperty';
-  /** This list only contains the latest charge, even if there were previously multiple unsuccessful charges. To view all previous charges for a PaymentIntent, you can filter the charges list using the `payment_intent` [parameter](https://stripe.com/docs/api/charges/list#list_charges-payment_intent). */
-  data: Array<Stripe_Charge>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_PaymentIntentChargesObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export type Stripe_Charge = {
-  __typename?: 'Stripe_Charge';
-  /** Amount intended to be collected by this payment. A positive integer representing how much to charge in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal) (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency). The minimum amount is $0.50 US or [equivalent in charge currency](https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts). The amount value supports up to eight digits (e.g., a value of 99999999 for a USD charge of $999,999.99). */
-  amount?: Maybe<Scalars['Int']>;
-  /** Amount in %s captured (can be less than the amount attribute on the charge if a partial capture was made). */
-  amount_captured?: Maybe<Scalars['Int']>;
-  /** Amount in %s refunded (can be less than the amount attribute on the charge if a partial refund was issued). */
-  amount_refunded?: Maybe<Scalars['Int']>;
-  application?: Maybe<Stripe_ChargeApplicationProperty>;
-  application_fee?: Maybe<Stripe_ChargeApplicationFeeProperty>;
-  /** The amount of the application fee (if any) requested for the charge. [See the Connect documentation](https://stripe.com/docs/connect/direct-charges#collecting-fees) for details. */
-  application_fee_amount?: Maybe<Scalars['Int']>;
-  balance_transaction?: Maybe<Stripe_ChargeBalanceTransactionProperty>;
-  billing_details?: Maybe<Stripe_BillingDetails>;
-  /** The full statement descriptor that is passed to card networks, and that is displayed on your customers' credit card and bank statements. Allows you to see what the statement descriptor looks like after the static and dynamic portions are combined. */
-  calculated_statement_descriptor?: Maybe<Scalars['String']>;
-  /** If the charge was created without capturing, this Boolean represents whether it is still uncaptured or has since been captured. */
-  captured?: Maybe<Scalars['Boolean']>;
+export type Stripe_Customer = {
+  __typename?: 'Stripe_Customer';
+  address?: Maybe<Stripe_Address>;
+  /** Current balance, if any, being stored on the customer. If negative, the customer has credit to apply to their next invoice. If positive, the customer has an amount owed that will be added to their next invoice. The balance does not refer to any unpaid invoices; it solely takes into account amounts that have yet to be successfully applied to any invoice. This balance is only taken into account as invoices are finalized. */
+  balance?: Maybe<Scalars['Int']>;
   /** Time at which the object was created. Measured in seconds since the Unix epoch. */
   created?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
+  /** Three-letter [ISO code for the currency](https://stripe.com/docs/currencies) the customer can be charged in for recurring billing purposes. */
   currency?: Maybe<Scalars['String']>;
-  customer?: Maybe<Scalars['String']>;
+  default_source?: Maybe<Stripe_CustomerDefaultSourceProperty>;
+  /**
+   * When the customer's latest invoice is billed by charging automatically, `delinquent` is `true` if the invoice's latest charge failed. When the customer's latest invoice is billed by sending an invoice, `delinquent` is `true` if the invoice isn't paid by its due date.
+   *
+   * If an invoice is marked uncollectible by [dunning](https://stripe.com/docs/billing/automatic-collection), `delinquent` doesn't get reset to `false`.
+   */
+  delinquent?: Maybe<Scalars['Boolean']>;
   /** An arbitrary string attached to the object. Often useful for displaying to users. */
   description?: Maybe<Scalars['String']>;
-  /** Whether the charge has been disputed. */
-  disputed?: Maybe<Scalars['Boolean']>;
-  failure_balance_transaction?: Maybe<Stripe_ChargeFailureBalanceTransactionProperty>;
-  /** Error code explaining reason for charge failure if available (see [the errors section](https://stripe.com/docs/api#errors) for a list of codes). */
-  failure_code?: Maybe<Scalars['String']>;
-  /** Message to user further explaining reason for charge failure if available. */
-  failure_message?: Maybe<Scalars['String']>;
-  fraud_details?: Maybe<Stripe_ChargeFraudDetails>;
+  discount?: Maybe<Stripe_Discount>;
+  /** The customer's email address. */
+  email?: Maybe<Scalars['String']>;
   /** Unique identifier for the object. */
   id?: Maybe<Scalars['String']>;
-  invoice?: Maybe<Stripe_ChargeInvoiceProperty>;
+  /** The prefix for the customer used to generate unique invoice numbers. */
+  invoice_prefix?: Maybe<Scalars['String']>;
+  invoice_settings?: Maybe<Stripe_InvoiceSettingCustomerSetting>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  /** The customer's full name or business name. */
+  name?: Maybe<Scalars['String']>;
+  /** The suffix of the customer's next invoice number, e.g., 0001. */
+  next_invoice_sequence?: Maybe<Scalars['Int']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_CustomerObjectProperty>;
+  /** The customer's phone number. */
+  phone?: Maybe<Scalars['String']>;
+  /** The customer's preferred locales (languages), ordered by preference. */
+  preferred_locales?: Maybe<Array<Maybe<Scalars['String']>>>;
+  shipping?: Maybe<Stripe_Shipping>;
+  /** The customer's payment sources, if any. */
+  sources?: Maybe<Stripe_CustomerSourcesProperty>;
+  /** The customer's current subscriptions, if any. */
+  subscriptions?: Maybe<Stripe_CustomerSubscriptionsProperty>;
+  tax?: Maybe<Stripe_CustomerTax>;
+  /** Describes the customer's tax exemption status. One of `none`, `exempt`, or `reverse`. When set to `reverse`, invoice and receipt PDFs include the text **"Reverse charge"**. */
+  tax_exempt?: Maybe<Stripe_CustomerTaxExemptProperty>;
+  /** The customer's tax IDs. */
+  tax_ids?: Maybe<Stripe_CustomerTaxIdsProperty>;
+  test_clock?: Maybe<Stripe_CustomerTestClockProperty>;
+};
+
+export type Stripe_Address = {
+  __typename?: 'Stripe_Address';
+  /** City, district, suburb, town, or village. */
+  city?: Maybe<Scalars['String']>;
+  /** Two-letter country code ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)). */
+  country?: Maybe<Scalars['String']>;
+  /** Address line 1 (e.g., street, PO Box, or company name). */
+  line1?: Maybe<Scalars['String']>;
+  /** Address line 2 (e.g., apartment, suite, unit, or building). */
+  line2?: Maybe<Scalars['String']>;
+  /** ZIP or postal code. */
+  postal_code?: Maybe<Scalars['String']>;
+  /** State, county, province, or region. */
+  state?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_CustomerDefaultSourceProperty = WrappedString | Stripe_AlipayAccount | Stripe_BankAccount | Stripe_BitcoinReceiver | Stripe_Card | Stripe_Source;
+
+export type Stripe_AlipayAccount = {
+  __typename?: 'Stripe_AlipayAccount';
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  customer?: Maybe<Stripe_AlipayAccountCustomerProperty>;
+  /** Uniquely identifies the account and will be the same across all Alipay account objects that are linked to the same Alipay account. */
+  fingerprint?: Maybe<Scalars['String']>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
   /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
   livemode?: Maybe<Scalars['Boolean']>;
   /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
   metadata?: Maybe<Scalars['JSONObject']>;
   /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_ChargeObjectProperty>;
-  on_behalf_of?: Maybe<Stripe_ChargeOnBehalfOfProperty>;
-  order?: Maybe<Stripe_ChargeOrderProperty>;
-  outcome?: Maybe<Stripe_ChargeOutcome>;
-  /** `true` if the charge succeeded, or was successfully authorized for later capture. */
-  paid?: Maybe<Scalars['Boolean']>;
-  payment_intent?: Maybe<Stripe_ChargePaymentIntentProperty>;
-  /** ID of the payment method used in this charge. */
-  payment_method?: Maybe<Scalars['String']>;
-  payment_method_details?: Maybe<Stripe_PaymentMethodDetails>;
-  /** This is the email address that the receipt for this charge was sent to. */
-  receipt_email?: Maybe<Scalars['String']>;
-  /** This is the transaction number that appears on email receipts sent for this charge. This attribute will be `null` until a receipt has been sent. */
-  receipt_number?: Maybe<Scalars['String']>;
-  /** This is the URL to view the receipt for this charge. The receipt is kept up-to-date to the latest state of the charge, including any refunds. If the charge is for an Invoice, the receipt will be stylized as an Invoice receipt. */
-  receipt_url?: Maybe<Scalars['String']>;
-  /** Whether the charge has been fully refunded. If the charge is only partially refunded, this attribute will still be false. */
-  refunded?: Maybe<Scalars['Boolean']>;
-  /** A list of refunds that have been applied to the charge. */
-  refunds?: Maybe<Stripe_ChargeRefundsProperty>;
-  review?: Maybe<Stripe_ChargeReviewProperty>;
-  shipping?: Maybe<Stripe_Shipping>;
-  source_transfer?: Maybe<Stripe_ChargeSourceTransferProperty>;
-  /** For card charges, use `statement_descriptor_suffix` instead. Otherwise, you can use this value as the complete description of a charge on your customers’ statements. Must contain at least one letter, maximum 22 characters. */
-  statement_descriptor?: Maybe<Scalars['String']>;
-  /** Provides information about the charge that customers see on their statements. Concatenated with the prefix (shortened descriptor) or statement descriptor that’s set on the account to form the complete statement descriptor. Maximum 22 characters for the concatenated descriptor. */
-  statement_descriptor_suffix?: Maybe<Scalars['String']>;
-  /** The status of the payment is either `succeeded`, `pending`, or `failed`. */
-  status?: Maybe<Stripe_ChargeStatusProperty>;
-  transfer?: Maybe<Stripe_ChargeTransferProperty>;
-  transfer_data?: Maybe<Stripe_ChargeTransferData>;
-  /** A string that identifies this transaction as part of a group. See the [Connect documentation](https://stripe.com/docs/connect/charges-transfers#transfer-options) for details. */
-  transfer_group?: Maybe<Scalars['String']>;
+  object?: Maybe<Stripe_AlipayAccountObjectProperty>;
+  /** If the Alipay account object is not reusable, the exact amount that you can create a charge for. */
+  payment_amount?: Maybe<Scalars['Int']>;
+  /** If the Alipay account object is not reusable, the exact currency that you can create a charge for. */
+  payment_currency?: Maybe<Scalars['String']>;
+  /** True if you can create multiple payments using this account. If the account is reusable, then you can freely choose the amount of each payment. */
+  reusable?: Maybe<Scalars['Boolean']>;
+  /** Whether this Alipay account object has ever been used for a payment. */
+  used?: Maybe<Scalars['Boolean']>;
+  /** The username for the Alipay account. */
+  username?: Maybe<Scalars['String']>;
 };
 
-export type Stripe_ChargeApplicationProperty = WrappedString | Stripe_Application;
+export type Stripe_AlipayAccountCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
 
-export type Stripe_ChargeApplicationFeeProperty = WrappedString | Stripe_ApplicationFee;
-
-export type Stripe_ApplicationFee = {
-  __typename?: 'Stripe_ApplicationFee';
-  account?: Maybe<Stripe_ApplicationFeeAccountProperty>;
-  /** Amount earned, in %s. */
-  amount?: Maybe<Scalars['Int']>;
-  /** Amount in %s refunded (can be less than the amount attribute on the fee if a partial refund was issued) */
-  amount_refunded?: Maybe<Scalars['Int']>;
-  application?: Maybe<Stripe_ApplicationFeeApplicationProperty>;
-  balance_transaction?: Maybe<Stripe_ApplicationFeeBalanceTransactionProperty>;
-  charge?: Maybe<Stripe_ApplicationFeeChargeProperty>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
-  currency?: Maybe<Scalars['String']>;
+export type Stripe_DeletedCustomer = {
+  __typename?: 'Stripe_DeletedCustomer';
   /** Unique identifier for the object. */
   id?: Maybe<Scalars['String']>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
   /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_ApplicationFeeObjectProperty>;
-  originating_transaction?: Maybe<Stripe_ApplicationFeeOriginatingTransactionProperty>;
-  /** Whether the fee has been fully refunded. If the fee is only partially refunded, this attribute will still be false. */
-  refunded?: Maybe<Scalars['Boolean']>;
-  /** A list of refunds that have been applied to the fee. */
-  refunds?: Maybe<Stripe_ApplicationFeeRefundsProperty>;
+  object?: Maybe<Stripe_DeletedCustomerObjectProperty>;
 };
 
-export type Stripe_ApplicationFeeAccountProperty = WrappedString | Stripe_Account;
+export enum Stripe_DeletedCustomerObjectProperty {
+  Customer = 'customer'
+}
+
+export enum Stripe_AlipayAccountObjectProperty {
+  AlipayAccount = 'alipay_account'
+}
+
+export type Stripe_BankAccount = {
+  __typename?: 'Stripe_BankAccount';
+  account?: Maybe<Stripe_BankAccountAccountProperty>;
+  /** The name of the person or business that owns the bank account. */
+  account_holder_name?: Maybe<Scalars['String']>;
+  /** The type of entity that holds the account. This can be either `individual` or `company`. */
+  account_holder_type?: Maybe<Scalars['String']>;
+  /** The bank account type. This can only be `checking` or `savings` in most countries. In Japan, this can only be `futsu` or `toza`. */
+  account_type?: Maybe<Scalars['String']>;
+  /** A set of available payout methods for this bank account. Only values from this set should be passed as the `method` when creating a payout. */
+  available_payout_methods?: Maybe<Array<Maybe<Stripe_BankAccountAvailablePayoutMethodsProperty>>>;
+  /** Name of the bank associated with the routing number (e.g., `WELLS FARGO`). */
+  bank_name?: Maybe<Scalars['String']>;
+  /** Two-letter ISO code representing the country the bank account is located in. */
+  country?: Maybe<Scalars['String']>;
+  /** Three-letter [ISO code for the currency](https://stripe.com/docs/payouts) paid out to the bank account. */
+  currency?: Maybe<Scalars['String']>;
+  customer?: Maybe<Stripe_BankAccountCustomerProperty>;
+  /** Whether this bank account is the default external account for its currency. */
+  default_for_currency?: Maybe<Scalars['Boolean']>;
+  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
+  fingerprint?: Maybe<Scalars['String']>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** The last four digits of the bank account number. */
+  last4?: Maybe<Scalars['String']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_BankAccountObjectProperty>;
+  /** The routing transit number for the bank account. */
+  routing_number?: Maybe<Scalars['String']>;
+  /**
+   * For bank accounts, possible values are `new`, `validated`, `verified`, `verification_failed`, or `errored`. A bank account that hasn't had any activity or validation performed is `new`. If Stripe can determine that the bank account exists, its status will be `validated`. Note that there often isn’t enough information to know (e.g., for smaller credit unions), and the validation is not always run. If customer bank account verification has succeeded, the bank account status will be `verified`. If the verification failed for any reason, such as microdeposit failure, the status will be `verification_failed`. If a transfer sent to this bank account fails, we'll set the status to `errored` and will not continue to send transfers until the bank details are updated.
+   *
+   * For external accounts, possible values are `new` and `errored`. Validations aren't run against external accounts because they're only used for payouts. This means the other statuses don't apply. If a transfer fails, the status is set to `errored` and transfers are stopped until account details are updated.
+   */
+  status?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_BankAccountAccountProperty = WrappedString | Stripe_Account;
 
 export type Stripe_Account = {
   __typename?: 'Stripe_Account';
@@ -2871,22 +1502,6 @@ export type Stripe_AccountBusinessProfile = {
   support_url?: Maybe<Scalars['String']>;
   /** The business's publicly available website. */
   url?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_Address = {
-  __typename?: 'Stripe_Address';
-  /** City, district, suburb, town, or village. */
-  city?: Maybe<Scalars['String']>;
-  /** Two-letter country code ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)). */
-  country?: Maybe<Scalars['String']>;
-  /** Address line 1 (e.g., street, PO Box, or company name). */
-  line1?: Maybe<Scalars['String']>;
-  /** Address line 2 (e.g., apartment, suite, unit, or building). */
-  line2?: Maybe<Scalars['String']>;
-  /** ZIP or postal code. */
-  postal_code?: Maybe<Scalars['String']>;
-  /** State, county, province, or region. */
-  state?: Maybe<Scalars['String']>;
 };
 
 export enum Stripe_AccountBusinessTypeProperty {
@@ -3344,57 +1959,6 @@ export type Stripe_AccountExternalAccountsProperty = {
 
 export type Stripe_AccountExternalAccountsDataProperty = Stripe_BankAccount | Stripe_Card;
 
-export type Stripe_BankAccount = {
-  __typename?: 'Stripe_BankAccount';
-  account?: Maybe<Stripe_BankAccountAccountProperty>;
-  /** The name of the person or business that owns the bank account. */
-  account_holder_name?: Maybe<Scalars['String']>;
-  /** The type of entity that holds the account. This can be either `individual` or `company`. */
-  account_holder_type?: Maybe<Scalars['String']>;
-  /** The bank account type. This can only be `checking` or `savings` in most countries. In Japan, this can only be `futsu` or `toza`. */
-  account_type?: Maybe<Scalars['String']>;
-  /** A set of available payout methods for this bank account. Only values from this set should be passed as the `method` when creating a payout. */
-  available_payout_methods?: Maybe<Array<Maybe<Stripe_BankAccountAvailablePayoutMethodsProperty>>>;
-  /** Name of the bank associated with the routing number (e.g., `WELLS FARGO`). */
-  bank_name?: Maybe<Scalars['String']>;
-  /** Two-letter ISO code representing the country the bank account is located in. */
-  country?: Maybe<Scalars['String']>;
-  /** Three-letter [ISO code for the currency](https://stripe.com/docs/payouts) paid out to the bank account. */
-  currency?: Maybe<Scalars['String']>;
-  customer?: Maybe<Scalars['String']>;
-  /** Whether this bank account is the default external account for its currency. */
-  default_for_currency?: Maybe<Scalars['Boolean']>;
-  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
-  fingerprint?: Maybe<Scalars['String']>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** The last four digits of the bank account number. */
-  last4?: Maybe<Scalars['String']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_BankAccountObjectProperty>;
-  /** The routing transit number for the bank account. */
-  routing_number?: Maybe<Scalars['String']>;
-  /**
-   * For bank accounts, possible values are `new`, `validated`, `verified`, `verification_failed`, or `errored`. A bank account that hasn't had any activity or validation performed is `new`. If Stripe can determine that the bank account exists, its status will be `validated`. Note that there often isn’t enough information to know (e.g., for smaller credit unions), and the validation is not always run. If customer bank account verification has succeeded, the bank account status will be `verified`. If the verification failed for any reason, such as microdeposit failure, the status will be `verification_failed`. If a transfer sent to this bank account fails, we'll set the status to `errored` and will not continue to send transfers until the bank details are updated.
-   *
-   * For external accounts, possible values are `new` and `errored`. Validations aren't run against external accounts because they're only used for payouts. This means the other statuses don't apply. If a transfer fails, the status is set to `errored` and transfers are stopped until account details are updated.
-   */
-  status?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_BankAccountAccountProperty = WrappedString | Stripe_Account;
-
-export enum Stripe_BankAccountAvailablePayoutMethodsProperty {
-  Instant = 'instant',
-  Standard = 'standard'
-}
-
-export enum Stripe_BankAccountObjectProperty {
-  BankAccount = 'bank_account'
-}
-
 export type Stripe_Card = {
   __typename?: 'Stripe_Card';
   account?: Maybe<Stripe_CardAccountProperty>;
@@ -3422,7 +1986,7 @@ export type Stripe_Card = {
   country?: Maybe<Scalars['String']>;
   /** Three-letter [ISO code for currency](https://stripe.com/docs/payouts). Only applicable on accounts (not customers or recipients). The card can be used as a transfer destination for funds in this currency. */
   currency?: Maybe<Scalars['String']>;
-  customer?: Maybe<Scalars['String']>;
+  customer?: Maybe<Stripe_CardCustomerProperty>;
   /** If a CVC was provided, results of the check: `pass`, `fail`, `unavailable`, or `unchecked`. A result of unchecked indicates that CVC was provided but hasn't been checked yet. Checks are typically performed when attaching a card to a Customer object, or when creating a charge. For more details, see [Check if a card is valid without a charge](https://support.stripe.com/questions/check-if-a-card-is-valid-without-a-charge). */
   cvc_check?: Maybe<Scalars['String']>;
   /** Whether this card is the default external account for its currency. */
@@ -3464,6 +2028,8 @@ export enum Stripe_CardAvailablePayoutMethodsProperty {
   Instant = 'instant',
   Standard = 'standard'
 }
+
+export type Stripe_CardCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
 
 export enum Stripe_CardObjectProperty {
   Card = 'card'
@@ -3905,6 +2471,1577 @@ export enum Stripe_AccountTypeProperty {
   Express = 'express',
   Standard = 'standard'
 }
+
+export enum Stripe_BankAccountAvailablePayoutMethodsProperty {
+  Instant = 'instant',
+  Standard = 'standard'
+}
+
+export type Stripe_BankAccountCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
+
+export enum Stripe_BankAccountObjectProperty {
+  BankAccount = 'bank_account'
+}
+
+export type Stripe_BitcoinReceiver = {
+  __typename?: 'Stripe_BitcoinReceiver';
+  /** True when this bitcoin receiver has received a non-zero amount of bitcoin. */
+  active?: Maybe<Scalars['Boolean']>;
+  /** The amount of `currency` that you are collecting as payment. */
+  amount?: Maybe<Scalars['Int']>;
+  /** The amount of `currency` to which `bitcoin_amount_received` has been converted. */
+  amount_received?: Maybe<Scalars['Int']>;
+  /** The amount of bitcoin that the customer should send to fill the receiver. The `bitcoin_amount` is denominated in Satoshi: there are 10^8 Satoshi in one bitcoin. */
+  bitcoin_amount?: Maybe<Scalars['Int']>;
+  /** The amount of bitcoin that has been sent by the customer to this receiver. */
+  bitcoin_amount_received?: Maybe<Scalars['Int']>;
+  /** This URI can be displayed to the customer as a clickable link (to activate their bitcoin client) or as a QR code (for mobile wallets). */
+  bitcoin_uri?: Maybe<Scalars['String']>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO code for the currency](https://stripe.com/docs/currencies) to which the bitcoin will be converted. */
+  currency?: Maybe<Scalars['String']>;
+  /** The customer ID of the bitcoin receiver. */
+  customer?: Maybe<Scalars['String']>;
+  /** An arbitrary string attached to the object. Often useful for displaying to users. */
+  description?: Maybe<Scalars['String']>;
+  /** The customer's email address, set by the API call that creates the receiver. */
+  email?: Maybe<Scalars['String']>;
+  /** This flag is initially false and updates to true when the customer sends the `bitcoin_amount` to this receiver. */
+  filled?: Maybe<Scalars['Boolean']>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** A bitcoin address that is specific to this receiver. The customer can send bitcoin to this address to fill the receiver. */
+  inbound_address?: Maybe<Scalars['String']>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_BitcoinReceiverObjectProperty>;
+  /** The ID of the payment created from the receiver, if any. Hidden when viewing the receiver with a publishable key. */
+  payment?: Maybe<Scalars['String']>;
+  /** The refund address of this bitcoin receiver. */
+  refund_address?: Maybe<Scalars['String']>;
+  /** A list with one entry for each time that the customer sent bitcoin to the receiver. Hidden when viewing the receiver with a publishable key. */
+  transactions?: Maybe<Stripe_BitcoinReceiverTransactionsProperty>;
+  /** This receiver contains uncaptured funds that can be used for a payment or refunded. */
+  uncaptured_funds?: Maybe<Scalars['Boolean']>;
+  /** Indicate if this source is used for payment. */
+  used_for_payment?: Maybe<Scalars['Boolean']>;
+};
+
+export enum Stripe_BitcoinReceiverObjectProperty {
+  BitcoinReceiver = 'bitcoin_receiver'
+}
+
+/** A list with one entry for each time that the customer sent bitcoin to the receiver. Hidden when viewing the receiver with a publishable key. */
+export type Stripe_BitcoinReceiverTransactionsProperty = {
+  __typename?: 'Stripe_BitcoinReceiverTransactionsProperty';
+  /** Details about each object. */
+  data: Array<Stripe_BitcoinTransaction>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_BitcoinReceiverTransactionsObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export type Stripe_BitcoinTransaction = {
+  __typename?: 'Stripe_BitcoinTransaction';
+  /** The amount of `currency` that the transaction was converted to in real-time. */
+  amount?: Maybe<Scalars['Int']>;
+  /** The amount of bitcoin contained in the transaction. */
+  bitcoin_amount?: Maybe<Scalars['Int']>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO code for the currency](https://stripe.com/docs/currencies) to which this transaction was converted. */
+  currency?: Maybe<Scalars['String']>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_BitcoinTransactionObjectProperty>;
+  /** The receiver to which this transaction was sent. */
+  receiver?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_BitcoinTransactionObjectProperty {
+  BitcoinTransaction = 'bitcoin_transaction'
+}
+
+export enum Stripe_BitcoinReceiverTransactionsObjectProperty {
+  List = 'list'
+}
+
+export type Stripe_Source = {
+  __typename?: 'Stripe_Source';
+  ach_credit_transfer?: Maybe<Stripe_SourceTypeAchCreditTransfer>;
+  ach_debit?: Maybe<Stripe_SourceTypeAchDebit>;
+  acss_debit?: Maybe<Stripe_SourceTypeAcssDebit>;
+  alipay?: Maybe<Stripe_SourceTypeAlipay>;
+  /** A positive integer in the smallest currency unit (that is, 100 cents for $1.00, or 1 for ¥1, Japanese Yen being a zero-decimal currency) representing the total amount associated with the source. This is the amount for which the source will be chargeable once ready. Required for `single_use` sources. */
+  amount?: Maybe<Scalars['Int']>;
+  au_becs_debit?: Maybe<Stripe_SourceTypeAuBecsDebit>;
+  bancontact?: Maybe<Stripe_SourceTypeBancontact>;
+  card?: Maybe<Stripe_SourceTypeCard>;
+  card_present?: Maybe<Stripe_SourceTypeCardPresent>;
+  /** The client secret of the source. Used for client-side retrieval using a publishable key. */
+  client_secret?: Maybe<Scalars['String']>;
+  code_verification?: Maybe<Stripe_SourceCodeVerificationFlow>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO code for the currency](https://stripe.com/docs/currencies) associated with the source. This is the currency for which the source will be chargeable once ready. Required for `single_use` sources. */
+  currency?: Maybe<Scalars['String']>;
+  /** The ID of the customer to which this source is attached. This will not be present when the source has not been attached to a customer. */
+  customer?: Maybe<Scalars['String']>;
+  eps?: Maybe<Stripe_SourceTypeEps>;
+  /** The authentication `flow` of the source. `flow` is one of `redirect`, `receiver`, `code_verification`, `none`. */
+  flow?: Maybe<Scalars['String']>;
+  giropay?: Maybe<Stripe_SourceTypeGiropay>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  ideal?: Maybe<Stripe_SourceTypeIdeal>;
+  klarna?: Maybe<Stripe_SourceTypeKlarna>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  multibanco?: Maybe<Stripe_SourceTypeMultibanco>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_SourceObjectProperty>;
+  owner?: Maybe<Stripe_SourceOwner>;
+  p24?: Maybe<Stripe_SourceTypeP24>;
+  receiver?: Maybe<Stripe_SourceReceiverFlow>;
+  redirect?: Maybe<Stripe_SourceRedirectFlow>;
+  sepa_debit?: Maybe<Stripe_SourceTypeSepaDebit>;
+  sofort?: Maybe<Stripe_SourceTypeSofort>;
+  source_order?: Maybe<Stripe_SourceOrder>;
+  /** Extra information about a source. This will appear on your customer's statement every time you charge the source. */
+  statement_descriptor?: Maybe<Scalars['String']>;
+  /** The status of the source, one of `canceled`, `chargeable`, `consumed`, `failed`, or `pending`. Only `chargeable` sources can be used to create a charge. */
+  status?: Maybe<Scalars['String']>;
+  three_d_secure?: Maybe<Stripe_SourceTypeThreeDSecure>;
+  /** The `type` of the source. The `type` is a payment method, one of `ach_credit_transfer`, `ach_debit`, `alipay`, `bancontact`, `card`, `card_present`, `eps`, `giropay`, `ideal`, `multibanco`, `klarna`, `p24`, `sepa_debit`, `sofort`, `three_d_secure`, or `wechat`. An additional hash is included on the source with a name matching this value. It contains additional information specific to the [payment method](https://stripe.com/docs/sources) used. */
+  type?: Maybe<Stripe_SourceTypeProperty>;
+  /** Either `reusable` or `single_use`. Whether this source should be reusable or not. Some source types may or may not be reusable by construction, while others may leave the option at creation. If an incompatible value is passed, an error will be returned. */
+  usage?: Maybe<Scalars['String']>;
+  wechat?: Maybe<Stripe_SourceTypeWechat>;
+};
+
+export type Stripe_SourceTypeAchCreditTransfer = {
+  __typename?: 'Stripe_SourceTypeAchCreditTransfer';
+  account_number?: Maybe<Scalars['String']>;
+  bank_name?: Maybe<Scalars['String']>;
+  fingerprint?: Maybe<Scalars['String']>;
+  refund_account_holder_name?: Maybe<Scalars['String']>;
+  refund_account_holder_type?: Maybe<Scalars['String']>;
+  refund_routing_number?: Maybe<Scalars['String']>;
+  routing_number?: Maybe<Scalars['String']>;
+  swift_code?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeAchDebit = {
+  __typename?: 'Stripe_SourceTypeAchDebit';
+  bank_name?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  fingerprint?: Maybe<Scalars['String']>;
+  last4?: Maybe<Scalars['String']>;
+  routing_number?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeAcssDebit = {
+  __typename?: 'Stripe_SourceTypeAcssDebit';
+  bank_address_city?: Maybe<Scalars['String']>;
+  bank_address_line_1?: Maybe<Scalars['String']>;
+  bank_address_line_2?: Maybe<Scalars['String']>;
+  bank_address_postal_code?: Maybe<Scalars['String']>;
+  bank_name?: Maybe<Scalars['String']>;
+  category?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  fingerprint?: Maybe<Scalars['String']>;
+  last4?: Maybe<Scalars['String']>;
+  routing_number?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeAlipay = {
+  __typename?: 'Stripe_SourceTypeAlipay';
+  data_string?: Maybe<Scalars['String']>;
+  native_url?: Maybe<Scalars['String']>;
+  statement_descriptor?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeAuBecsDebit = {
+  __typename?: 'Stripe_SourceTypeAuBecsDebit';
+  bsb_number?: Maybe<Scalars['String']>;
+  fingerprint?: Maybe<Scalars['String']>;
+  last4?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeBancontact = {
+  __typename?: 'Stripe_SourceTypeBancontact';
+  bank_code?: Maybe<Scalars['String']>;
+  bank_name?: Maybe<Scalars['String']>;
+  bic?: Maybe<Scalars['String']>;
+  iban_last4?: Maybe<Scalars['String']>;
+  preferred_language?: Maybe<Scalars['String']>;
+  statement_descriptor?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeCard = {
+  __typename?: 'Stripe_SourceTypeCard';
+  address_line1_check?: Maybe<Scalars['String']>;
+  address_zip_check?: Maybe<Scalars['String']>;
+  brand?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  cvc_check?: Maybe<Scalars['String']>;
+  dynamic_last4?: Maybe<Scalars['String']>;
+  exp_month?: Maybe<Scalars['Int']>;
+  exp_year?: Maybe<Scalars['Int']>;
+  fingerprint?: Maybe<Scalars['String']>;
+  funding?: Maybe<Scalars['String']>;
+  last4?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  three_d_secure?: Maybe<Scalars['String']>;
+  tokenization_method?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeCardPresent = {
+  __typename?: 'Stripe_SourceTypeCardPresent';
+  application_cryptogram?: Maybe<Scalars['String']>;
+  application_preferred_name?: Maybe<Scalars['String']>;
+  authorization_code?: Maybe<Scalars['String']>;
+  authorization_response_code?: Maybe<Scalars['String']>;
+  brand?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  cvm_type?: Maybe<Scalars['String']>;
+  data_type?: Maybe<Scalars['String']>;
+  dedicated_file_name?: Maybe<Scalars['String']>;
+  emv_auth_data?: Maybe<Scalars['String']>;
+  evidence_customer_signature?: Maybe<Scalars['String']>;
+  evidence_transaction_certificate?: Maybe<Scalars['String']>;
+  exp_month?: Maybe<Scalars['Int']>;
+  exp_year?: Maybe<Scalars['Int']>;
+  fingerprint?: Maybe<Scalars['String']>;
+  funding?: Maybe<Scalars['String']>;
+  last4?: Maybe<Scalars['String']>;
+  pos_device_id?: Maybe<Scalars['String']>;
+  pos_entry_mode?: Maybe<Scalars['String']>;
+  read_method?: Maybe<Scalars['String']>;
+  reader?: Maybe<Scalars['String']>;
+  terminal_verification_results?: Maybe<Scalars['String']>;
+  transaction_status_information?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceCodeVerificationFlow = {
+  __typename?: 'Stripe_SourceCodeVerificationFlow';
+  /** The number of attempts remaining to authenticate the source object with a verification code. */
+  attempts_remaining?: Maybe<Scalars['Int']>;
+  /** The status of the code verification, either `pending` (awaiting verification, `attempts_remaining` should be greater than 0), `succeeded` (successful verification) or `failed` (failed verification, cannot be verified anymore as `attempts_remaining` should be 0). */
+  status?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeEps = {
+  __typename?: 'Stripe_SourceTypeEps';
+  reference?: Maybe<Scalars['String']>;
+  statement_descriptor?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeGiropay = {
+  __typename?: 'Stripe_SourceTypeGiropay';
+  bank_code?: Maybe<Scalars['String']>;
+  bank_name?: Maybe<Scalars['String']>;
+  bic?: Maybe<Scalars['String']>;
+  statement_descriptor?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeIdeal = {
+  __typename?: 'Stripe_SourceTypeIdeal';
+  bank?: Maybe<Scalars['String']>;
+  bic?: Maybe<Scalars['String']>;
+  iban_last4?: Maybe<Scalars['String']>;
+  statement_descriptor?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeKlarna = {
+  __typename?: 'Stripe_SourceTypeKlarna';
+  background_image_url?: Maybe<Scalars['String']>;
+  client_token?: Maybe<Scalars['String']>;
+  first_name?: Maybe<Scalars['String']>;
+  last_name?: Maybe<Scalars['String']>;
+  locale?: Maybe<Scalars['String']>;
+  logo_url?: Maybe<Scalars['String']>;
+  page_title?: Maybe<Scalars['String']>;
+  pay_later_asset_urls_descriptive?: Maybe<Scalars['String']>;
+  pay_later_asset_urls_standard?: Maybe<Scalars['String']>;
+  pay_later_name?: Maybe<Scalars['String']>;
+  pay_later_redirect_url?: Maybe<Scalars['String']>;
+  pay_now_asset_urls_descriptive?: Maybe<Scalars['String']>;
+  pay_now_asset_urls_standard?: Maybe<Scalars['String']>;
+  pay_now_name?: Maybe<Scalars['String']>;
+  pay_now_redirect_url?: Maybe<Scalars['String']>;
+  pay_over_time_asset_urls_descriptive?: Maybe<Scalars['String']>;
+  pay_over_time_asset_urls_standard?: Maybe<Scalars['String']>;
+  pay_over_time_name?: Maybe<Scalars['String']>;
+  pay_over_time_redirect_url?: Maybe<Scalars['String']>;
+  payment_method_categories?: Maybe<Scalars['String']>;
+  purchase_country?: Maybe<Scalars['String']>;
+  purchase_type?: Maybe<Scalars['String']>;
+  redirect_url?: Maybe<Scalars['String']>;
+  shipping_delay?: Maybe<Scalars['Int']>;
+  shipping_first_name?: Maybe<Scalars['String']>;
+  shipping_last_name?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeMultibanco = {
+  __typename?: 'Stripe_SourceTypeMultibanco';
+  entity?: Maybe<Scalars['String']>;
+  reference?: Maybe<Scalars['String']>;
+  refund_account_holder_address_city?: Maybe<Scalars['String']>;
+  refund_account_holder_address_country?: Maybe<Scalars['String']>;
+  refund_account_holder_address_line1?: Maybe<Scalars['String']>;
+  refund_account_holder_address_line2?: Maybe<Scalars['String']>;
+  refund_account_holder_address_postal_code?: Maybe<Scalars['String']>;
+  refund_account_holder_address_state?: Maybe<Scalars['String']>;
+  refund_account_holder_name?: Maybe<Scalars['String']>;
+  refund_iban?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_SourceObjectProperty {
+  Source = 'source'
+}
+
+export type Stripe_SourceOwner = {
+  __typename?: 'Stripe_SourceOwner';
+  address?: Maybe<Stripe_Address>;
+  /** Owner's email address. */
+  email?: Maybe<Scalars['String']>;
+  /** Owner's full name. */
+  name?: Maybe<Scalars['String']>;
+  /** Owner's phone number (including extension). */
+  phone?: Maybe<Scalars['String']>;
+  verified_address?: Maybe<Stripe_Address>;
+  /** Verified owner's email address. Verified values are verified or provided by the payment method directly (and if supported) at the time of authorization or settlement. They cannot be set or mutated. */
+  verified_email?: Maybe<Scalars['String']>;
+  /** Verified owner's full name. Verified values are verified or provided by the payment method directly (and if supported) at the time of authorization or settlement. They cannot be set or mutated. */
+  verified_name?: Maybe<Scalars['String']>;
+  /** Verified owner's phone number (including extension). Verified values are verified or provided by the payment method directly (and if supported) at the time of authorization or settlement. They cannot be set or mutated. */
+  verified_phone?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeP24 = {
+  __typename?: 'Stripe_SourceTypeP24';
+  reference?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceReceiverFlow = {
+  __typename?: 'Stripe_SourceReceiverFlow';
+  /** The address of the receiver source. This is the value that should be communicated to the customer to send their funds to. */
+  address?: Maybe<Scalars['String']>;
+  /** The total amount that was moved to your balance. This is almost always equal to the amount charged. In rare cases when customers deposit excess funds and we are unable to refund those, those funds get moved to your balance and show up in amount_charged as well. The amount charged is expressed in the source's currency. */
+  amount_charged?: Maybe<Scalars['Int']>;
+  /** The total amount received by the receiver source. `amount_received = amount_returned + amount_charged` should be true for consumed sources unless customers deposit excess funds. The amount received is expressed in the source's currency. */
+  amount_received?: Maybe<Scalars['Int']>;
+  /** The total amount that was returned to the customer. The amount returned is expressed in the source's currency. */
+  amount_returned?: Maybe<Scalars['Int']>;
+  /** Type of refund attribute method, one of `email`, `manual`, or `none`. */
+  refund_attributes_method?: Maybe<Scalars['String']>;
+  /** Type of refund attribute status, one of `missing`, `requested`, or `available`. */
+  refund_attributes_status?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceRedirectFlow = {
+  __typename?: 'Stripe_SourceRedirectFlow';
+  /** The failure reason for the redirect, either `user_abort` (the customer aborted or dropped out of the redirect flow), `declined` (the authentication failed or the transaction was declined), or `processing_error` (the redirect failed due to a technical error). Present only if the redirect status is `failed`. */
+  failure_reason?: Maybe<Scalars['String']>;
+  /** The URL you provide to redirect the customer to after they authenticated their payment. */
+  return_url?: Maybe<Scalars['String']>;
+  /** The status of the redirect, either `pending` (ready to be used by your customer to authenticate the transaction), `succeeded` (succesful authentication, cannot be reused) or `not_required` (redirect should not be used) or `failed` (failed authentication, cannot be reused). */
+  status?: Maybe<Scalars['String']>;
+  /** The URL provided to you to redirect a customer to as part of a `redirect` authentication flow. */
+  url?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeSepaDebit = {
+  __typename?: 'Stripe_SourceTypeSepaDebit';
+  bank_code?: Maybe<Scalars['String']>;
+  branch_code?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  fingerprint?: Maybe<Scalars['String']>;
+  last4?: Maybe<Scalars['String']>;
+  mandate_reference?: Maybe<Scalars['String']>;
+  mandate_url?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeSofort = {
+  __typename?: 'Stripe_SourceTypeSofort';
+  bank_code?: Maybe<Scalars['String']>;
+  bank_name?: Maybe<Scalars['String']>;
+  bic?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  iban_last4?: Maybe<Scalars['String']>;
+  preferred_language?: Maybe<Scalars['String']>;
+  statement_descriptor?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceOrder = {
+  __typename?: 'Stripe_SourceOrder';
+  /** A positive integer in the smallest currency unit (that is, 100 cents for $1.00, or 1 for ¥1, Japanese Yen being a zero-decimal currency) representing the total amount for the order. */
+  amount?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
+  currency?: Maybe<Scalars['String']>;
+  /** The email address of the customer placing the order. */
+  email?: Maybe<Scalars['String']>;
+  /** List of items constituting the order. */
+  items?: Maybe<Array<Maybe<Stripe_SourceOrderItem>>>;
+  shipping?: Maybe<Stripe_Shipping>;
+};
+
+export type Stripe_SourceOrderItem = {
+  __typename?: 'Stripe_SourceOrderItem';
+  /** The amount (price) for this order item. */
+  amount?: Maybe<Scalars['Int']>;
+  /** This currency of this order item. Required when `amount` is present. */
+  currency?: Maybe<Scalars['String']>;
+  /** Human-readable description for this order item. */
+  description?: Maybe<Scalars['String']>;
+  /** The ID of the associated object for this line item. Expandable if not null (e.g., expandable to a SKU). */
+  parent?: Maybe<Scalars['String']>;
+  /** The quantity of this order item. When type is `sku`, this is the number of instances of the SKU to be ordered. */
+  quantity?: Maybe<Scalars['Int']>;
+  /** The type of this order item. Must be `sku`, `tax`, or `shipping`. */
+  type?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_Shipping = {
+  __typename?: 'Stripe_Shipping';
+  address?: Maybe<Stripe_Address>;
+  /** The delivery service that shipped a physical product, such as Fedex, UPS, USPS, etc. */
+  carrier?: Maybe<Scalars['String']>;
+  /** Recipient name. */
+  name?: Maybe<Scalars['String']>;
+  /** Recipient phone (including extension). */
+  phone?: Maybe<Scalars['String']>;
+  /** The tracking number for a physical product, obtained from the delivery service. If multiple tracking numbers were generated for this purchase, please separate them with commas. */
+  tracking_number?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SourceTypeThreeDSecure = {
+  __typename?: 'Stripe_SourceTypeThreeDSecure';
+  address_line1_check?: Maybe<Scalars['String']>;
+  address_zip_check?: Maybe<Scalars['String']>;
+  authenticated?: Maybe<Scalars['Boolean']>;
+  brand?: Maybe<Scalars['String']>;
+  card?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  customer?: Maybe<Scalars['String']>;
+  cvc_check?: Maybe<Scalars['String']>;
+  dynamic_last4?: Maybe<Scalars['String']>;
+  exp_month?: Maybe<Scalars['Int']>;
+  exp_year?: Maybe<Scalars['Int']>;
+  fingerprint?: Maybe<Scalars['String']>;
+  funding?: Maybe<Scalars['String']>;
+  last4?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  three_d_secure?: Maybe<Scalars['String']>;
+  tokenization_method?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_SourceTypeProperty {
+  AchCreditTransfer = 'ach_credit_transfer',
+  AchDebit = 'ach_debit',
+  AcssDebit = 'acss_debit',
+  Alipay = 'alipay',
+  AuBecsDebit = 'au_becs_debit',
+  Bancontact = 'bancontact',
+  Card = 'card',
+  CardPresent = 'card_present',
+  Eps = 'eps',
+  Giropay = 'giropay',
+  Ideal = 'ideal',
+  Klarna = 'klarna',
+  Multibanco = 'multibanco',
+  P24 = 'p24',
+  SepaDebit = 'sepa_debit',
+  Sofort = 'sofort',
+  ThreeDSecure = 'three_d_secure',
+  Wechat = 'wechat'
+}
+
+export type Stripe_SourceTypeWechat = {
+  __typename?: 'Stripe_SourceTypeWechat';
+  prepay_id?: Maybe<Scalars['String']>;
+  qr_code_url?: Maybe<Scalars['String']>;
+  statement_descriptor?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_Discount = {
+  __typename?: 'Stripe_Discount';
+  /** The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode. Will not be present for subscription mode. */
+  checkout_session?: Maybe<Scalars['String']>;
+  coupon?: Maybe<Stripe_Coupon>;
+  customer?: Maybe<Stripe_DiscountCustomerProperty>;
+  /** If the coupon has a duration of `repeating`, the date that this discount will end. If the coupon has a duration of `once` or `forever`, this attribute will be null. */
+  end?: Maybe<Scalars['Int']>;
+  /** The ID of the discount object. Discounts cannot be fetched by ID. Use `expand[]=discounts` in API calls to expand discount IDs in an array. */
+  id?: Maybe<Scalars['String']>;
+  /** The invoice that the discount's coupon was applied to, if it was applied directly to a particular invoice. */
+  invoice?: Maybe<Scalars['String']>;
+  /** The invoice item `id` (or invoice line item `id` for invoice line items of type='subscription') that the discount's coupon was applied to, if it was applied directly to a particular invoice item or invoice line item. */
+  invoice_item?: Maybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_DiscountObjectProperty>;
+  promotion_code?: Maybe<Stripe_DiscountPromotionCodeProperty>;
+  /** Date that the coupon was applied. */
+  start?: Maybe<Scalars['Int']>;
+  /** The subscription that this coupon is applied to, if it is applied to a particular subscription. */
+  subscription?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_Coupon = {
+  __typename?: 'Stripe_Coupon';
+  /** Amount (in the `currency` specified) that will be taken off the subtotal of any invoices for this customer. */
+  amount_off?: Maybe<Scalars['Int']>;
+  applies_to?: Maybe<Stripe_CouponAppliesTo>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  /** If `amount_off` has been set, the three-letter [ISO code for the currency](https://stripe.com/docs/currencies) of the amount to take off. */
+  currency?: Maybe<Scalars['String']>;
+  /** One of `forever`, `once`, and `repeating`. Describes how long a customer who applies this coupon will get the discount. */
+  duration?: Maybe<Stripe_CouponDurationProperty>;
+  /** If `duration` is `repeating`, the number of months the coupon applies. Null if coupon `duration` is `forever` or `once`. */
+  duration_in_months?: Maybe<Scalars['Int']>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** Maximum number of times this coupon can be redeemed, in total, across all customers, before it is no longer valid. */
+  max_redemptions?: Maybe<Scalars['Int']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  /** Name of the coupon displayed to customers on for instance invoices or receipts. */
+  name?: Maybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_CouponObjectProperty>;
+  /** Percent that will be taken off the subtotal of any invoices for this customer for the duration of the coupon. For example, a coupon with percent_off of 50 will make a %s100 invoice %s50 instead. */
+  percent_off?: Maybe<Scalars['Float']>;
+  /** Date after which the coupon can no longer be redeemed. */
+  redeem_by?: Maybe<Scalars['Int']>;
+  /** Number of times this coupon has been applied to a customer. */
+  times_redeemed?: Maybe<Scalars['Int']>;
+  /** Taking account of the above properties, whether this coupon can still be applied to a customer. */
+  valid?: Maybe<Scalars['Boolean']>;
+};
+
+export type Stripe_CouponAppliesTo = {
+  __typename?: 'Stripe_CouponAppliesTo';
+  /** A list of product IDs this coupon applies to */
+  products?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+export enum Stripe_CouponDurationProperty {
+  Forever = 'forever',
+  Once = 'once',
+  Repeating = 'repeating'
+}
+
+export enum Stripe_CouponObjectProperty {
+  Coupon = 'coupon'
+}
+
+export type Stripe_DiscountCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
+
+export enum Stripe_DiscountObjectProperty {
+  Discount = 'discount'
+}
+
+export type Stripe_DiscountPromotionCodeProperty = WrappedString | Stripe_PromotionCode;
+
+export type Stripe_PromotionCode = {
+  __typename?: 'Stripe_PromotionCode';
+  /** Whether the promotion code is currently active. A promotion code is only active if the coupon is also valid. */
+  active?: Maybe<Scalars['Boolean']>;
+  /** The customer-facing code. Regardless of case, this code must be unique across all active promotion codes for each customer. */
+  code?: Maybe<Scalars['String']>;
+  coupon?: Maybe<Stripe_Coupon>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  customer?: Maybe<Stripe_PromotionCodeCustomerProperty>;
+  /** Date at which the promotion code can no longer be redeemed. */
+  expires_at?: Maybe<Scalars['Int']>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** Maximum number of times this promotion code can be redeemed. */
+  max_redemptions?: Maybe<Scalars['Int']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_PromotionCodeObjectProperty>;
+  restrictions?: Maybe<Stripe_PromotionCodesResourceRestrictions>;
+  /** Number of times this promotion code has been used. */
+  times_redeemed?: Maybe<Scalars['Int']>;
+};
+
+export type Stripe_PromotionCodeCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
+
+export enum Stripe_PromotionCodeObjectProperty {
+  PromotionCode = 'promotion_code'
+}
+
+export type Stripe_PromotionCodesResourceRestrictions = {
+  __typename?: 'Stripe_PromotionCodesResourceRestrictions';
+  /** A Boolean indicating if the Promotion Code should only be redeemed for Customers without any successful payments or invoices */
+  first_time_transaction?: Maybe<Scalars['Boolean']>;
+  /** Minimum amount required to redeem this Promotion Code into a Coupon (e.g., a purchase must be $100 or more to work). */
+  minimum_amount?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO code](https://stripe.com/docs/currencies) for minimum_amount */
+  minimum_amount_currency?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_InvoiceSettingCustomerSetting = {
+  __typename?: 'Stripe_InvoiceSettingCustomerSetting';
+  /** Default custom fields to be displayed on invoices for this customer. */
+  custom_fields?: Maybe<Array<Maybe<Stripe_InvoiceSettingCustomField>>>;
+  default_payment_method?: Maybe<Stripe_InvoiceSettingCustomerSettingDefaultPaymentMethodProperty>;
+  /** Default footer to be displayed on invoices for this customer. */
+  footer?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_InvoiceSettingCustomField = {
+  __typename?: 'Stripe_InvoiceSettingCustomField';
+  /** The name of the custom field. */
+  name?: Maybe<Scalars['String']>;
+  /** The value of the custom field. */
+  value?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_InvoiceSettingCustomerSettingDefaultPaymentMethodProperty = WrappedString | Stripe_PaymentMethod;
+
+export type Stripe_PaymentMethod = {
+  __typename?: 'Stripe_PaymentMethod';
+  acss_debit?: Maybe<Stripe_PaymentMethodAcssDebit>;
+  afterpay_clearpay?: Maybe<Stripe_PaymentMethodAfterpayClearpay>;
+  alipay?: Maybe<Stripe_PaymentFlowsPrivatePaymentMethodsAlipay>;
+  au_becs_debit?: Maybe<Stripe_PaymentMethodAuBecsDebit>;
+  bacs_debit?: Maybe<Stripe_PaymentMethodBacsDebit>;
+  bancontact?: Maybe<Stripe_PaymentMethodBancontact>;
+  billing_details?: Maybe<Stripe_BillingDetails>;
+  boleto?: Maybe<Stripe_PaymentMethodBoleto>;
+  card?: Maybe<Stripe_PaymentMethodCard>;
+  card_present?: Maybe<Stripe_PaymentMethodCardPresent>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  customer?: Maybe<Stripe_PaymentMethodCustomerProperty>;
+  eps?: Maybe<Stripe_PaymentMethodEps>;
+  fpx?: Maybe<Stripe_PaymentMethodFpx>;
+  giropay?: Maybe<Stripe_PaymentMethodGiropay>;
+  grabpay?: Maybe<Stripe_PaymentMethodGrabpay>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  ideal?: Maybe<Stripe_PaymentMethodIdeal>;
+  interac_present?: Maybe<Stripe_PaymentMethodInteracPresent>;
+  klarna?: Maybe<Stripe_PaymentMethodKlarna>;
+  konbini?: Maybe<Stripe_PaymentMethodKonbini>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_PaymentMethodObjectProperty>;
+  oxxo?: Maybe<Stripe_PaymentMethodOxxo>;
+  p24?: Maybe<Stripe_PaymentMethodP24>;
+  paynow?: Maybe<Stripe_PaymentMethodPaynow>;
+  sepa_debit?: Maybe<Stripe_PaymentMethodSepaDebit>;
+  sofort?: Maybe<Stripe_PaymentMethodSofort>;
+  /** The type of the PaymentMethod. An additional hash is included on the PaymentMethod with a name matching this value. It contains additional information specific to the PaymentMethod type. */
+  type?: Maybe<Stripe_PaymentMethodTypeProperty>;
+  us_bank_account?: Maybe<Stripe_PaymentMethodUsBankAccount>;
+  wechat_pay?: Maybe<Stripe_PaymentMethodWechatPay>;
+};
+
+export type Stripe_PaymentMethodAcssDebit = {
+  __typename?: 'Stripe_PaymentMethodAcssDebit';
+  /** Name of the bank associated with the bank account. */
+  bank_name?: Maybe<Scalars['String']>;
+  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
+  fingerprint?: Maybe<Scalars['String']>;
+  /** Institution number of the bank account. */
+  institution_number?: Maybe<Scalars['String']>;
+  /** Last four digits of the bank account number. */
+  last4?: Maybe<Scalars['String']>;
+  /** Transit number of the bank account. */
+  transit_number?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_PaymentMethodAfterpayClearpay = {
+  __typename?: 'Stripe_PaymentMethodAfterpayClearpay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentFlowsPrivatePaymentMethodsAlipay = {
+  __typename?: 'Stripe_PaymentFlowsPrivatePaymentMethodsAlipay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodAuBecsDebit = {
+  __typename?: 'Stripe_PaymentMethodAuBecsDebit';
+  /** Six-digit number identifying bank and branch associated with this bank account. */
+  bsb_number?: Maybe<Scalars['String']>;
+  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
+  fingerprint?: Maybe<Scalars['String']>;
+  /** Last four digits of the bank account number. */
+  last4?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_PaymentMethodBacsDebit = {
+  __typename?: 'Stripe_PaymentMethodBacsDebit';
+  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
+  fingerprint?: Maybe<Scalars['String']>;
+  /** Last four digits of the bank account number. */
+  last4?: Maybe<Scalars['String']>;
+  /** Sort code of the bank account. (e.g., `10-20-30`) */
+  sort_code?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_PaymentMethodBancontact = {
+  __typename?: 'Stripe_PaymentMethodBancontact';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_BillingDetails = {
+  __typename?: 'Stripe_BillingDetails';
+  address?: Maybe<Stripe_Address>;
+  /** Email address. */
+  email?: Maybe<Scalars['String']>;
+  /** Full name. */
+  name?: Maybe<Scalars['String']>;
+  /** Billing phone number (including extension). */
+  phone?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_PaymentMethodBoleto = {
+  __typename?: 'Stripe_PaymentMethodBoleto';
+  /** Uniquely identifies the customer tax id (CNPJ or CPF) */
+  tax_id?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_PaymentMethodCard = {
+  __typename?: 'Stripe_PaymentMethodCard';
+  /** Card brand. Can be `amex`, `diners`, `discover`, `jcb`, `mastercard`, `unionpay`, `visa`, or `unknown`. */
+  brand?: Maybe<Scalars['String']>;
+  checks?: Maybe<Stripe_PaymentMethodCardChecks>;
+  /** Two-letter ISO code representing the country of the card. You could use this attribute to get a sense of the international breakdown of cards you've collected. */
+  country?: Maybe<Scalars['String']>;
+  /** Two-digit number representing the card's expiration month. */
+  exp_month?: Maybe<Scalars['Int']>;
+  /** Four-digit number representing the card's expiration year. */
+  exp_year?: Maybe<Scalars['Int']>;
+  /**
+   * Uniquely identifies this particular card number. You can use this attribute to check whether two customers who’ve signed up with you are using the same card number, for example. For payment methods that tokenize card information (Apple Pay, Google Pay), the tokenized number might be provided instead of the underlying card number.
+   *
+   * *Starting May 1, 2021, card fingerprint in India for Connect will change to allow two fingerprints for the same card --- one for India and one for the rest of the world.*
+   */
+  fingerprint?: Maybe<Scalars['String']>;
+  /** Card funding type. Can be `credit`, `debit`, `prepaid`, or `unknown`. */
+  funding?: Maybe<Scalars['String']>;
+  generated_from?: Maybe<Stripe_PaymentMethodCardGeneratedCard>;
+  /** The last four digits of the card. */
+  last4?: Maybe<Scalars['String']>;
+  networks?: Maybe<Stripe_Networks>;
+  three_d_secure_usage?: Maybe<Stripe_ThreeDSecureUsage>;
+  wallet?: Maybe<Stripe_PaymentMethodCardWallet>;
+};
+
+export type Stripe_PaymentMethodCardChecks = {
+  __typename?: 'Stripe_PaymentMethodCardChecks';
+  /** If a address line1 was provided, results of the check, one of `pass`, `fail`, `unavailable`, or `unchecked`. */
+  address_line1_check?: Maybe<Scalars['String']>;
+  /** If a address postal code was provided, results of the check, one of `pass`, `fail`, `unavailable`, or `unchecked`. */
+  address_postal_code_check?: Maybe<Scalars['String']>;
+  /** If a CVC was provided, results of the check, one of `pass`, `fail`, `unavailable`, or `unchecked`. */
+  cvc_check?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_PaymentMethodCardGeneratedCard = {
+  __typename?: 'Stripe_PaymentMethodCardGeneratedCard';
+  /** The charge that created this object. */
+  charge?: Maybe<Scalars['String']>;
+  payment_method_details?: Maybe<Stripe_CardGeneratedFromPaymentMethodDetails>;
+  setup_attempt?: Maybe<Stripe_PaymentMethodCardGeneratedCardSetupAttemptProperty>;
+};
+
+export type Stripe_CardGeneratedFromPaymentMethodDetails = {
+  __typename?: 'Stripe_CardGeneratedFromPaymentMethodDetails';
+  card_present?: Maybe<Stripe_PaymentMethodDetailsCardPresent>;
+  /** The type of payment method transaction-specific details from the transaction that generated this `card` payment method. Always `card_present`. */
+  type?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_PaymentMethodDetailsCardPresent = {
+  __typename?: 'Stripe_PaymentMethodDetailsCardPresent';
+  /** The authorized amount */
+  amount_authorized?: Maybe<Scalars['Int']>;
+  /** Card brand. Can be `amex`, `diners`, `discover`, `jcb`, `mastercard`, `unionpay`, `visa`, or `unknown`. */
+  brand?: Maybe<Scalars['String']>;
+  /** When using manual capture, a future timestamp after which the charge will be automatically refunded if uncaptured. */
+  capture_before?: Maybe<Scalars['Int']>;
+  /** The cardholder name as read from the card, in [ISO 7813](https://en.wikipedia.org/wiki/ISO/IEC_7813) format. May include alphanumeric characters, special characters and first/last name separator (`/`). In some cases, the cardholder name may not be available depending on how the issuer has configured the card. Cardholder name is typically not available on swipe or contactless payments, such as those made with Apple Pay and Google Pay. */
+  cardholder_name?: Maybe<Scalars['String']>;
+  /** Two-letter ISO code representing the country of the card. You could use this attribute to get a sense of the international breakdown of cards you've collected. */
+  country?: Maybe<Scalars['String']>;
+  /** Authorization response cryptogram. */
+  emv_auth_data?: Maybe<Scalars['String']>;
+  /** Two-digit number representing the card's expiration month. */
+  exp_month?: Maybe<Scalars['Int']>;
+  /** Four-digit number representing the card's expiration year. */
+  exp_year?: Maybe<Scalars['Int']>;
+  /**
+   * Uniquely identifies this particular card number. You can use this attribute to check whether two customers who’ve signed up with you are using the same card number, for example. For payment methods that tokenize card information (Apple Pay, Google Pay), the tokenized number might be provided instead of the underlying card number.
+   *
+   * *Starting May 1, 2021, card fingerprint in India for Connect will change to allow two fingerprints for the same card --- one for India and one for the rest of the world.*
+   */
+  fingerprint?: Maybe<Scalars['String']>;
+  /** Card funding type. Can be `credit`, `debit`, `prepaid`, or `unknown`. */
+  funding?: Maybe<Scalars['String']>;
+  /** ID of a card PaymentMethod generated from the card_present PaymentMethod that may be attached to a Customer for future transactions. Only present if it was possible to generate a card PaymentMethod. */
+  generated_card?: Maybe<Scalars['String']>;
+  /** The last four digits of the card. */
+  last4?: Maybe<Scalars['String']>;
+  /** Identifies which network this charge was processed on. Can be `amex`, `cartes_bancaires`, `diners`, `discover`, `interac`, `jcb`, `mastercard`, `unionpay`, `visa`, or `unknown`. */
+  network?: Maybe<Scalars['String']>;
+  /** Defines whether the authorized amount can be over-captured or not */
+  overcapture_supported?: Maybe<Scalars['Boolean']>;
+  /** How card details were read in this transaction. */
+  read_method?: Maybe<Stripe_PaymentMethodDetailsCardPresentReadMethodProperty>;
+  receipt?: Maybe<Stripe_PaymentMethodDetailsCardPresentReceipt>;
+};
+
+export enum Stripe_PaymentMethodDetailsCardPresentReadMethodProperty {
+  ContactEmv = 'contact_emv',
+  ContactlessEmv = 'contactless_emv',
+  ContactlessMagstripeMode = 'contactless_magstripe_mode',
+  MagneticStripeFallback = 'magnetic_stripe_fallback',
+  MagneticStripeTrack2 = 'magnetic_stripe_track2'
+}
+
+export type Stripe_PaymentMethodDetailsCardPresentReceipt = {
+  __typename?: 'Stripe_PaymentMethodDetailsCardPresentReceipt';
+  /** The type of account being debited or credited */
+  account_type?: Maybe<Stripe_PaymentMethodDetailsCardPresentReceiptAccountTypeProperty>;
+  /** EMV tag 9F26, cryptogram generated by the integrated circuit chip. */
+  application_cryptogram?: Maybe<Scalars['String']>;
+  /** Mnenomic of the Application Identifier. */
+  application_preferred_name?: Maybe<Scalars['String']>;
+  /** Identifier for this transaction. */
+  authorization_code?: Maybe<Scalars['String']>;
+  /** EMV tag 8A. A code returned by the card issuer. */
+  authorization_response_code?: Maybe<Scalars['String']>;
+  /** How the cardholder verified ownership of the card. */
+  cardholder_verification_method?: Maybe<Scalars['String']>;
+  /** EMV tag 84. Similar to the application identifier stored on the integrated circuit chip. */
+  dedicated_file_name?: Maybe<Scalars['String']>;
+  /** The outcome of a series of EMV functions performed by the card reader. */
+  terminal_verification_results?: Maybe<Scalars['String']>;
+  /** An indication of various EMV functions performed during the transaction. */
+  transaction_status_information?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_PaymentMethodDetailsCardPresentReceiptAccountTypeProperty {
+  Checking = 'checking',
+  Credit = 'credit',
+  Prepaid = 'prepaid',
+  Unknown = 'unknown'
+}
+
+export type Stripe_PaymentMethodCardGeneratedCardSetupAttemptProperty = WrappedString | Stripe_SetupAttempt;
+
+export type Stripe_SetupAttempt = {
+  __typename?: 'Stripe_SetupAttempt';
+  application?: Maybe<Stripe_SetupAttemptApplicationProperty>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  customer?: Maybe<Stripe_SetupAttemptCustomerProperty>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_SetupAttemptObjectProperty>;
+  on_behalf_of?: Maybe<Stripe_SetupAttemptOnBehalfOfProperty>;
+  payment_method?: Maybe<Stripe_SetupAttemptPaymentMethodProperty>;
+  payment_method_details?: Maybe<Stripe_SetupAttemptPaymentMethodDetails>;
+  setup_error?: Maybe<Stripe_ApiErrors>;
+  setup_intent?: Maybe<Stripe_SetupAttemptSetupIntentProperty>;
+  /** Status of this SetupAttempt, one of `requires_confirmation`, `requires_action`, `processing`, `succeeded`, `failed`, or `abandoned`. */
+  status?: Maybe<Scalars['String']>;
+  /** The value of [usage](https://stripe.com/docs/api/setup_intents/object#setup_intent_object-usage) on the SetupIntent at the time of this confirmation, one of `off_session` or `on_session`. */
+  usage?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SetupAttemptApplicationProperty = WrappedString | Stripe_Application;
+
+export type Stripe_Application = {
+  __typename?: 'Stripe_Application';
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** The name of the application. */
+  name?: Maybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_ApplicationObjectProperty>;
+};
+
+export enum Stripe_ApplicationObjectProperty {
+  Application = 'application'
+}
+
+export type Stripe_SetupAttemptCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
+
+export enum Stripe_SetupAttemptObjectProperty {
+  SetupAttempt = 'setup_attempt'
+}
+
+export type Stripe_SetupAttemptOnBehalfOfProperty = WrappedString | Stripe_Account;
+
+export type Stripe_SetupAttemptPaymentMethodProperty = WrappedString | Stripe_PaymentMethod;
+
+export type Stripe_SetupAttemptPaymentMethodDetails = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetails';
+  acss_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsAcssDebit>;
+  au_becs_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsAuBecsDebit>;
+  bacs_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBacsDebit>;
+  bancontact?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBancontact>;
+  boleto?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBoleto>;
+  card?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsCard>;
+  card_present?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsCardPresent>;
+  ideal?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsIdeal>;
+  sepa_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsSepaDebit>;
+  sofort?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsSofort>;
+  /** The type of the payment method used in the SetupIntent (e.g., `card`). An additional hash is included on `payment_method_details` with a name matching this value. It contains confirmation-specific information for the payment method. */
+  type?: Maybe<Scalars['String']>;
+  us_bank_account?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsUsBankAccount>;
+};
+
+export type Stripe_SetupAttemptPaymentMethodDetailsAcssDebit = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsAcssDebit';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_SetupAttemptPaymentMethodDetailsAuBecsDebit = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsAuBecsDebit';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_SetupAttemptPaymentMethodDetailsBacsDebit = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsBacsDebit';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_SetupAttemptPaymentMethodDetailsBancontact = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsBancontact';
+  /** Bank code of bank associated with the bank account. */
+  bank_code?: Maybe<Scalars['String']>;
+  /** Name of the bank associated with the bank account. */
+  bank_name?: Maybe<Scalars['String']>;
+  /** Bank Identifier Code of the bank associated with the bank account. */
+  bic?: Maybe<Scalars['String']>;
+  generated_sepa_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBancontactGeneratedSepaDebitProperty>;
+  generated_sepa_debit_mandate?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBancontactGeneratedSepaDebitMandateProperty>;
+  /** Last four characters of the IBAN. */
+  iban_last4?: Maybe<Scalars['String']>;
+  /**
+   * Preferred language of the Bancontact authorization page that the customer is redirected to.
+   * Can be one of `en`, `de`, `fr`, or `nl`
+   */
+  preferred_language?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBancontactPreferredLanguageProperty>;
+  /**
+   * Owner's verified full name. Values are verified or provided by Bancontact directly
+   * (if supported) at the time of authorization or settlement. They cannot be set or mutated.
+   */
+  verified_name?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SetupAttemptPaymentMethodDetailsBancontactGeneratedSepaDebitProperty = WrappedString | Stripe_PaymentMethod;
+
+export type Stripe_SetupAttemptPaymentMethodDetailsBancontactGeneratedSepaDebitMandateProperty = WrappedString | Stripe_Mandate;
+
+export type Stripe_Mandate = {
+  __typename?: 'Stripe_Mandate';
+  customer_acceptance?: Maybe<Stripe_CustomerAcceptance>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  multi_use?: Maybe<Stripe_MandateMultiUse>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_MandateObjectProperty>;
+  payment_method?: Maybe<Stripe_MandatePaymentMethodProperty>;
+  payment_method_details?: Maybe<Stripe_MandatePaymentMethodDetails>;
+  single_use?: Maybe<Stripe_MandateSingleUse>;
+  /** The status of the mandate, which indicates whether it can be used to initiate a payment. */
+  status?: Maybe<Stripe_MandateStatusProperty>;
+  /** The type of the mandate. */
+  type?: Maybe<Stripe_MandateTypeProperty>;
+};
+
+export type Stripe_CustomerAcceptance = {
+  __typename?: 'Stripe_CustomerAcceptance';
+  /** The time at which the customer accepted the Mandate. */
+  accepted_at?: Maybe<Scalars['Int']>;
+  offline?: Maybe<Stripe_OfflineAcceptance>;
+  online?: Maybe<Stripe_OnlineAcceptance>;
+  /** The type of customer acceptance information included with the Mandate. One of `online` or `offline`. */
+  type?: Maybe<Stripe_CustomerAcceptanceTypeProperty>;
+};
+
+export type Stripe_OfflineAcceptance = {
+  __typename?: 'Stripe_OfflineAcceptance';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_OnlineAcceptance = {
+  __typename?: 'Stripe_OnlineAcceptance';
+  /** The IP address from which the Mandate was accepted by the customer. */
+  ip_address?: Maybe<Scalars['String']>;
+  /** The user agent of the browser from which the Mandate was accepted by the customer. */
+  user_agent?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_CustomerAcceptanceTypeProperty {
+  Offline = 'offline',
+  Online = 'online'
+}
+
+export type Stripe_MandateMultiUse = {
+  __typename?: 'Stripe_MandateMultiUse';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export enum Stripe_MandateObjectProperty {
+  Mandate = 'mandate'
+}
+
+export type Stripe_MandatePaymentMethodProperty = WrappedString | Stripe_PaymentMethod;
+
+export type Stripe_MandatePaymentMethodDetails = {
+  __typename?: 'Stripe_MandatePaymentMethodDetails';
+  acss_debit?: Maybe<Stripe_MandateAcssDebit>;
+  au_becs_debit?: Maybe<Stripe_MandateAuBecsDebit>;
+  bacs_debit?: Maybe<Stripe_MandateBacsDebit>;
+  card?: Maybe<Stripe_CardMandatePaymentMethodDetails>;
+  sepa_debit?: Maybe<Stripe_MandateSepaDebit>;
+  /** The type of the payment method associated with this mandate. An additional hash is included on `payment_method_details` with a name matching this value. It contains mandate information specific to the payment method. */
+  type?: Maybe<Scalars['String']>;
+  us_bank_account?: Maybe<Stripe_MandateUsBankAccount>;
+};
+
+export type Stripe_MandateAcssDebit = {
+  __typename?: 'Stripe_MandateAcssDebit';
+  /** List of Stripe products where this mandate can be selected automatically. */
+  default_for?: Maybe<Array<Maybe<Stripe_MandateAcssDebitDefaultForProperty>>>;
+  /** Description of the interval. Only required if the 'payment_schedule' parameter is 'interval' or 'combined'. */
+  interval_description?: Maybe<Scalars['String']>;
+  /** Payment schedule for the mandate. */
+  payment_schedule?: Maybe<Stripe_MandateAcssDebitPaymentScheduleProperty>;
+  /** Transaction type of the mandate. */
+  transaction_type?: Maybe<Stripe_MandateAcssDebitTransactionTypeProperty>;
+};
+
+export enum Stripe_MandateAcssDebitDefaultForProperty {
+  Invoice = 'invoice',
+  Subscription = 'subscription'
+}
+
+export enum Stripe_MandateAcssDebitPaymentScheduleProperty {
+  Combined = 'combined',
+  Interval = 'interval',
+  Sporadic = 'sporadic'
+}
+
+export enum Stripe_MandateAcssDebitTransactionTypeProperty {
+  Business = 'business',
+  Personal = 'personal'
+}
+
+export type Stripe_MandateAuBecsDebit = {
+  __typename?: 'Stripe_MandateAuBecsDebit';
+  /** The URL of the mandate. This URL generally contains sensitive information about the customer and should be shared with them exclusively. */
+  url?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_MandateBacsDebit = {
+  __typename?: 'Stripe_MandateBacsDebit';
+  /** The status of the mandate on the Bacs network. Can be one of `pending`, `revoked`, `refused`, or `accepted`. */
+  network_status?: Maybe<Stripe_MandateBacsDebitNetworkStatusProperty>;
+  /** The unique reference identifying the mandate on the Bacs network. */
+  reference?: Maybe<Scalars['String']>;
+  /** The URL that will contain the mandate that the customer has signed. */
+  url?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_MandateBacsDebitNetworkStatusProperty {
+  Accepted = 'accepted',
+  Pending = 'pending',
+  Refused = 'refused',
+  Revoked = 'revoked'
+}
+
+export type Stripe_CardMandatePaymentMethodDetails = {
+  __typename?: 'Stripe_CardMandatePaymentMethodDetails';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_MandateSepaDebit = {
+  __typename?: 'Stripe_MandateSepaDebit';
+  /** The unique reference of the mandate. */
+  reference?: Maybe<Scalars['String']>;
+  /** The URL of the mandate. This URL generally contains sensitive information about the customer and should be shared with them exclusively. */
+  url?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_MandateUsBankAccount = {
+  __typename?: 'Stripe_MandateUsBankAccount';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_MandateSingleUse = {
+  __typename?: 'Stripe_MandateSingleUse';
+  /** On a single use mandate, the amount of the payment. */
+  amount?: Maybe<Scalars['Int']>;
+  /** On a single use mandate, the currency of the payment. */
+  currency?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_MandateStatusProperty {
+  Active = 'active',
+  Inactive = 'inactive',
+  Pending = 'pending'
+}
+
+export enum Stripe_MandateTypeProperty {
+  MultiUse = 'multi_use',
+  SingleUse = 'single_use'
+}
+
+export enum Stripe_SetupAttemptPaymentMethodDetailsBancontactPreferredLanguageProperty {
+  De = 'de',
+  En = 'en',
+  Fr = 'fr',
+  Nl = 'nl'
+}
+
+export type Stripe_SetupAttemptPaymentMethodDetailsBoleto = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsBoleto';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_SetupAttemptPaymentMethodDetailsCard = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsCard';
+  three_d_secure?: Maybe<Stripe_ThreeDSecureDetails>;
+};
+
+export type Stripe_ThreeDSecureDetails = {
+  __typename?: 'Stripe_ThreeDSecureDetails';
+  /**
+   * For authenticated transactions: how the customer was authenticated by
+   * the issuing bank.
+   */
+  authentication_flow?: Maybe<Stripe_ThreeDSecureDetailsAuthenticationFlowProperty>;
+  /** Indicates the outcome of 3D Secure authentication. */
+  result?: Maybe<Stripe_ThreeDSecureDetailsResultProperty>;
+  /**
+   * Additional information about why 3D Secure succeeded or failed based
+   * on the `result`.
+   */
+  result_reason?: Maybe<Stripe_ThreeDSecureDetailsResultReasonProperty>;
+  /** The version of 3D Secure that was used. */
+  version?: Maybe<Stripe_ThreeDSecureDetailsVersionProperty>;
+};
+
+export enum Stripe_ThreeDSecureDetailsAuthenticationFlowProperty {
+  Challenge = 'challenge',
+  Frictionless = 'frictionless'
+}
+
+export enum Stripe_ThreeDSecureDetailsResultProperty {
+  AttemptAcknowledged = 'attempt_acknowledged',
+  Authenticated = 'authenticated',
+  Failed = 'failed',
+  NotSupported = 'not_supported',
+  ProcessingError = 'processing_error'
+}
+
+export enum Stripe_ThreeDSecureDetailsResultReasonProperty {
+  Abandoned = 'abandoned',
+  Bypassed = 'bypassed',
+  Canceled = 'canceled',
+  CardNotEnrolled = 'card_not_enrolled',
+  NetworkNotSupported = 'network_not_supported',
+  ProtocolError = 'protocol_error',
+  Rejected = 'rejected'
+}
+
+export enum Stripe_ThreeDSecureDetailsVersionProperty {
+  Onedot0Dot2 = 'ONEDOT0DOT2',
+  Twodot1Dot0 = 'TWODOT1DOT0',
+  Twodot2Dot0 = 'TWODOT2DOT0'
+}
+
+export type Stripe_SetupAttemptPaymentMethodDetailsCardPresent = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsCardPresent';
+  generated_card?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsCardPresentGeneratedCardProperty>;
+};
+
+export type Stripe_SetupAttemptPaymentMethodDetailsCardPresentGeneratedCardProperty = WrappedString | Stripe_PaymentMethod;
+
+export type Stripe_SetupAttemptPaymentMethodDetailsIdeal = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsIdeal';
+  /** The customer's bank. Can be one of `abn_amro`, `asn_bank`, `bunq`, `handelsbanken`, `ing`, `knab`, `moneyou`, `rabobank`, `regiobank`, `revolut`, `sns_bank`, `triodos_bank`, or `van_lanschot`. */
+  bank?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsIdealBankProperty>;
+  /** The Bank Identifier Code of the customer's bank. */
+  bic?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsIdealBicProperty>;
+  generated_sepa_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsIdealGeneratedSepaDebitProperty>;
+  generated_sepa_debit_mandate?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsIdealGeneratedSepaDebitMandateProperty>;
+  /** Last four characters of the IBAN. */
+  iban_last4?: Maybe<Scalars['String']>;
+  /**
+   * Owner's verified full name. Values are verified or provided by iDEAL directly
+   * (if supported) at the time of authorization or settlement. They cannot be set or mutated.
+   */
+  verified_name?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_SetupAttemptPaymentMethodDetailsIdealBankProperty {
+  AbnAmro = 'abn_amro',
+  AsnBank = 'asn_bank',
+  Bunq = 'bunq',
+  Handelsbanken = 'handelsbanken',
+  Ing = 'ing',
+  Knab = 'knab',
+  Moneyou = 'moneyou',
+  Rabobank = 'rabobank',
+  Regiobank = 'regiobank',
+  Revolut = 'revolut',
+  SnsBank = 'sns_bank',
+  TriodosBank = 'triodos_bank',
+  VanLanschot = 'van_lanschot'
+}
+
+export enum Stripe_SetupAttemptPaymentMethodDetailsIdealBicProperty {
+  Abnanl2A = 'ABNANL2A',
+  Asnbnl21 = 'ASNBNL21',
+  Bunqnl2A = 'BUNQNL2A',
+  Fvlbnl22 = 'FVLBNL22',
+  Handnl2A = 'HANDNL2A',
+  Ingbnl2A = 'INGBNL2A',
+  Knabnl2H = 'KNABNL2H',
+  Moyonl21 = 'MOYONL21',
+  Rabonl2U = 'RABONL2U',
+  Rbrbnl21 = 'RBRBNL21',
+  Revolt21 = 'REVOLT21',
+  Snsbnl2A = 'SNSBNL2A',
+  Trionl2U = 'TRIONL2U'
+}
+
+export type Stripe_SetupAttemptPaymentMethodDetailsIdealGeneratedSepaDebitProperty = WrappedString | Stripe_PaymentMethod;
+
+export type Stripe_SetupAttemptPaymentMethodDetailsIdealGeneratedSepaDebitMandateProperty = WrappedString | Stripe_Mandate;
+
+export type Stripe_SetupAttemptPaymentMethodDetailsSepaDebit = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsSepaDebit';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_SetupAttemptPaymentMethodDetailsSofort = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsSofort';
+  /** Bank code of bank associated with the bank account. */
+  bank_code?: Maybe<Scalars['String']>;
+  /** Name of the bank associated with the bank account. */
+  bank_name?: Maybe<Scalars['String']>;
+  /** Bank Identifier Code of the bank associated with the bank account. */
+  bic?: Maybe<Scalars['String']>;
+  generated_sepa_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsSofortGeneratedSepaDebitProperty>;
+  generated_sepa_debit_mandate?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsSofortGeneratedSepaDebitMandateProperty>;
+  /** Last four characters of the IBAN. */
+  iban_last4?: Maybe<Scalars['String']>;
+  /**
+   * Preferred language of the Sofort authorization page that the customer is redirected to.
+   * Can be one of `en`, `de`, `fr`, or `nl`
+   */
+  preferred_language?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsSofortPreferredLanguageProperty>;
+  /**
+   * Owner's verified full name. Values are verified or provided by Sofort directly
+   * (if supported) at the time of authorization or settlement. They cannot be set or mutated.
+   */
+  verified_name?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SetupAttemptPaymentMethodDetailsSofortGeneratedSepaDebitProperty = WrappedString | Stripe_PaymentMethod;
+
+export type Stripe_SetupAttemptPaymentMethodDetailsSofortGeneratedSepaDebitMandateProperty = WrappedString | Stripe_Mandate;
+
+export enum Stripe_SetupAttemptPaymentMethodDetailsSofortPreferredLanguageProperty {
+  De = 'de',
+  En = 'en',
+  Fr = 'fr',
+  Nl = 'nl'
+}
+
+export type Stripe_SetupAttemptPaymentMethodDetailsUsBankAccount = {
+  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsUsBankAccount';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_ApiErrors = {
+  __typename?: 'Stripe_ApiErrors';
+  /** For card errors, the ID of the failed charge. */
+  charge?: Maybe<Scalars['String']>;
+  /** For some errors that could be handled programmatically, a short string indicating the [error code](https://stripe.com/docs/error-codes) reported. */
+  code?: Maybe<Scalars['String']>;
+  /** For card errors resulting from a card issuer decline, a short string indicating the [card issuer's reason for the decline](https://stripe.com/docs/declines#issuer-declines) if they provide one. */
+  decline_code?: Maybe<Scalars['String']>;
+  /** A URL to more information about the [error code](https://stripe.com/docs/error-codes) reported. */
+  doc_url?: Maybe<Scalars['String']>;
+  /** A human-readable message providing more details about the error. For card errors, these messages can be shown to your users. */
+  message?: Maybe<Scalars['String']>;
+  /** If the error is parameter-specific, the parameter related to the error. For example, you can use this to display a message near the correct form field. */
+  param?: Maybe<Scalars['String']>;
+  payment_intent?: Maybe<Stripe_PaymentIntent>;
+  payment_method?: Maybe<Stripe_PaymentMethod>;
+  /** If the error is specific to the type of payment method, the payment method type that had a problem. This field is only populated for invoice-related errors. */
+  payment_method_type?: Maybe<Scalars['String']>;
+  setup_intent?: Maybe<Stripe_SetupIntent>;
+  source?: Maybe<Stripe_ApiErrorsSourceProperty>;
+  /** The type of error returned. One of `api_error`, `card_error`, `idempotency_error`, or `invalid_request_error` */
+  type?: Maybe<Stripe_ApiErrorsTypeProperty>;
+};
+
+export type Stripe_PaymentIntent = {
+  __typename?: 'Stripe_PaymentIntent';
+  /** Amount intended to be collected by this PaymentIntent. A positive integer representing how much to charge in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal) (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency). The minimum amount is $0.50 US or [equivalent in charge currency](https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts). The amount value supports up to eight digits (e.g., a value of 99999999 for a USD charge of $999,999.99). */
+  amount?: Maybe<Scalars['Int']>;
+  /** Amount that can be captured from this PaymentIntent. */
+  amount_capturable?: Maybe<Scalars['Int']>;
+  /** Amount that was collected by this PaymentIntent. */
+  amount_received?: Maybe<Scalars['Int']>;
+  application?: Maybe<Stripe_PaymentIntentApplicationProperty>;
+  /** The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total payment amount. For more information, see the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts). */
+  application_fee_amount?: Maybe<Scalars['Int']>;
+  automatic_payment_methods?: Maybe<Stripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntent>;
+  /** Populated when `status` is `canceled`, this is the time at which the PaymentIntent was canceled. Measured in seconds since the Unix epoch. */
+  canceled_at?: Maybe<Scalars['Int']>;
+  /** Reason for cancellation of this PaymentIntent, either user-provided (`duplicate`, `fraudulent`, `requested_by_customer`, or `abandoned`) or generated by Stripe internally (`failed_invoice`, `void_invoice`, or `automatic`). */
+  cancellation_reason?: Maybe<Stripe_PaymentIntentCancellationReasonProperty>;
+  /** Controls when the funds will be captured from the customer's account. */
+  capture_method?: Maybe<Stripe_PaymentIntentCaptureMethodProperty>;
+  /** Charges that were created by this PaymentIntent, if any. */
+  charges?: Maybe<Stripe_PaymentIntentChargesProperty>;
+  /**
+   * The client secret of this PaymentIntent. Used for client-side retrieval using a publishable key.
+   *
+   * The client secret can be used to complete a payment from your frontend. It should not be stored, logged, embedded in URLs, or exposed to anyone other than the customer. Make sure that you have TLS enabled on any page that includes the client secret.
+   *
+   * Refer to our docs to [accept a payment](https://stripe.com/docs/payments/accept-a-payment?integration=elements) and learn about how `client_secret` should be handled.
+   */
+  client_secret?: Maybe<Scalars['String']>;
+  confirmation_method?: Maybe<Stripe_PaymentIntentConfirmationMethodProperty>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
+  currency?: Maybe<Scalars['String']>;
+  customer?: Maybe<Scalars['String']>;
+  /** An arbitrary string attached to the object. Often useful for displaying to users. */
+  description?: Maybe<Scalars['String']>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  invoice?: Maybe<Stripe_PaymentIntentInvoiceProperty>;
+  last_payment_error?: Maybe<Stripe_ApiErrors>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. For more information, see the [documentation](https://stripe.com/docs/payments/payment-intents/creating-payment-intents#storing-information-in-metadata). */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  next_action?: Maybe<Stripe_PaymentIntentNextAction>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_PaymentIntentObjectProperty>;
+  on_behalf_of?: Maybe<Stripe_PaymentIntentOnBehalfOfProperty>;
+  payment_method?: Maybe<Stripe_PaymentIntentPaymentMethodProperty>;
+  payment_method_options?: Maybe<Stripe_PaymentIntentPaymentMethodOptions>;
+  /** The list of payment method types (e.g. card) that this PaymentIntent is allowed to use. */
+  payment_method_types?: Maybe<Array<Maybe<Scalars['String']>>>;
+  processing?: Maybe<Stripe_PaymentIntentProcessing>;
+  /** Email address that the receipt for the resulting payment will be sent to. If `receipt_email` is specified for a payment in live mode, a receipt will be sent regardless of your [email settings](https://dashboard.stripe.com/account/emails). */
+  receipt_email?: Maybe<Scalars['String']>;
+  review?: Maybe<Stripe_PaymentIntentReviewProperty>;
+  /**
+   * Indicates that you intend to make future payments with this PaymentIntent's payment method.
+   *
+   * Providing this parameter will [attach the payment method](https://stripe.com/docs/payments/save-during-payment) to the PaymentIntent's Customer, if present, after the PaymentIntent is confirmed and any required actions from the user are complete. If no Customer was provided, the payment method can still be [attached](https://stripe.com/docs/api/payment_methods/attach) to a Customer after the transaction completes.
+   *
+   * When processing card payments, Stripe also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as [SCA](https://stripe.com/docs/strong-customer-authentication).
+   */
+  setup_future_usage?: Maybe<Stripe_PaymentIntentSetupFutureUsageProperty>;
+  shipping?: Maybe<Stripe_Shipping>;
+  /** For non-card charges, you can use this value as the complete description that appears on your customers’ statements. Must contain at least one letter, maximum 22 characters. */
+  statement_descriptor?: Maybe<Scalars['String']>;
+  /** Provides information about a card payment that customers see on their statements. Concatenated with the prefix (shortened descriptor) or statement descriptor that’s set on the account to form the complete statement descriptor. Maximum 22 characters for the concatenated descriptor. */
+  statement_descriptor_suffix?: Maybe<Scalars['String']>;
+  /** Status of this PaymentIntent, one of `requires_payment_method`, `requires_confirmation`, `requires_action`, `processing`, `requires_capture`, `canceled`, or `succeeded`. Read more about each PaymentIntent [status](https://stripe.com/docs/payments/intents#intent-statuses). */
+  status?: Maybe<Stripe_PaymentIntentStatusProperty>;
+  transfer_data?: Maybe<Stripe_TransferData>;
+  /** A string that identifies the resulting payment as part of a group. See the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts) for details. */
+  transfer_group?: Maybe<Scalars['String']>;
+  /** The Stripe checkout session associated with this payment. */
+  session?: Maybe<Stripe_CheckoutSession>;
+  /** The ShipEngine label associated with this payment. */
+  shipment?: Maybe<ShipEngine_Label>;
+};
+
+export type Stripe_PaymentIntentApplicationProperty = WrappedString | Stripe_Application;
+
+export type Stripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntent = {
+  __typename?: 'Stripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntent';
+  /** Automatically calculates compatible payment methods */
+  enabled?: Maybe<Scalars['Boolean']>;
+};
+
+export enum Stripe_PaymentIntentCancellationReasonProperty {
+  Abandoned = 'abandoned',
+  Automatic = 'automatic',
+  Duplicate = 'duplicate',
+  FailedInvoice = 'failed_invoice',
+  Fraudulent = 'fraudulent',
+  RequestedByCustomer = 'requested_by_customer',
+  VoidInvoice = 'void_invoice'
+}
+
+export enum Stripe_PaymentIntentCaptureMethodProperty {
+  Automatic = 'automatic',
+  Manual = 'manual'
+}
+
+/** Charges that were created by this PaymentIntent, if any. */
+export type Stripe_PaymentIntentChargesProperty = {
+  __typename?: 'Stripe_PaymentIntentChargesProperty';
+  /** This list only contains the latest charge, even if there were previously multiple unsuccessful charges. To view all previous charges for a PaymentIntent, you can filter the charges list using the `payment_intent` [parameter](https://stripe.com/docs/api/charges/list#list_charges-payment_intent). */
+  data: Array<Stripe_Charge>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_PaymentIntentChargesObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export type Stripe_Charge = {
+  __typename?: 'Stripe_Charge';
+  /** Amount intended to be collected by this payment. A positive integer representing how much to charge in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal) (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency). The minimum amount is $0.50 US or [equivalent in charge currency](https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts). The amount value supports up to eight digits (e.g., a value of 99999999 for a USD charge of $999,999.99). */
+  amount?: Maybe<Scalars['Int']>;
+  /** Amount in %s captured (can be less than the amount attribute on the charge if a partial capture was made). */
+  amount_captured?: Maybe<Scalars['Int']>;
+  /** Amount in %s refunded (can be less than the amount attribute on the charge if a partial refund was issued). */
+  amount_refunded?: Maybe<Scalars['Int']>;
+  application?: Maybe<Stripe_ChargeApplicationProperty>;
+  application_fee?: Maybe<Stripe_ChargeApplicationFeeProperty>;
+  /** The amount of the application fee (if any) requested for the charge. [See the Connect documentation](https://stripe.com/docs/connect/direct-charges#collecting-fees) for details. */
+  application_fee_amount?: Maybe<Scalars['Int']>;
+  balance_transaction?: Maybe<Stripe_ChargeBalanceTransactionProperty>;
+  billing_details?: Maybe<Stripe_BillingDetails>;
+  /** The full statement descriptor that is passed to card networks, and that is displayed on your customers' credit card and bank statements. Allows you to see what the statement descriptor looks like after the static and dynamic portions are combined. */
+  calculated_statement_descriptor?: Maybe<Scalars['String']>;
+  /** If the charge was created without capturing, this Boolean represents whether it is still uncaptured or has since been captured. */
+  captured?: Maybe<Scalars['Boolean']>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
+  currency?: Maybe<Scalars['String']>;
+  customer?: Maybe<Stripe_ChargeCustomerProperty>;
+  /** An arbitrary string attached to the object. Often useful for displaying to users. */
+  description?: Maybe<Scalars['String']>;
+  /** Whether the charge has been disputed. */
+  disputed?: Maybe<Scalars['Boolean']>;
+  failure_balance_transaction?: Maybe<Stripe_ChargeFailureBalanceTransactionProperty>;
+  /** Error code explaining reason for charge failure if available (see [the errors section](https://stripe.com/docs/api#errors) for a list of codes). */
+  failure_code?: Maybe<Scalars['String']>;
+  /** Message to user further explaining reason for charge failure if available. */
+  failure_message?: Maybe<Scalars['String']>;
+  fraud_details?: Maybe<Stripe_ChargeFraudDetails>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  invoice?: Maybe<Stripe_ChargeInvoiceProperty>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_ChargeObjectProperty>;
+  on_behalf_of?: Maybe<Stripe_ChargeOnBehalfOfProperty>;
+  order?: Maybe<Stripe_ChargeOrderProperty>;
+  outcome?: Maybe<Stripe_ChargeOutcome>;
+  /** `true` if the charge succeeded, or was successfully authorized for later capture. */
+  paid?: Maybe<Scalars['Boolean']>;
+  payment_intent?: Maybe<Stripe_ChargePaymentIntentProperty>;
+  /** ID of the payment method used in this charge. */
+  payment_method?: Maybe<Scalars['String']>;
+  payment_method_details?: Maybe<Stripe_PaymentMethodDetails>;
+  /** This is the email address that the receipt for this charge was sent to. */
+  receipt_email?: Maybe<Scalars['String']>;
+  /** This is the transaction number that appears on email receipts sent for this charge. This attribute will be `null` until a receipt has been sent. */
+  receipt_number?: Maybe<Scalars['String']>;
+  /** This is the URL to view the receipt for this charge. The receipt is kept up-to-date to the latest state of the charge, including any refunds. If the charge is for an Invoice, the receipt will be stylized as an Invoice receipt. */
+  receipt_url?: Maybe<Scalars['String']>;
+  /** Whether the charge has been fully refunded. If the charge is only partially refunded, this attribute will still be false. */
+  refunded?: Maybe<Scalars['Boolean']>;
+  /** A list of refunds that have been applied to the charge. */
+  refunds?: Maybe<Stripe_ChargeRefundsProperty>;
+  review?: Maybe<Stripe_ChargeReviewProperty>;
+  shipping?: Maybe<Stripe_Shipping>;
+  source_transfer?: Maybe<Stripe_ChargeSourceTransferProperty>;
+  /** For card charges, use `statement_descriptor_suffix` instead. Otherwise, you can use this value as the complete description of a charge on your customers’ statements. Must contain at least one letter, maximum 22 characters. */
+  statement_descriptor?: Maybe<Scalars['String']>;
+  /** Provides information about the charge that customers see on their statements. Concatenated with the prefix (shortened descriptor) or statement descriptor that’s set on the account to form the complete statement descriptor. Maximum 22 characters for the concatenated descriptor. */
+  statement_descriptor_suffix?: Maybe<Scalars['String']>;
+  /** The status of the payment is either `succeeded`, `pending`, or `failed`. */
+  status?: Maybe<Stripe_ChargeStatusProperty>;
+  transfer?: Maybe<Stripe_ChargeTransferProperty>;
+  transfer_data?: Maybe<Stripe_ChargeTransferData>;
+  /** A string that identifies this transaction as part of a group. See the [Connect documentation](https://stripe.com/docs/connect/charges-transfers#transfer-options) for details. */
+  transfer_group?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_ChargeApplicationProperty = WrappedString | Stripe_Application;
+
+export type Stripe_ChargeApplicationFeeProperty = WrappedString | Stripe_ApplicationFee;
+
+export type Stripe_ApplicationFee = {
+  __typename?: 'Stripe_ApplicationFee';
+  account?: Maybe<Stripe_ApplicationFeeAccountProperty>;
+  /** Amount earned, in %s. */
+  amount?: Maybe<Scalars['Int']>;
+  /** Amount in %s refunded (can be less than the amount attribute on the fee if a partial refund was issued) */
+  amount_refunded?: Maybe<Scalars['Int']>;
+  application?: Maybe<Stripe_ApplicationFeeApplicationProperty>;
+  balance_transaction?: Maybe<Stripe_ApplicationFeeBalanceTransactionProperty>;
+  charge?: Maybe<Stripe_ApplicationFeeChargeProperty>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
+  currency?: Maybe<Scalars['String']>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_ApplicationFeeObjectProperty>;
+  originating_transaction?: Maybe<Stripe_ApplicationFeeOriginatingTransactionProperty>;
+  /** Whether the fee has been fully refunded. If the fee is only partially refunded, this attribute will still be false. */
+  refunded?: Maybe<Scalars['Boolean']>;
+  /** A list of refunds that have been applied to the fee. */
+  refunds?: Maybe<Stripe_ApplicationFeeRefundsProperty>;
+};
+
+export type Stripe_ApplicationFeeAccountProperty = WrappedString | Stripe_Account;
 
 export type Stripe_ApplicationFeeApplicationProperty = WrappedString | Stripe_Application;
 
@@ -7085,408 +7222,6 @@ export enum Stripe_TopupObjectProperty {
   Topup = 'topup'
 }
 
-export type Stripe_Source = {
-  __typename?: 'Stripe_Source';
-  ach_credit_transfer?: Maybe<Stripe_SourceTypeAchCreditTransfer>;
-  ach_debit?: Maybe<Stripe_SourceTypeAchDebit>;
-  acss_debit?: Maybe<Stripe_SourceTypeAcssDebit>;
-  alipay?: Maybe<Stripe_SourceTypeAlipay>;
-  /** A positive integer in the smallest currency unit (that is, 100 cents for $1.00, or 1 for ¥1, Japanese Yen being a zero-decimal currency) representing the total amount associated with the source. This is the amount for which the source will be chargeable once ready. Required for `single_use` sources. */
-  amount?: Maybe<Scalars['Int']>;
-  au_becs_debit?: Maybe<Stripe_SourceTypeAuBecsDebit>;
-  bancontact?: Maybe<Stripe_SourceTypeBancontact>;
-  card?: Maybe<Stripe_SourceTypeCard>;
-  card_present?: Maybe<Stripe_SourceTypeCardPresent>;
-  /** The client secret of the source. Used for client-side retrieval using a publishable key. */
-  client_secret?: Maybe<Scalars['String']>;
-  code_verification?: Maybe<Stripe_SourceCodeVerificationFlow>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO code for the currency](https://stripe.com/docs/currencies) associated with the source. This is the currency for which the source will be chargeable once ready. Required for `single_use` sources. */
-  currency?: Maybe<Scalars['String']>;
-  /** The ID of the customer to which this source is attached. This will not be present when the source has not been attached to a customer. */
-  customer?: Maybe<Scalars['String']>;
-  eps?: Maybe<Stripe_SourceTypeEps>;
-  /** The authentication `flow` of the source. `flow` is one of `redirect`, `receiver`, `code_verification`, `none`. */
-  flow?: Maybe<Scalars['String']>;
-  giropay?: Maybe<Stripe_SourceTypeGiropay>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  ideal?: Maybe<Stripe_SourceTypeIdeal>;
-  klarna?: Maybe<Stripe_SourceTypeKlarna>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  multibanco?: Maybe<Stripe_SourceTypeMultibanco>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_SourceObjectProperty>;
-  owner?: Maybe<Stripe_SourceOwner>;
-  p24?: Maybe<Stripe_SourceTypeP24>;
-  receiver?: Maybe<Stripe_SourceReceiverFlow>;
-  redirect?: Maybe<Stripe_SourceRedirectFlow>;
-  sepa_debit?: Maybe<Stripe_SourceTypeSepaDebit>;
-  sofort?: Maybe<Stripe_SourceTypeSofort>;
-  source_order?: Maybe<Stripe_SourceOrder>;
-  /** Extra information about a source. This will appear on your customer's statement every time you charge the source. */
-  statement_descriptor?: Maybe<Scalars['String']>;
-  /** The status of the source, one of `canceled`, `chargeable`, `consumed`, `failed`, or `pending`. Only `chargeable` sources can be used to create a charge. */
-  status?: Maybe<Scalars['String']>;
-  three_d_secure?: Maybe<Stripe_SourceTypeThreeDSecure>;
-  /** The `type` of the source. The `type` is a payment method, one of `ach_credit_transfer`, `ach_debit`, `alipay`, `bancontact`, `card`, `card_present`, `eps`, `giropay`, `ideal`, `multibanco`, `klarna`, `p24`, `sepa_debit`, `sofort`, `three_d_secure`, or `wechat`. An additional hash is included on the source with a name matching this value. It contains additional information specific to the [payment method](https://stripe.com/docs/sources) used. */
-  type?: Maybe<Stripe_SourceTypeProperty>;
-  /** Either `reusable` or `single_use`. Whether this source should be reusable or not. Some source types may or may not be reusable by construction, while others may leave the option at creation. If an incompatible value is passed, an error will be returned. */
-  usage?: Maybe<Scalars['String']>;
-  wechat?: Maybe<Stripe_SourceTypeWechat>;
-};
-
-export type Stripe_SourceTypeAchCreditTransfer = {
-  __typename?: 'Stripe_SourceTypeAchCreditTransfer';
-  account_number?: Maybe<Scalars['String']>;
-  bank_name?: Maybe<Scalars['String']>;
-  fingerprint?: Maybe<Scalars['String']>;
-  refund_account_holder_name?: Maybe<Scalars['String']>;
-  refund_account_holder_type?: Maybe<Scalars['String']>;
-  refund_routing_number?: Maybe<Scalars['String']>;
-  routing_number?: Maybe<Scalars['String']>;
-  swift_code?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeAchDebit = {
-  __typename?: 'Stripe_SourceTypeAchDebit';
-  bank_name?: Maybe<Scalars['String']>;
-  country?: Maybe<Scalars['String']>;
-  fingerprint?: Maybe<Scalars['String']>;
-  last4?: Maybe<Scalars['String']>;
-  routing_number?: Maybe<Scalars['String']>;
-  type?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeAcssDebit = {
-  __typename?: 'Stripe_SourceTypeAcssDebit';
-  bank_address_city?: Maybe<Scalars['String']>;
-  bank_address_line_1?: Maybe<Scalars['String']>;
-  bank_address_line_2?: Maybe<Scalars['String']>;
-  bank_address_postal_code?: Maybe<Scalars['String']>;
-  bank_name?: Maybe<Scalars['String']>;
-  category?: Maybe<Scalars['String']>;
-  country?: Maybe<Scalars['String']>;
-  fingerprint?: Maybe<Scalars['String']>;
-  last4?: Maybe<Scalars['String']>;
-  routing_number?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeAlipay = {
-  __typename?: 'Stripe_SourceTypeAlipay';
-  data_string?: Maybe<Scalars['String']>;
-  native_url?: Maybe<Scalars['String']>;
-  statement_descriptor?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeAuBecsDebit = {
-  __typename?: 'Stripe_SourceTypeAuBecsDebit';
-  bsb_number?: Maybe<Scalars['String']>;
-  fingerprint?: Maybe<Scalars['String']>;
-  last4?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeBancontact = {
-  __typename?: 'Stripe_SourceTypeBancontact';
-  bank_code?: Maybe<Scalars['String']>;
-  bank_name?: Maybe<Scalars['String']>;
-  bic?: Maybe<Scalars['String']>;
-  iban_last4?: Maybe<Scalars['String']>;
-  preferred_language?: Maybe<Scalars['String']>;
-  statement_descriptor?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeCard = {
-  __typename?: 'Stripe_SourceTypeCard';
-  address_line1_check?: Maybe<Scalars['String']>;
-  address_zip_check?: Maybe<Scalars['String']>;
-  brand?: Maybe<Scalars['String']>;
-  country?: Maybe<Scalars['String']>;
-  cvc_check?: Maybe<Scalars['String']>;
-  dynamic_last4?: Maybe<Scalars['String']>;
-  exp_month?: Maybe<Scalars['Int']>;
-  exp_year?: Maybe<Scalars['Int']>;
-  fingerprint?: Maybe<Scalars['String']>;
-  funding?: Maybe<Scalars['String']>;
-  last4?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  three_d_secure?: Maybe<Scalars['String']>;
-  tokenization_method?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeCardPresent = {
-  __typename?: 'Stripe_SourceTypeCardPresent';
-  application_cryptogram?: Maybe<Scalars['String']>;
-  application_preferred_name?: Maybe<Scalars['String']>;
-  authorization_code?: Maybe<Scalars['String']>;
-  authorization_response_code?: Maybe<Scalars['String']>;
-  brand?: Maybe<Scalars['String']>;
-  country?: Maybe<Scalars['String']>;
-  cvm_type?: Maybe<Scalars['String']>;
-  data_type?: Maybe<Scalars['String']>;
-  dedicated_file_name?: Maybe<Scalars['String']>;
-  emv_auth_data?: Maybe<Scalars['String']>;
-  evidence_customer_signature?: Maybe<Scalars['String']>;
-  evidence_transaction_certificate?: Maybe<Scalars['String']>;
-  exp_month?: Maybe<Scalars['Int']>;
-  exp_year?: Maybe<Scalars['Int']>;
-  fingerprint?: Maybe<Scalars['String']>;
-  funding?: Maybe<Scalars['String']>;
-  last4?: Maybe<Scalars['String']>;
-  pos_device_id?: Maybe<Scalars['String']>;
-  pos_entry_mode?: Maybe<Scalars['String']>;
-  read_method?: Maybe<Scalars['String']>;
-  reader?: Maybe<Scalars['String']>;
-  terminal_verification_results?: Maybe<Scalars['String']>;
-  transaction_status_information?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceCodeVerificationFlow = {
-  __typename?: 'Stripe_SourceCodeVerificationFlow';
-  /** The number of attempts remaining to authenticate the source object with a verification code. */
-  attempts_remaining?: Maybe<Scalars['Int']>;
-  /** The status of the code verification, either `pending` (awaiting verification, `attempts_remaining` should be greater than 0), `succeeded` (successful verification) or `failed` (failed verification, cannot be verified anymore as `attempts_remaining` should be 0). */
-  status?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeEps = {
-  __typename?: 'Stripe_SourceTypeEps';
-  reference?: Maybe<Scalars['String']>;
-  statement_descriptor?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeGiropay = {
-  __typename?: 'Stripe_SourceTypeGiropay';
-  bank_code?: Maybe<Scalars['String']>;
-  bank_name?: Maybe<Scalars['String']>;
-  bic?: Maybe<Scalars['String']>;
-  statement_descriptor?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeIdeal = {
-  __typename?: 'Stripe_SourceTypeIdeal';
-  bank?: Maybe<Scalars['String']>;
-  bic?: Maybe<Scalars['String']>;
-  iban_last4?: Maybe<Scalars['String']>;
-  statement_descriptor?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeKlarna = {
-  __typename?: 'Stripe_SourceTypeKlarna';
-  background_image_url?: Maybe<Scalars['String']>;
-  client_token?: Maybe<Scalars['String']>;
-  first_name?: Maybe<Scalars['String']>;
-  last_name?: Maybe<Scalars['String']>;
-  locale?: Maybe<Scalars['String']>;
-  logo_url?: Maybe<Scalars['String']>;
-  page_title?: Maybe<Scalars['String']>;
-  pay_later_asset_urls_descriptive?: Maybe<Scalars['String']>;
-  pay_later_asset_urls_standard?: Maybe<Scalars['String']>;
-  pay_later_name?: Maybe<Scalars['String']>;
-  pay_later_redirect_url?: Maybe<Scalars['String']>;
-  pay_now_asset_urls_descriptive?: Maybe<Scalars['String']>;
-  pay_now_asset_urls_standard?: Maybe<Scalars['String']>;
-  pay_now_name?: Maybe<Scalars['String']>;
-  pay_now_redirect_url?: Maybe<Scalars['String']>;
-  pay_over_time_asset_urls_descriptive?: Maybe<Scalars['String']>;
-  pay_over_time_asset_urls_standard?: Maybe<Scalars['String']>;
-  pay_over_time_name?: Maybe<Scalars['String']>;
-  pay_over_time_redirect_url?: Maybe<Scalars['String']>;
-  payment_method_categories?: Maybe<Scalars['String']>;
-  purchase_country?: Maybe<Scalars['String']>;
-  purchase_type?: Maybe<Scalars['String']>;
-  redirect_url?: Maybe<Scalars['String']>;
-  shipping_delay?: Maybe<Scalars['Int']>;
-  shipping_first_name?: Maybe<Scalars['String']>;
-  shipping_last_name?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeMultibanco = {
-  __typename?: 'Stripe_SourceTypeMultibanco';
-  entity?: Maybe<Scalars['String']>;
-  reference?: Maybe<Scalars['String']>;
-  refund_account_holder_address_city?: Maybe<Scalars['String']>;
-  refund_account_holder_address_country?: Maybe<Scalars['String']>;
-  refund_account_holder_address_line1?: Maybe<Scalars['String']>;
-  refund_account_holder_address_line2?: Maybe<Scalars['String']>;
-  refund_account_holder_address_postal_code?: Maybe<Scalars['String']>;
-  refund_account_holder_address_state?: Maybe<Scalars['String']>;
-  refund_account_holder_name?: Maybe<Scalars['String']>;
-  refund_iban?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_SourceObjectProperty {
-  Source = 'source'
-}
-
-export type Stripe_SourceOwner = {
-  __typename?: 'Stripe_SourceOwner';
-  address?: Maybe<Stripe_Address>;
-  /** Owner's email address. */
-  email?: Maybe<Scalars['String']>;
-  /** Owner's full name. */
-  name?: Maybe<Scalars['String']>;
-  /** Owner's phone number (including extension). */
-  phone?: Maybe<Scalars['String']>;
-  verified_address?: Maybe<Stripe_Address>;
-  /** Verified owner's email address. Verified values are verified or provided by the payment method directly (and if supported) at the time of authorization or settlement. They cannot be set or mutated. */
-  verified_email?: Maybe<Scalars['String']>;
-  /** Verified owner's full name. Verified values are verified or provided by the payment method directly (and if supported) at the time of authorization or settlement. They cannot be set or mutated. */
-  verified_name?: Maybe<Scalars['String']>;
-  /** Verified owner's phone number (including extension). Verified values are verified or provided by the payment method directly (and if supported) at the time of authorization or settlement. They cannot be set or mutated. */
-  verified_phone?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeP24 = {
-  __typename?: 'Stripe_SourceTypeP24';
-  reference?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceReceiverFlow = {
-  __typename?: 'Stripe_SourceReceiverFlow';
-  /** The address of the receiver source. This is the value that should be communicated to the customer to send their funds to. */
-  address?: Maybe<Scalars['String']>;
-  /** The total amount that was moved to your balance. This is almost always equal to the amount charged. In rare cases when customers deposit excess funds and we are unable to refund those, those funds get moved to your balance and show up in amount_charged as well. The amount charged is expressed in the source's currency. */
-  amount_charged?: Maybe<Scalars['Int']>;
-  /** The total amount received by the receiver source. `amount_received = amount_returned + amount_charged` should be true for consumed sources unless customers deposit excess funds. The amount received is expressed in the source's currency. */
-  amount_received?: Maybe<Scalars['Int']>;
-  /** The total amount that was returned to the customer. The amount returned is expressed in the source's currency. */
-  amount_returned?: Maybe<Scalars['Int']>;
-  /** Type of refund attribute method, one of `email`, `manual`, or `none`. */
-  refund_attributes_method?: Maybe<Scalars['String']>;
-  /** Type of refund attribute status, one of `missing`, `requested`, or `available`. */
-  refund_attributes_status?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceRedirectFlow = {
-  __typename?: 'Stripe_SourceRedirectFlow';
-  /** The failure reason for the redirect, either `user_abort` (the customer aborted or dropped out of the redirect flow), `declined` (the authentication failed or the transaction was declined), or `processing_error` (the redirect failed due to a technical error). Present only if the redirect status is `failed`. */
-  failure_reason?: Maybe<Scalars['String']>;
-  /** The URL you provide to redirect the customer to after they authenticated their payment. */
-  return_url?: Maybe<Scalars['String']>;
-  /** The status of the redirect, either `pending` (ready to be used by your customer to authenticate the transaction), `succeeded` (succesful authentication, cannot be reused) or `not_required` (redirect should not be used) or `failed` (failed authentication, cannot be reused). */
-  status?: Maybe<Scalars['String']>;
-  /** The URL provided to you to redirect a customer to as part of a `redirect` authentication flow. */
-  url?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeSepaDebit = {
-  __typename?: 'Stripe_SourceTypeSepaDebit';
-  bank_code?: Maybe<Scalars['String']>;
-  branch_code?: Maybe<Scalars['String']>;
-  country?: Maybe<Scalars['String']>;
-  fingerprint?: Maybe<Scalars['String']>;
-  last4?: Maybe<Scalars['String']>;
-  mandate_reference?: Maybe<Scalars['String']>;
-  mandate_url?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeSofort = {
-  __typename?: 'Stripe_SourceTypeSofort';
-  bank_code?: Maybe<Scalars['String']>;
-  bank_name?: Maybe<Scalars['String']>;
-  bic?: Maybe<Scalars['String']>;
-  country?: Maybe<Scalars['String']>;
-  iban_last4?: Maybe<Scalars['String']>;
-  preferred_language?: Maybe<Scalars['String']>;
-  statement_descriptor?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceOrder = {
-  __typename?: 'Stripe_SourceOrder';
-  /** A positive integer in the smallest currency unit (that is, 100 cents for $1.00, or 1 for ¥1, Japanese Yen being a zero-decimal currency) representing the total amount for the order. */
-  amount?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
-  currency?: Maybe<Scalars['String']>;
-  /** The email address of the customer placing the order. */
-  email?: Maybe<Scalars['String']>;
-  /** List of items constituting the order. */
-  items?: Maybe<Array<Maybe<Stripe_SourceOrderItem>>>;
-  shipping?: Maybe<Stripe_Shipping>;
-};
-
-export type Stripe_SourceOrderItem = {
-  __typename?: 'Stripe_SourceOrderItem';
-  /** The amount (price) for this order item. */
-  amount?: Maybe<Scalars['Int']>;
-  /** This currency of this order item. Required when `amount` is present. */
-  currency?: Maybe<Scalars['String']>;
-  /** Human-readable description for this order item. */
-  description?: Maybe<Scalars['String']>;
-  /** The ID of the associated object for this line item. Expandable if not null (e.g., expandable to a SKU). */
-  parent?: Maybe<Scalars['String']>;
-  /** The quantity of this order item. When type is `sku`, this is the number of instances of the SKU to be ordered. */
-  quantity?: Maybe<Scalars['Int']>;
-  /** The type of this order item. Must be `sku`, `tax`, or `shipping`. */
-  type?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_Shipping = {
-  __typename?: 'Stripe_Shipping';
-  address?: Maybe<Stripe_Address>;
-  /** The delivery service that shipped a physical product, such as Fedex, UPS, USPS, etc. */
-  carrier?: Maybe<Scalars['String']>;
-  /** Recipient name. */
-  name?: Maybe<Scalars['String']>;
-  /** Recipient phone (including extension). */
-  phone?: Maybe<Scalars['String']>;
-  /** The tracking number for a physical product, obtained from the delivery service. If multiple tracking numbers were generated for this purchase, please separate them with commas. */
-  tracking_number?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SourceTypeThreeDSecure = {
-  __typename?: 'Stripe_SourceTypeThreeDSecure';
-  address_line1_check?: Maybe<Scalars['String']>;
-  address_zip_check?: Maybe<Scalars['String']>;
-  authenticated?: Maybe<Scalars['Boolean']>;
-  brand?: Maybe<Scalars['String']>;
-  card?: Maybe<Scalars['String']>;
-  country?: Maybe<Scalars['String']>;
-  customer?: Maybe<Scalars['String']>;
-  cvc_check?: Maybe<Scalars['String']>;
-  dynamic_last4?: Maybe<Scalars['String']>;
-  exp_month?: Maybe<Scalars['Int']>;
-  exp_year?: Maybe<Scalars['Int']>;
-  fingerprint?: Maybe<Scalars['String']>;
-  funding?: Maybe<Scalars['String']>;
-  last4?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  three_d_secure?: Maybe<Scalars['String']>;
-  tokenization_method?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_SourceTypeProperty {
-  AchCreditTransfer = 'ach_credit_transfer',
-  AchDebit = 'ach_debit',
-  AcssDebit = 'acss_debit',
-  Alipay = 'alipay',
-  AuBecsDebit = 'au_becs_debit',
-  Bancontact = 'bancontact',
-  Card = 'card',
-  CardPresent = 'card_present',
-  Eps = 'eps',
-  Giropay = 'giropay',
-  Ideal = 'ideal',
-  Klarna = 'klarna',
-  Multibanco = 'multibanco',
-  P24 = 'p24',
-  SepaDebit = 'sepa_debit',
-  Sofort = 'sofort',
-  ThreeDSecure = 'three_d_secure',
-  Wechat = 'wechat'
-}
-
-export type Stripe_SourceTypeWechat = {
-  __typename?: 'Stripe_SourceTypeWechat';
-  prepay_id?: Maybe<Scalars['String']>;
-  qr_code_url?: Maybe<Scalars['String']>;
-  statement_descriptor?: Maybe<Scalars['String']>;
-};
-
 export enum Stripe_TopupStatusProperty {
   Canceled = 'canceled',
   Failed = 'failed',
@@ -7557,16 +7292,7 @@ export enum Stripe_ApplicationFeeRefundsObjectProperty {
 
 export type Stripe_ChargeBalanceTransactionProperty = WrappedString | Stripe_BalanceTransaction;
 
-export type Stripe_BillingDetails = {
-  __typename?: 'Stripe_BillingDetails';
-  address?: Maybe<Stripe_Address>;
-  /** Email address. */
-  email?: Maybe<Scalars['String']>;
-  /** Full name. */
-  name?: Maybe<Scalars['String']>;
-  /** Billing phone number (including extension). */
-  phone?: Maybe<Scalars['String']>;
-};
+export type Stripe_ChargeCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
 
 export type Stripe_ChargeFailureBalanceTransactionProperty = WrappedString | Stripe_BalanceTransaction;
 
@@ -7622,7 +7348,7 @@ export type Stripe_Invoice = {
   customer_name?: Maybe<Scalars['String']>;
   /** The customer's phone number. Until the invoice is finalized, this field will equal `customer.phone`. Once the invoice is finalized, this field will no longer be updated. */
   customer_phone?: Maybe<Scalars['String']>;
-  customer_shipping?: Maybe<Scalars['String']>;
+  customer_shipping?: Maybe<Scalars['JSONObject']>;
   /** The customer's tax exempt status. Until the invoice is finalized, this field will equal `customer.tax_exempt`. Once the invoice is finalized, this field will no longer be updated. */
   customer_tax_exempt?: Maybe<Stripe_InvoiceCustomerTaxExemptProperty>;
   /** The customer's tax IDs. Until the invoice is finalized, this field will contain the same tax IDs as `customer.tax_ids`. Once the invoice is finalized, this field will no longer be updated. */
@@ -7730,191 +7456,231 @@ export type Stripe_TaxId = {
 
 export type Stripe_TaxIdCustomerProperty = WrappedString | Stripe_Customer;
 
-export type Stripe_Customer = {
-  __typename?: 'Stripe_Customer';
-  address?: Maybe<Stripe_Address>;
-  /** Current balance, if any, being stored on the customer. If negative, the customer has credit to apply to their next invoice. If positive, the customer has an amount owed that will be added to their next invoice. The balance does not refer to any unpaid invoices; it solely takes into account amounts that have yet to be successfully applied to any invoice. This balance is only taken into account as invoices are finalized. */
-  balance?: Maybe<Scalars['Int']>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO code for the currency](https://stripe.com/docs/currencies) the customer can be charged in for recurring billing purposes. */
-  currency?: Maybe<Scalars['String']>;
-  default_source?: Maybe<Stripe_CustomerDefaultSourceProperty>;
-  /**
-   * When the customer's latest invoice is billed by charging automatically, `delinquent` is `true` if the invoice's latest charge failed. When the customer's latest invoice is billed by sending an invoice, `delinquent` is `true` if the invoice isn't paid by its due date.
-   *
-   * If an invoice is marked uncollectible by [dunning](https://stripe.com/docs/billing/automatic-collection), `delinquent` doesn't get reset to `false`.
-   */
-  delinquent?: Maybe<Scalars['Boolean']>;
-  /** An arbitrary string attached to the object. Often useful for displaying to users. */
-  description?: Maybe<Scalars['String']>;
-  discount?: Maybe<Stripe_Discount>;
-  /** The customer's email address. */
-  email?: Maybe<Scalars['String']>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** The prefix for the customer used to generate unique invoice numbers. */
-  invoice_prefix?: Maybe<Scalars['String']>;
-  invoice_settings?: Maybe<Stripe_InvoiceSettingCustomerSetting>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  /** The customer's full name or business name. */
-  name?: Maybe<Scalars['String']>;
-  /** The suffix of the customer's next invoice number, e.g., 0001. */
-  next_invoice_sequence?: Maybe<Scalars['Int']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_CustomerObjectProperty>;
-  /** The customer's phone number. */
-  phone?: Maybe<Scalars['String']>;
-  /** The customer's preferred locales (languages), ordered by preference. */
-  preferred_locales?: Maybe<Array<Maybe<Scalars['String']>>>;
-  shipping?: Maybe<Stripe_Shipping>;
-  /** The customer's payment sources, if any. */
-  sources?: Maybe<Stripe_CustomerSourcesProperty>;
-  /** The customer's current subscriptions, if any. */
-  subscriptions?: Maybe<Stripe_CustomerSubscriptionsProperty>;
-  tax?: Maybe<Stripe_CustomerTax>;
-  /** Describes the customer's tax exemption status. One of `none`, `exempt`, or `reverse`. When set to `reverse`, invoice and receipt PDFs include the text **"Reverse charge"**. */
-  tax_exempt?: Maybe<Stripe_CustomerTaxExemptProperty>;
-  /** The customer's tax IDs. */
-  tax_ids?: Maybe<Stripe_CustomerTaxIdsProperty>;
-  test_clock?: Maybe<Stripe_CustomerTestClockProperty>;
-};
-
-export type Stripe_CustomerDefaultSourceProperty = WrappedString | Stripe_AlipayAccount | Stripe_BankAccount | Stripe_BitcoinReceiver | Stripe_Card | Stripe_Source;
-
-export type Stripe_AlipayAccount = {
-  __typename?: 'Stripe_AlipayAccount';
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  customer?: Maybe<Scalars['String']>;
-  /** Uniquely identifies the account and will be the same across all Alipay account objects that are linked to the same Alipay account. */
-  fingerprint?: Maybe<Scalars['String']>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_AlipayAccountObjectProperty>;
-  /** If the Alipay account object is not reusable, the exact amount that you can create a charge for. */
-  payment_amount?: Maybe<Scalars['Int']>;
-  /** If the Alipay account object is not reusable, the exact currency that you can create a charge for. */
-  payment_currency?: Maybe<Scalars['String']>;
-  /** True if you can create multiple payments using this account. If the account is reusable, then you can freely choose the amount of each payment. */
-  reusable?: Maybe<Scalars['Boolean']>;
-  /** Whether this Alipay account object has ever been used for a payment. */
-  used?: Maybe<Scalars['Boolean']>;
-  /** The username for the Alipay account. */
-  username?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_AlipayAccountObjectProperty {
-  AlipayAccount = 'alipay_account'
+export enum Stripe_TaxIdObjectProperty {
+  TaxId = 'tax_id'
 }
 
-export type Stripe_BitcoinReceiver = {
-  __typename?: 'Stripe_BitcoinReceiver';
-  /** True when this bitcoin receiver has received a non-zero amount of bitcoin. */
+export enum Stripe_TaxIdTypeProperty {
+  AeTrn = 'ae_trn',
+  AuAbn = 'au_abn',
+  AuArn = 'au_arn',
+  BgUic = 'bg_uic',
+  BrCnpj = 'br_cnpj',
+  BrCpf = 'br_cpf',
+  CaBn = 'ca_bn',
+  CaGstHst = 'ca_gst_hst',
+  CaPstBc = 'ca_pst_bc',
+  CaPstMb = 'ca_pst_mb',
+  CaPstSk = 'ca_pst_sk',
+  CaQst = 'ca_qst',
+  ChVat = 'ch_vat',
+  ClTin = 'cl_tin',
+  EsCif = 'es_cif',
+  EuVat = 'eu_vat',
+  GbVat = 'gb_vat',
+  GeVat = 'ge_vat',
+  HkBr = 'hk_br',
+  HuTin = 'hu_tin',
+  IdNpwp = 'id_npwp',
+  IlVat = 'il_vat',
+  InGst = 'in_gst',
+  IsVat = 'is_vat',
+  JpCn = 'jp_cn',
+  JpRn = 'jp_rn',
+  KrBrn = 'kr_brn',
+  LiUid = 'li_uid',
+  MxRfc = 'mx_rfc',
+  MyFrp = 'my_frp',
+  MyItn = 'my_itn',
+  MySst = 'my_sst',
+  NoVat = 'no_vat',
+  NzGst = 'nz_gst',
+  RuInn = 'ru_inn',
+  RuKpp = 'ru_kpp',
+  SaVat = 'sa_vat',
+  SgGst = 'sg_gst',
+  SgUen = 'sg_uen',
+  SiTin = 'si_tin',
+  ThVat = 'th_vat',
+  TwVat = 'tw_vat',
+  UaVat = 'ua_vat',
+  Unknown = 'unknown',
+  UsEin = 'us_ein',
+  ZaVat = 'za_vat'
+}
+
+export type Stripe_TaxIdVerification = {
+  __typename?: 'Stripe_TaxIdVerification';
+  /** Verification status, one of `pending`, `verified`, `unverified`, or `unavailable`. */
+  status?: Maybe<Stripe_TaxIdVerificationStatusProperty>;
+  /** Verified address. */
+  verified_address?: Maybe<Scalars['String']>;
+  /** Verified name. */
+  verified_name?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_TaxIdVerificationStatusProperty {
+  Pending = 'pending',
+  Unavailable = 'unavailable',
+  Unverified = 'unverified',
+  Verified = 'verified'
+}
+
+export type Stripe_AutomaticTax = {
+  __typename?: 'Stripe_AutomaticTax';
+  /** Whether Stripe automatically computes tax on this invoice. */
+  enabled?: Maybe<Scalars['Boolean']>;
+  /** The status of the most recent automated tax calculation for this invoice. */
+  status?: Maybe<Stripe_AutomaticTaxStatusProperty>;
+};
+
+export enum Stripe_AutomaticTaxStatusProperty {
+  Complete = 'complete',
+  Failed = 'failed',
+  RequiresLocationInputs = 'requires_location_inputs'
+}
+
+export enum Stripe_InvoiceBillingReasonProperty {
+  AutomaticPendingInvoiceItemInvoice = 'automatic_pending_invoice_item_invoice',
+  Manual = 'manual',
+  QuoteAccept = 'quote_accept',
+  Subscription = 'subscription',
+  SubscriptionCreate = 'subscription_create',
+  SubscriptionCycle = 'subscription_cycle',
+  SubscriptionThreshold = 'subscription_threshold',
+  SubscriptionUpdate = 'subscription_update',
+  Upcoming = 'upcoming'
+}
+
+export type Stripe_InvoiceChargeProperty = WrappedString | Stripe_Charge;
+
+export enum Stripe_InvoiceCollectionMethodProperty {
+  ChargeAutomatically = 'charge_automatically',
+  SendInvoice = 'send_invoice'
+}
+
+export enum Stripe_InvoiceCustomerTaxExemptProperty {
+  Exempt = 'exempt',
+  None = 'none',
+  Reverse = 'reverse'
+}
+
+export type Stripe_InvoicesResourceInvoiceTaxId = {
+  __typename?: 'Stripe_InvoicesResourceInvoiceTaxId';
+  /** The type of the tax ID, one of `eu_vat`, `br_cnpj`, `br_cpf`, `gb_vat`, `nz_gst`, `au_abn`, `au_arn`, `in_gst`, `no_vat`, `za_vat`, `ch_vat`, `mx_rfc`, `sg_uen`, `ru_inn`, `ru_kpp`, `ca_bn`, `hk_br`, `es_cif`, `tw_vat`, `th_vat`, `jp_cn`, `jp_rn`, `li_uid`, `my_itn`, `us_ein`, `kr_brn`, `ca_qst`, `ca_gst_hst`, `ca_pst_bc`, `ca_pst_mb`, `ca_pst_sk`, `my_sst`, `sg_gst`, `ae_trn`, `cl_tin`, `sa_vat`, `id_npwp`, `my_frp`, `il_vat`, `ge_vat`, `ua_vat`, `is_vat`, `bg_uic`, `hu_tin`, `si_tin`, or `unknown` */
+  type?: Maybe<Stripe_InvoicesResourceInvoiceTaxIdTypeProperty>;
+  /** The value of the tax ID. */
+  value?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_InvoicesResourceInvoiceTaxIdTypeProperty {
+  AeTrn = 'ae_trn',
+  AuAbn = 'au_abn',
+  AuArn = 'au_arn',
+  BgUic = 'bg_uic',
+  BrCnpj = 'br_cnpj',
+  BrCpf = 'br_cpf',
+  CaBn = 'ca_bn',
+  CaGstHst = 'ca_gst_hst',
+  CaPstBc = 'ca_pst_bc',
+  CaPstMb = 'ca_pst_mb',
+  CaPstSk = 'ca_pst_sk',
+  CaQst = 'ca_qst',
+  ChVat = 'ch_vat',
+  ClTin = 'cl_tin',
+  EsCif = 'es_cif',
+  EuVat = 'eu_vat',
+  GbVat = 'gb_vat',
+  GeVat = 'ge_vat',
+  HkBr = 'hk_br',
+  HuTin = 'hu_tin',
+  IdNpwp = 'id_npwp',
+  IlVat = 'il_vat',
+  InGst = 'in_gst',
+  IsVat = 'is_vat',
+  JpCn = 'jp_cn',
+  JpRn = 'jp_rn',
+  KrBrn = 'kr_brn',
+  LiUid = 'li_uid',
+  MxRfc = 'mx_rfc',
+  MyFrp = 'my_frp',
+  MyItn = 'my_itn',
+  MySst = 'my_sst',
+  NoVat = 'no_vat',
+  NzGst = 'nz_gst',
+  RuInn = 'ru_inn',
+  RuKpp = 'ru_kpp',
+  SaVat = 'sa_vat',
+  SgGst = 'sg_gst',
+  SgUen = 'sg_uen',
+  SiTin = 'si_tin',
+  ThVat = 'th_vat',
+  TwVat = 'tw_vat',
+  UaVat = 'ua_vat',
+  Unknown = 'unknown',
+  UsEin = 'us_ein',
+  ZaVat = 'za_vat'
+}
+
+export type Stripe_InvoiceDefaultPaymentMethodProperty = WrappedString | Stripe_PaymentMethod;
+
+export type Stripe_InvoiceDefaultSourceProperty = WrappedString | Stripe_AlipayAccount | Stripe_BankAccount | Stripe_BitcoinReceiver | Stripe_Card | Stripe_Source;
+
+export type Stripe_TaxRate = {
+  __typename?: 'Stripe_TaxRate';
+  /** Defaults to `true`. When set to `false`, this tax rate cannot be used with new applications or Checkout Sessions, but will still work for subscriptions and invoices that already have it set. */
   active?: Maybe<Scalars['Boolean']>;
-  /** The amount of `currency` that you are collecting as payment. */
-  amount?: Maybe<Scalars['Int']>;
-  /** The amount of `currency` to which `bitcoin_amount_received` has been converted. */
-  amount_received?: Maybe<Scalars['Int']>;
-  /** The amount of bitcoin that the customer should send to fill the receiver. The `bitcoin_amount` is denominated in Satoshi: there are 10^8 Satoshi in one bitcoin. */
-  bitcoin_amount?: Maybe<Scalars['Int']>;
-  /** The amount of bitcoin that has been sent by the customer to this receiver. */
-  bitcoin_amount_received?: Maybe<Scalars['Int']>;
-  /** This URI can be displayed to the customer as a clickable link (to activate their bitcoin client) or as a QR code (for mobile wallets). */
-  bitcoin_uri?: Maybe<Scalars['String']>;
+  /** Two-letter country code ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)). */
+  country?: Maybe<Scalars['String']>;
   /** Time at which the object was created. Measured in seconds since the Unix epoch. */
   created?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO code for the currency](https://stripe.com/docs/currencies) to which the bitcoin will be converted. */
-  currency?: Maybe<Scalars['String']>;
-  /** The customer ID of the bitcoin receiver. */
-  customer?: Maybe<Scalars['String']>;
-  /** An arbitrary string attached to the object. Often useful for displaying to users. */
+  /** An arbitrary string attached to the tax rate for your internal use only. It will not be visible to your customers. */
   description?: Maybe<Scalars['String']>;
-  /** The customer's email address, set by the API call that creates the receiver. */
-  email?: Maybe<Scalars['String']>;
-  /** This flag is initially false and updates to true when the customer sends the `bitcoin_amount` to this receiver. */
-  filled?: Maybe<Scalars['Boolean']>;
+  /** The display name of the tax rates as it will appear to your customer on their receipt email, PDF, and the hosted invoice page. */
+  display_name?: Maybe<Scalars['String']>;
   /** Unique identifier for the object. */
   id?: Maybe<Scalars['String']>;
-  /** A bitcoin address that is specific to this receiver. The customer can send bitcoin to this address to fill the receiver. */
-  inbound_address?: Maybe<Scalars['String']>;
+  /** This specifies if the tax rate is inclusive or exclusive. */
+  inclusive?: Maybe<Scalars['Boolean']>;
+  /** The jurisdiction for the tax rate. You can use this label field for tax reporting purposes. It also appears on your customer’s invoice. */
+  jurisdiction?: Maybe<Scalars['String']>;
   /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
   livemode?: Maybe<Scalars['Boolean']>;
   /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
   metadata?: Maybe<Scalars['JSONObject']>;
   /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_BitcoinReceiverObjectProperty>;
-  /** The ID of the payment created from the receiver, if any. Hidden when viewing the receiver with a publishable key. */
-  payment?: Maybe<Scalars['String']>;
-  /** The refund address of this bitcoin receiver. */
-  refund_address?: Maybe<Scalars['String']>;
-  /** A list with one entry for each time that the customer sent bitcoin to the receiver. Hidden when viewing the receiver with a publishable key. */
-  transactions?: Maybe<Stripe_BitcoinReceiverTransactionsProperty>;
-  /** This receiver contains uncaptured funds that can be used for a payment or refunded. */
-  uncaptured_funds?: Maybe<Scalars['Boolean']>;
-  /** Indicate if this source is used for payment. */
-  used_for_payment?: Maybe<Scalars['Boolean']>;
+  object?: Maybe<Stripe_TaxRateObjectProperty>;
+  /** This represents the tax rate percent out of 100. */
+  percentage?: Maybe<Scalars['Float']>;
+  /** [ISO 3166-2 subdivision code](https://en.wikipedia.org/wiki/ISO_3166-2:US), without country prefix. For example, "NY" for New York, United States. */
+  state?: Maybe<Scalars['String']>;
+  /** The high-level tax type, such as `vat` or `sales_tax`. */
+  tax_type?: Maybe<Stripe_TaxRateTaxTypeProperty>;
 };
 
-export enum Stripe_BitcoinReceiverObjectProperty {
-  BitcoinReceiver = 'bitcoin_receiver'
+export enum Stripe_TaxRateObjectProperty {
+  TaxRate = 'tax_rate'
 }
 
-/** A list with one entry for each time that the customer sent bitcoin to the receiver. Hidden when viewing the receiver with a publishable key. */
-export type Stripe_BitcoinReceiverTransactionsProperty = {
-  __typename?: 'Stripe_BitcoinReceiverTransactionsProperty';
-  /** Details about each object. */
-  data: Array<Stripe_BitcoinTransaction>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_BitcoinReceiverTransactionsObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export type Stripe_BitcoinTransaction = {
-  __typename?: 'Stripe_BitcoinTransaction';
-  /** The amount of `currency` that the transaction was converted to in real-time. */
-  amount?: Maybe<Scalars['Int']>;
-  /** The amount of bitcoin contained in the transaction. */
-  bitcoin_amount?: Maybe<Scalars['Int']>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO code for the currency](https://stripe.com/docs/currencies) to which this transaction was converted. */
-  currency?: Maybe<Scalars['String']>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_BitcoinTransactionObjectProperty>;
-  /** The receiver to which this transaction was sent. */
-  receiver?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_BitcoinTransactionObjectProperty {
-  BitcoinTransaction = 'bitcoin_transaction'
+export enum Stripe_TaxRateTaxTypeProperty {
+  Gst = 'gst',
+  Hst = 'hst',
+  Jct = 'jct',
+  Pst = 'pst',
+  Qst = 'qst',
+  Rst = 'rst',
+  SalesTax = 'sales_tax',
+  Vat = 'vat'
 }
 
-export enum Stripe_BitcoinReceiverTransactionsObjectProperty {
-  List = 'list'
-}
+export type Stripe_InvoiceDiscountsProperty = WrappedString | Stripe_Discount | Stripe_DeletedDiscount;
 
-export type Stripe_Discount = {
-  __typename?: 'Stripe_Discount';
+export type Stripe_DeletedDiscount = {
+  __typename?: 'Stripe_DeletedDiscount';
   /** The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode. Will not be present for subscription mode. */
   checkout_session?: Maybe<Scalars['String']>;
   coupon?: Maybe<Stripe_Coupon>;
-  customer?: Maybe<Scalars['String']>;
-  /** If the coupon has a duration of `repeating`, the date that this discount will end. If the coupon has a duration of `once` or `forever`, this attribute will be null. */
-  end?: Maybe<Scalars['Int']>;
+  customer?: Maybe<Stripe_DeletedDiscountCustomerProperty>;
   /** The ID of the discount object. Discounts cannot be fetched by ID. Use `expand[]=discounts` in API calls to expand discount IDs in an array. */
   id?: Maybe<Scalars['String']>;
   /** The invoice that the discount's coupon was applied to, if it was applied directly to a particular invoice. */
@@ -7922,817 +7688,778 @@ export type Stripe_Discount = {
   /** The invoice item `id` (or invoice line item `id` for invoice line items of type='subscription') that the discount's coupon was applied to, if it was applied directly to a particular invoice item or invoice line item. */
   invoice_item?: Maybe<Scalars['String']>;
   /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_DiscountObjectProperty>;
-  promotion_code?: Maybe<Stripe_DiscountPromotionCodeProperty>;
+  object?: Maybe<Stripe_DeletedDiscountObjectProperty>;
+  promotion_code?: Maybe<Stripe_DeletedDiscountPromotionCodeProperty>;
   /** Date that the coupon was applied. */
   start?: Maybe<Scalars['Int']>;
   /** The subscription that this coupon is applied to, if it is applied to a particular subscription. */
   subscription?: Maybe<Scalars['String']>;
 };
 
-export type Stripe_Coupon = {
-  __typename?: 'Stripe_Coupon';
-  /** Amount (in the `currency` specified) that will be taken off the subtotal of any invoices for this customer. */
-  amount_off?: Maybe<Scalars['Int']>;
-  applies_to?: Maybe<Stripe_CouponAppliesTo>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  /** If `amount_off` has been set, the three-letter [ISO code for the currency](https://stripe.com/docs/currencies) of the amount to take off. */
-  currency?: Maybe<Scalars['String']>;
-  /** One of `forever`, `once`, and `repeating`. Describes how long a customer who applies this coupon will get the discount. */
-  duration?: Maybe<Stripe_CouponDurationProperty>;
-  /** If `duration` is `repeating`, the number of months the coupon applies. Null if coupon `duration` is `forever` or `once`. */
-  duration_in_months?: Maybe<Scalars['Int']>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  /** Maximum number of times this coupon can be redeemed, in total, across all customers, before it is no longer valid. */
-  max_redemptions?: Maybe<Scalars['Int']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  /** Name of the coupon displayed to customers on for instance invoices or receipts. */
-  name?: Maybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_CouponObjectProperty>;
-  /** Percent that will be taken off the subtotal of any invoices for this customer for the duration of the coupon. For example, a coupon with percent_off of 50 will make a %s100 invoice %s50 instead. */
-  percent_off?: Maybe<Scalars['Float']>;
-  /** Date after which the coupon can no longer be redeemed. */
-  redeem_by?: Maybe<Scalars['Int']>;
-  /** Number of times this coupon has been applied to a customer. */
-  times_redeemed?: Maybe<Scalars['Int']>;
-  /** Taking account of the above properties, whether this coupon can still be applied to a customer. */
-  valid?: Maybe<Scalars['Boolean']>;
-};
+export type Stripe_DeletedDiscountCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
 
-export type Stripe_CouponAppliesTo = {
-  __typename?: 'Stripe_CouponAppliesTo';
-  /** A list of product IDs this coupon applies to */
-  products?: Maybe<Array<Maybe<Scalars['String']>>>;
-};
-
-export enum Stripe_CouponDurationProperty {
-  Forever = 'forever',
-  Once = 'once',
-  Repeating = 'repeating'
-}
-
-export enum Stripe_CouponObjectProperty {
-  Coupon = 'coupon'
-}
-
-export enum Stripe_DiscountObjectProperty {
+export enum Stripe_DeletedDiscountObjectProperty {
   Discount = 'discount'
 }
 
-export type Stripe_DiscountPromotionCodeProperty = WrappedString | Stripe_PromotionCode;
+export type Stripe_DeletedDiscountPromotionCodeProperty = WrappedString | Stripe_PromotionCode;
 
-export type Stripe_PromotionCode = {
-  __typename?: 'Stripe_PromotionCode';
-  /** Whether the promotion code is currently active. A promotion code is only active if the coupon is also valid. */
-  active?: Maybe<Scalars['Boolean']>;
-  /** The customer-facing code. Regardless of case, this code must be unique across all active promotion codes for each customer. */
-  code?: Maybe<Scalars['String']>;
-  coupon?: Maybe<Stripe_Coupon>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  customer?: Maybe<Stripe_PromotionCodeCustomerProperty>;
-  /** Date at which the promotion code can no longer be redeemed. */
-  expires_at?: Maybe<Scalars['Int']>;
+/** The individual line items that make up the invoice. `lines` is sorted as follows: invoice items in reverse chronological order, followed by the subscription, if any. */
+export type Stripe_InvoiceLinesProperty = {
+  __typename?: 'Stripe_InvoiceLinesProperty';
+  /** Details about each object. */
+  data: Array<Stripe_LineItem>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_InvoiceLinesObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export type Stripe_LineItem = {
+  __typename?: 'Stripe_LineItem';
+  /** The amount, in %s. */
+  amount?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
+  currency?: Maybe<Scalars['String']>;
+  /** An arbitrary string attached to the object. Often useful for displaying to users. */
+  description?: Maybe<Scalars['String']>;
+  /** The amount of discount calculated per discount for this line item. */
+  discount_amounts?: Maybe<Array<Maybe<Stripe_DiscountsResourceDiscountAmount>>>;
+  /** If true, discounts will apply to this line item. Always false for prorations. */
+  discountable?: Maybe<Scalars['Boolean']>;
+  /** The discounts applied to the invoice line item. Line item discounts are applied before invoice discounts. Use `expand[]=discounts` to expand each discount. */
+  discounts?: Maybe<Array<Maybe<Stripe_LineItemDiscountsProperty>>>;
   /** Unique identifier for the object. */
   id?: Maybe<Scalars['String']>;
+  /** The ID of the [invoice item](https://stripe.com/docs/api/invoiceitems) associated with this line item if any. */
+  invoice_item?: Maybe<Scalars['String']>;
   /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
   livemode?: Maybe<Scalars['Boolean']>;
-  /** Maximum number of times this promotion code can be redeemed. */
-  max_redemptions?: Maybe<Scalars['Int']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Note that for line items with `type=subscription` this will reflect the metadata of the subscription that caused the line item to be created. */
   metadata?: Maybe<Scalars['JSONObject']>;
   /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_PromotionCodeObjectProperty>;
-  restrictions?: Maybe<Stripe_PromotionCodesResourceRestrictions>;
-  /** Number of times this promotion code has been used. */
-  times_redeemed?: Maybe<Scalars['Int']>;
+  object?: Maybe<Stripe_LineItemObjectProperty>;
+  period?: Maybe<Stripe_InvoiceLineItemPeriod>;
+  price?: Maybe<Stripe_Price>;
+  /** Whether this is a proration. */
+  proration?: Maybe<Scalars['Boolean']>;
+  proration_details?: Maybe<Stripe_InvoicesLineItemsProrationDetails>;
+  /** The quantity of the subscription, if the line item is a subscription or a proration. */
+  quantity?: Maybe<Scalars['Int']>;
+  /** The subscription that the invoice item pertains to, if any. */
+  subscription?: Maybe<Scalars['String']>;
+  /** The subscription item that generated this invoice item. Left empty if the line item is not an explicit result of a subscription. */
+  subscription_item?: Maybe<Scalars['String']>;
+  /** The amount of tax calculated per tax rate for this line item */
+  tax_amounts?: Maybe<Array<Maybe<Stripe_InvoiceTaxAmount>>>;
+  /** The tax rates which apply to the line item. */
+  tax_rates?: Maybe<Array<Maybe<Stripe_TaxRate>>>;
+  /** A string identifying the type of the source of this line item, either an `invoiceitem` or a `subscription`. */
+  type?: Maybe<Stripe_LineItemTypeProperty>;
 };
 
-export type Stripe_PromotionCodeCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
-
-export type Stripe_DeletedCustomer = {
-  __typename?: 'Stripe_DeletedCustomer';
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_DeletedCustomerObjectProperty>;
+export type Stripe_DiscountsResourceDiscountAmount = {
+  __typename?: 'Stripe_DiscountsResourceDiscountAmount';
+  /** The amount, in %s, of the discount. */
+  amount?: Maybe<Scalars['Int']>;
+  discount?: Maybe<Stripe_DiscountsResourceDiscountAmountDiscountProperty>;
 };
 
-export enum Stripe_DeletedCustomerObjectProperty {
-  Customer = 'customer'
+export type Stripe_DiscountsResourceDiscountAmountDiscountProperty = WrappedString | Stripe_Discount | Stripe_DeletedDiscount;
+
+export type Stripe_LineItemDiscountsProperty = WrappedString | Stripe_Discount;
+
+export enum Stripe_LineItemObjectProperty {
+  LineItem = 'line_item'
 }
 
-export enum Stripe_PromotionCodeObjectProperty {
-  PromotionCode = 'promotion_code'
-}
-
-export type Stripe_PromotionCodesResourceRestrictions = {
-  __typename?: 'Stripe_PromotionCodesResourceRestrictions';
-  /** A Boolean indicating if the Promotion Code should only be redeemed for Customers without any successful payments or invoices */
-  first_time_transaction?: Maybe<Scalars['Boolean']>;
-  /** Minimum amount required to redeem this Promotion Code into a Coupon (e.g., a purchase must be $100 or more to work). */
-  minimum_amount?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO code](https://stripe.com/docs/currencies) for minimum_amount */
-  minimum_amount_currency?: Maybe<Scalars['String']>;
+export type Stripe_InvoiceLineItemPeriod = {
+  __typename?: 'Stripe_InvoiceLineItemPeriod';
+  /** The end of the period, which must be greater than or equal to the start. */
+  end?: Maybe<Scalars['Int']>;
+  /** The start of the period. */
+  start?: Maybe<Scalars['Int']>;
 };
 
-export type Stripe_InvoiceSettingCustomerSetting = {
-  __typename?: 'Stripe_InvoiceSettingCustomerSetting';
-  /** Default custom fields to be displayed on invoices for this customer. */
-  custom_fields?: Maybe<Array<Maybe<Stripe_InvoiceSettingCustomField>>>;
-  default_payment_method?: Maybe<Stripe_InvoiceSettingCustomerSettingDefaultPaymentMethodProperty>;
-  /** Default footer to be displayed on invoices for this customer. */
-  footer?: Maybe<Scalars['String']>;
+export type Stripe_InvoicesLineItemsProrationDetails = {
+  __typename?: 'Stripe_InvoicesLineItemsProrationDetails';
+  credited_items?: Maybe<Stripe_InvoicesLineItemsCreditedItems>;
 };
 
-export type Stripe_InvoiceSettingCustomField = {
-  __typename?: 'Stripe_InvoiceSettingCustomField';
-  /** The name of the custom field. */
-  name?: Maybe<Scalars['String']>;
-  /** The value of the custom field. */
-  value?: Maybe<Scalars['String']>;
+export type Stripe_InvoicesLineItemsCreditedItems = {
+  __typename?: 'Stripe_InvoicesLineItemsCreditedItems';
+  /** Invoice containing the credited invoice line items */
+  invoice?: Maybe<Scalars['String']>;
+  /** Credited invoice line items */
+  invoice_line_items?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
-export type Stripe_InvoiceSettingCustomerSettingDefaultPaymentMethodProperty = WrappedString | Stripe_PaymentMethod;
-
-export type Stripe_PaymentMethod = {
-  __typename?: 'Stripe_PaymentMethod';
-  acss_debit?: Maybe<Stripe_PaymentMethodAcssDebit>;
-  afterpay_clearpay?: Maybe<Stripe_PaymentMethodAfterpayClearpay>;
-  alipay?: Maybe<Stripe_PaymentFlowsPrivatePaymentMethodsAlipay>;
-  au_becs_debit?: Maybe<Stripe_PaymentMethodAuBecsDebit>;
-  bacs_debit?: Maybe<Stripe_PaymentMethodBacsDebit>;
-  bancontact?: Maybe<Stripe_PaymentMethodBancontact>;
-  billing_details?: Maybe<Stripe_BillingDetails>;
-  boleto?: Maybe<Stripe_PaymentMethodBoleto>;
-  card?: Maybe<Stripe_PaymentMethodCard>;
-  card_present?: Maybe<Stripe_PaymentMethodCardPresent>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  customer?: Maybe<Stripe_PaymentMethodCustomerProperty>;
-  eps?: Maybe<Stripe_PaymentMethodEps>;
-  fpx?: Maybe<Stripe_PaymentMethodFpx>;
-  giropay?: Maybe<Stripe_PaymentMethodGiropay>;
-  grabpay?: Maybe<Stripe_PaymentMethodGrabpay>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  ideal?: Maybe<Stripe_PaymentMethodIdeal>;
-  interac_present?: Maybe<Stripe_PaymentMethodInteracPresent>;
-  klarna?: Maybe<Stripe_PaymentMethodKlarna>;
-  konbini?: Maybe<Stripe_PaymentMethodKonbini>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_PaymentMethodObjectProperty>;
-  oxxo?: Maybe<Stripe_PaymentMethodOxxo>;
-  p24?: Maybe<Stripe_PaymentMethodP24>;
-  paynow?: Maybe<Stripe_PaymentMethodPaynow>;
-  sepa_debit?: Maybe<Stripe_PaymentMethodSepaDebit>;
-  sofort?: Maybe<Stripe_PaymentMethodSofort>;
-  /** The type of the PaymentMethod. An additional hash is included on the PaymentMethod with a name matching this value. It contains additional information specific to the PaymentMethod type. */
-  type?: Maybe<Stripe_PaymentMethodTypeProperty>;
-  us_bank_account?: Maybe<Stripe_PaymentMethodUsBankAccount>;
-  wechat_pay?: Maybe<Stripe_PaymentMethodWechatPay>;
+export type Stripe_InvoiceTaxAmount = {
+  __typename?: 'Stripe_InvoiceTaxAmount';
+  /** The amount, in %s, of the tax. */
+  amount?: Maybe<Scalars['Int']>;
+  /** Whether this tax amount is inclusive or exclusive. */
+  inclusive?: Maybe<Scalars['Boolean']>;
+  tax_rate?: Maybe<Stripe_InvoiceTaxAmountTaxRateProperty>;
 };
 
-export type Stripe_PaymentMethodAcssDebit = {
-  __typename?: 'Stripe_PaymentMethodAcssDebit';
-  /** Name of the bank associated with the bank account. */
-  bank_name?: Maybe<Scalars['String']>;
-  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
-  fingerprint?: Maybe<Scalars['String']>;
-  /** Institution number of the bank account. */
-  institution_number?: Maybe<Scalars['String']>;
-  /** Last four digits of the bank account number. */
-  last4?: Maybe<Scalars['String']>;
-  /** Transit number of the bank account. */
-  transit_number?: Maybe<Scalars['String']>;
-};
+export type Stripe_InvoiceTaxAmountTaxRateProperty = WrappedString | Stripe_TaxRate;
 
-export type Stripe_PaymentMethodAfterpayClearpay = {
-  __typename?: 'Stripe_PaymentMethodAfterpayClearpay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentFlowsPrivatePaymentMethodsAlipay = {
-  __typename?: 'Stripe_PaymentFlowsPrivatePaymentMethodsAlipay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodAuBecsDebit = {
-  __typename?: 'Stripe_PaymentMethodAuBecsDebit';
-  /** Six-digit number identifying bank and branch associated with this bank account. */
-  bsb_number?: Maybe<Scalars['String']>;
-  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
-  fingerprint?: Maybe<Scalars['String']>;
-  /** Last four digits of the bank account number. */
-  last4?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_PaymentMethodBacsDebit = {
-  __typename?: 'Stripe_PaymentMethodBacsDebit';
-  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
-  fingerprint?: Maybe<Scalars['String']>;
-  /** Last four digits of the bank account number. */
-  last4?: Maybe<Scalars['String']>;
-  /** Sort code of the bank account. (e.g., `10-20-30`) */
-  sort_code?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_PaymentMethodBancontact = {
-  __typename?: 'Stripe_PaymentMethodBancontact';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodBoleto = {
-  __typename?: 'Stripe_PaymentMethodBoleto';
-  /** Uniquely identifies the customer tax id (CNPJ or CPF) */
-  tax_id?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_PaymentMethodCard = {
-  __typename?: 'Stripe_PaymentMethodCard';
-  /** Card brand. Can be `amex`, `diners`, `discover`, `jcb`, `mastercard`, `unionpay`, `visa`, or `unknown`. */
-  brand?: Maybe<Scalars['String']>;
-  checks?: Maybe<Stripe_PaymentMethodCardChecks>;
-  /** Two-letter ISO code representing the country of the card. You could use this attribute to get a sense of the international breakdown of cards you've collected. */
-  country?: Maybe<Scalars['String']>;
-  /** Two-digit number representing the card's expiration month. */
-  exp_month?: Maybe<Scalars['Int']>;
-  /** Four-digit number representing the card's expiration year. */
-  exp_year?: Maybe<Scalars['Int']>;
-  /**
-   * Uniquely identifies this particular card number. You can use this attribute to check whether two customers who’ve signed up with you are using the same card number, for example. For payment methods that tokenize card information (Apple Pay, Google Pay), the tokenized number might be provided instead of the underlying card number.
-   *
-   * *Starting May 1, 2021, card fingerprint in India for Connect will change to allow two fingerprints for the same card --- one for India and one for the rest of the world.*
-   */
-  fingerprint?: Maybe<Scalars['String']>;
-  /** Card funding type. Can be `credit`, `debit`, `prepaid`, or `unknown`. */
-  funding?: Maybe<Scalars['String']>;
-  generated_from?: Maybe<Stripe_PaymentMethodCardGeneratedCard>;
-  /** The last four digits of the card. */
-  last4?: Maybe<Scalars['String']>;
-  networks?: Maybe<Stripe_Networks>;
-  three_d_secure_usage?: Maybe<Stripe_ThreeDSecureUsage>;
-  wallet?: Maybe<Stripe_PaymentMethodCardWallet>;
-};
-
-export type Stripe_PaymentMethodCardChecks = {
-  __typename?: 'Stripe_PaymentMethodCardChecks';
-  /** If a address line1 was provided, results of the check, one of `pass`, `fail`, `unavailable`, or `unchecked`. */
-  address_line1_check?: Maybe<Scalars['String']>;
-  /** If a address postal code was provided, results of the check, one of `pass`, `fail`, `unavailable`, or `unchecked`. */
-  address_postal_code_check?: Maybe<Scalars['String']>;
-  /** If a CVC was provided, results of the check, one of `pass`, `fail`, `unavailable`, or `unchecked`. */
-  cvc_check?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_PaymentMethodCardGeneratedCard = {
-  __typename?: 'Stripe_PaymentMethodCardGeneratedCard';
-  /** The charge that created this object. */
-  charge?: Maybe<Scalars['String']>;
-  payment_method_details?: Maybe<Stripe_CardGeneratedFromPaymentMethodDetails>;
-  setup_attempt?: Maybe<Stripe_PaymentMethodCardGeneratedCardSetupAttemptProperty>;
-};
-
-export type Stripe_CardGeneratedFromPaymentMethodDetails = {
-  __typename?: 'Stripe_CardGeneratedFromPaymentMethodDetails';
-  card_present?: Maybe<Stripe_PaymentMethodDetailsCardPresent>;
-  /** The type of payment method transaction-specific details from the transaction that generated this `card` payment method. Always `card_present`. */
-  type?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_PaymentMethodDetailsCardPresent = {
-  __typename?: 'Stripe_PaymentMethodDetailsCardPresent';
-  /** The authorized amount */
-  amount_authorized?: Maybe<Scalars['Int']>;
-  /** Card brand. Can be `amex`, `diners`, `discover`, `jcb`, `mastercard`, `unionpay`, `visa`, or `unknown`. */
-  brand?: Maybe<Scalars['String']>;
-  /** When using manual capture, a future timestamp after which the charge will be automatically refunded if uncaptured. */
-  capture_before?: Maybe<Scalars['Int']>;
-  /** The cardholder name as read from the card, in [ISO 7813](https://en.wikipedia.org/wiki/ISO/IEC_7813) format. May include alphanumeric characters, special characters and first/last name separator (`/`). In some cases, the cardholder name may not be available depending on how the issuer has configured the card. Cardholder name is typically not available on swipe or contactless payments, such as those made with Apple Pay and Google Pay. */
-  cardholder_name?: Maybe<Scalars['String']>;
-  /** Two-letter ISO code representing the country of the card. You could use this attribute to get a sense of the international breakdown of cards you've collected. */
-  country?: Maybe<Scalars['String']>;
-  /** Authorization response cryptogram. */
-  emv_auth_data?: Maybe<Scalars['String']>;
-  /** Two-digit number representing the card's expiration month. */
-  exp_month?: Maybe<Scalars['Int']>;
-  /** Four-digit number representing the card's expiration year. */
-  exp_year?: Maybe<Scalars['Int']>;
-  /**
-   * Uniquely identifies this particular card number. You can use this attribute to check whether two customers who’ve signed up with you are using the same card number, for example. For payment methods that tokenize card information (Apple Pay, Google Pay), the tokenized number might be provided instead of the underlying card number.
-   *
-   * *Starting May 1, 2021, card fingerprint in India for Connect will change to allow two fingerprints for the same card --- one for India and one for the rest of the world.*
-   */
-  fingerprint?: Maybe<Scalars['String']>;
-  /** Card funding type. Can be `credit`, `debit`, `prepaid`, or `unknown`. */
-  funding?: Maybe<Scalars['String']>;
-  /** ID of a card PaymentMethod generated from the card_present PaymentMethod that may be attached to a Customer for future transactions. Only present if it was possible to generate a card PaymentMethod. */
-  generated_card?: Maybe<Scalars['String']>;
-  /** The last four digits of the card. */
-  last4?: Maybe<Scalars['String']>;
-  /** Identifies which network this charge was processed on. Can be `amex`, `cartes_bancaires`, `diners`, `discover`, `interac`, `jcb`, `mastercard`, `unionpay`, `visa`, or `unknown`. */
-  network?: Maybe<Scalars['String']>;
-  /** Defines whether the authorized amount can be over-captured or not */
-  overcapture_supported?: Maybe<Scalars['Boolean']>;
-  /** How card details were read in this transaction. */
-  read_method?: Maybe<Stripe_PaymentMethodDetailsCardPresentReadMethodProperty>;
-  receipt?: Maybe<Stripe_PaymentMethodDetailsCardPresentReceipt>;
-};
-
-export enum Stripe_PaymentMethodDetailsCardPresentReadMethodProperty {
-  ContactEmv = 'contact_emv',
-  ContactlessEmv = 'contactless_emv',
-  ContactlessMagstripeMode = 'contactless_magstripe_mode',
-  MagneticStripeFallback = 'magnetic_stripe_fallback',
-  MagneticStripeTrack2 = 'magnetic_stripe_track2'
-}
-
-export type Stripe_PaymentMethodDetailsCardPresentReceipt = {
-  __typename?: 'Stripe_PaymentMethodDetailsCardPresentReceipt';
-  /** The type of account being debited or credited */
-  account_type?: Maybe<Stripe_PaymentMethodDetailsCardPresentReceiptAccountTypeProperty>;
-  /** EMV tag 9F26, cryptogram generated by the integrated circuit chip. */
-  application_cryptogram?: Maybe<Scalars['String']>;
-  /** Mnenomic of the Application Identifier. */
-  application_preferred_name?: Maybe<Scalars['String']>;
-  /** Identifier for this transaction. */
-  authorization_code?: Maybe<Scalars['String']>;
-  /** EMV tag 8A. A code returned by the card issuer. */
-  authorization_response_code?: Maybe<Scalars['String']>;
-  /** How the cardholder verified ownership of the card. */
-  cardholder_verification_method?: Maybe<Scalars['String']>;
-  /** EMV tag 84. Similar to the application identifier stored on the integrated circuit chip. */
-  dedicated_file_name?: Maybe<Scalars['String']>;
-  /** The outcome of a series of EMV functions performed by the card reader. */
-  terminal_verification_results?: Maybe<Scalars['String']>;
-  /** An indication of various EMV functions performed during the transaction. */
-  transaction_status_information?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_PaymentMethodDetailsCardPresentReceiptAccountTypeProperty {
-  Checking = 'checking',
-  Credit = 'credit',
-  Prepaid = 'prepaid',
-  Unknown = 'unknown'
-}
-
-export type Stripe_PaymentMethodCardGeneratedCardSetupAttemptProperty = WrappedString | Stripe_SetupAttempt;
-
-export type Stripe_SetupAttempt = {
-  __typename?: 'Stripe_SetupAttempt';
-  application?: Maybe<Stripe_SetupAttemptApplicationProperty>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  customer?: Maybe<Stripe_SetupAttemptCustomerProperty>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_SetupAttemptObjectProperty>;
-  on_behalf_of?: Maybe<Stripe_SetupAttemptOnBehalfOfProperty>;
-  payment_method?: Maybe<Stripe_SetupAttemptPaymentMethodProperty>;
-  payment_method_details?: Maybe<Stripe_SetupAttemptPaymentMethodDetails>;
-  setup_error?: Maybe<Stripe_ApiErrors>;
-  setup_intent?: Maybe<Stripe_SetupAttemptSetupIntentProperty>;
-  /** Status of this SetupAttempt, one of `requires_confirmation`, `requires_action`, `processing`, `succeeded`, `failed`, or `abandoned`. */
-  status?: Maybe<Scalars['String']>;
-  /** The value of [usage](https://stripe.com/docs/api/setup_intents/object#setup_intent_object-usage) on the SetupIntent at the time of this confirmation, one of `off_session` or `on_session`. */
-  usage?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SetupAttemptApplicationProperty = WrappedString | Stripe_Application;
-
-export type Stripe_SetupAttemptCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
-
-export enum Stripe_SetupAttemptObjectProperty {
-  SetupAttempt = 'setup_attempt'
-}
-
-export type Stripe_SetupAttemptOnBehalfOfProperty = WrappedString | Stripe_Account;
-
-export type Stripe_SetupAttemptPaymentMethodProperty = WrappedString | Stripe_PaymentMethod;
-
-export type Stripe_SetupAttemptPaymentMethodDetails = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetails';
-  acss_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsAcssDebit>;
-  au_becs_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsAuBecsDebit>;
-  bacs_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBacsDebit>;
-  bancontact?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBancontact>;
-  boleto?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBoleto>;
-  card?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsCard>;
-  card_present?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsCardPresent>;
-  ideal?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsIdeal>;
-  sepa_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsSepaDebit>;
-  sofort?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsSofort>;
-  /** The type of the payment method used in the SetupIntent (e.g., `card`). An additional hash is included on `payment_method_details` with a name matching this value. It contains confirmation-specific information for the payment method. */
-  type?: Maybe<Scalars['String']>;
-  us_bank_account?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsUsBankAccount>;
-};
-
-export type Stripe_SetupAttemptPaymentMethodDetailsAcssDebit = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsAcssDebit';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_SetupAttemptPaymentMethodDetailsAuBecsDebit = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsAuBecsDebit';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_SetupAttemptPaymentMethodDetailsBacsDebit = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsBacsDebit';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_SetupAttemptPaymentMethodDetailsBancontact = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsBancontact';
-  /** Bank code of bank associated with the bank account. */
-  bank_code?: Maybe<Scalars['String']>;
-  /** Name of the bank associated with the bank account. */
-  bank_name?: Maybe<Scalars['String']>;
-  /** Bank Identifier Code of the bank associated with the bank account. */
-  bic?: Maybe<Scalars['String']>;
-  generated_sepa_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBancontactGeneratedSepaDebitProperty>;
-  generated_sepa_debit_mandate?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBancontactGeneratedSepaDebitMandateProperty>;
-  /** Last four characters of the IBAN. */
-  iban_last4?: Maybe<Scalars['String']>;
-  /**
-   * Preferred language of the Bancontact authorization page that the customer is redirected to.
-   * Can be one of `en`, `de`, `fr`, or `nl`
-   */
-  preferred_language?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsBancontactPreferredLanguageProperty>;
-  /**
-   * Owner's verified full name. Values are verified or provided by Bancontact directly
-   * (if supported) at the time of authorization or settlement. They cannot be set or mutated.
-   */
-  verified_name?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SetupAttemptPaymentMethodDetailsBancontactGeneratedSepaDebitProperty = WrappedString | Stripe_PaymentMethod;
-
-export type Stripe_SetupAttemptPaymentMethodDetailsBancontactGeneratedSepaDebitMandateProperty = WrappedString | Stripe_Mandate;
-
-export type Stripe_Mandate = {
-  __typename?: 'Stripe_Mandate';
-  customer_acceptance?: Maybe<Stripe_CustomerAcceptance>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  multi_use?: Maybe<Stripe_MandateMultiUse>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_MandateObjectProperty>;
-  payment_method?: Maybe<Stripe_MandatePaymentMethodProperty>;
-  payment_method_details?: Maybe<Stripe_MandatePaymentMethodDetails>;
-  single_use?: Maybe<Stripe_MandateSingleUse>;
-  /** The status of the mandate, which indicates whether it can be used to initiate a payment. */
-  status?: Maybe<Stripe_MandateStatusProperty>;
-  /** The type of the mandate. */
-  type?: Maybe<Stripe_MandateTypeProperty>;
-};
-
-export type Stripe_CustomerAcceptance = {
-  __typename?: 'Stripe_CustomerAcceptance';
-  /** The time at which the customer accepted the Mandate. */
-  accepted_at?: Maybe<Scalars['Int']>;
-  offline?: Maybe<Stripe_OfflineAcceptance>;
-  online?: Maybe<Stripe_OnlineAcceptance>;
-  /** The type of customer acceptance information included with the Mandate. One of `online` or `offline`. */
-  type?: Maybe<Stripe_CustomerAcceptanceTypeProperty>;
-};
-
-export type Stripe_OfflineAcceptance = {
-  __typename?: 'Stripe_OfflineAcceptance';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_OnlineAcceptance = {
-  __typename?: 'Stripe_OnlineAcceptance';
-  /** The IP address from which the Mandate was accepted by the customer. */
-  ip_address?: Maybe<Scalars['String']>;
-  /** The user agent of the browser from which the Mandate was accepted by the customer. */
-  user_agent?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_CustomerAcceptanceTypeProperty {
-  Offline = 'offline',
-  Online = 'online'
-}
-
-export type Stripe_MandateMultiUse = {
-  __typename?: 'Stripe_MandateMultiUse';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export enum Stripe_MandateObjectProperty {
-  Mandate = 'mandate'
-}
-
-export type Stripe_MandatePaymentMethodProperty = WrappedString | Stripe_PaymentMethod;
-
-export type Stripe_MandatePaymentMethodDetails = {
-  __typename?: 'Stripe_MandatePaymentMethodDetails';
-  acss_debit?: Maybe<Stripe_MandateAcssDebit>;
-  au_becs_debit?: Maybe<Stripe_MandateAuBecsDebit>;
-  bacs_debit?: Maybe<Stripe_MandateBacsDebit>;
-  card?: Maybe<Stripe_CardMandatePaymentMethodDetails>;
-  sepa_debit?: Maybe<Stripe_MandateSepaDebit>;
-  /** The type of the payment method associated with this mandate. An additional hash is included on `payment_method_details` with a name matching this value. It contains mandate information specific to the payment method. */
-  type?: Maybe<Scalars['String']>;
-  us_bank_account?: Maybe<Stripe_MandateUsBankAccount>;
-};
-
-export type Stripe_MandateAcssDebit = {
-  __typename?: 'Stripe_MandateAcssDebit';
-  /** List of Stripe products where this mandate can be selected automatically. */
-  default_for?: Maybe<Array<Maybe<Stripe_MandateAcssDebitDefaultForProperty>>>;
-  /** Description of the interval. Only required if the 'payment_schedule' parameter is 'interval' or 'combined'. */
-  interval_description?: Maybe<Scalars['String']>;
-  /** Payment schedule for the mandate. */
-  payment_schedule?: Maybe<Stripe_MandateAcssDebitPaymentScheduleProperty>;
-  /** Transaction type of the mandate. */
-  transaction_type?: Maybe<Stripe_MandateAcssDebitTransactionTypeProperty>;
-};
-
-export enum Stripe_MandateAcssDebitDefaultForProperty {
-  Invoice = 'invoice',
+export enum Stripe_LineItemTypeProperty {
+  Invoiceitem = 'invoiceitem',
   Subscription = 'subscription'
 }
 
-export enum Stripe_MandateAcssDebitPaymentScheduleProperty {
-  Combined = 'combined',
-  Interval = 'interval',
-  Sporadic = 'sporadic'
+export enum Stripe_InvoiceLinesObjectProperty {
+  List = 'list'
 }
 
-export enum Stripe_MandateAcssDebitTransactionTypeProperty {
+export enum Stripe_InvoiceObjectProperty {
+  Invoice = 'invoice'
+}
+
+export type Stripe_InvoiceOnBehalfOfProperty = WrappedString | Stripe_Account;
+
+export type Stripe_InvoicePaymentIntentProperty = WrappedString | Stripe_PaymentIntent;
+
+export type Stripe_InvoicesPaymentSettings = {
+  __typename?: 'Stripe_InvoicesPaymentSettings';
+  payment_method_options?: Maybe<Stripe_InvoicesPaymentMethodOptions>;
+  /** The list of payment method types (e.g. card) to provide to the invoice’s PaymentIntent. If not set, Stripe attempts to automatically determine the types to use by looking at the invoice’s default payment method, the subscription’s default payment method, the customer’s default payment method, and your [invoice template settings](https://dashboard.stripe.com/settings/billing/invoice). */
+  payment_method_types?: Maybe<Array<Maybe<Stripe_InvoicesPaymentSettingsPaymentMethodTypesProperty>>>;
+};
+
+export type Stripe_InvoicesPaymentMethodOptions = {
+  __typename?: 'Stripe_InvoicesPaymentMethodOptions';
+  acss_debit?: Maybe<Stripe_InvoicePaymentMethodOptionsAcssDebit>;
+  bancontact?: Maybe<Stripe_InvoicePaymentMethodOptionsBancontact>;
+  card?: Maybe<Stripe_InvoicePaymentMethodOptionsCard>;
+  customer_balance?: Maybe<Stripe_InvoicePaymentMethodOptionsCustomerBalance>;
+  konbini?: Maybe<Stripe_InvoicePaymentMethodOptionsKonbini>;
+  us_bank_account?: Maybe<Stripe_InvoicePaymentMethodOptionsUsBankAccount>;
+};
+
+export type Stripe_InvoicePaymentMethodOptionsAcssDebit = {
+  __typename?: 'Stripe_InvoicePaymentMethodOptionsAcssDebit';
+  mandate_options?: Maybe<Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptions>;
+  /** Bank account verification method. */
+  verification_method?: Maybe<Stripe_InvoicePaymentMethodOptionsAcssDebitVerificationMethodProperty>;
+};
+
+export type Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptions = {
+  __typename?: 'Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptions';
+  /** Transaction type of the mandate. */
+  transaction_type?: Maybe<Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptionsTransactionTypeProperty>;
+};
+
+export enum Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptionsTransactionTypeProperty {
   Business = 'business',
   Personal = 'personal'
 }
 
-export type Stripe_MandateAuBecsDebit = {
-  __typename?: 'Stripe_MandateAuBecsDebit';
-  /** The URL of the mandate. This URL generally contains sensitive information about the customer and should be shared with them exclusively. */
-  url?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_MandateBacsDebit = {
-  __typename?: 'Stripe_MandateBacsDebit';
-  /** The status of the mandate on the Bacs network. Can be one of `pending`, `revoked`, `refused`, or `accepted`. */
-  network_status?: Maybe<Stripe_MandateBacsDebitNetworkStatusProperty>;
-  /** The unique reference identifying the mandate on the Bacs network. */
-  reference?: Maybe<Scalars['String']>;
-  /** The URL that will contain the mandate that the customer has signed. */
-  url?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_MandateBacsDebitNetworkStatusProperty {
-  Accepted = 'accepted',
-  Pending = 'pending',
-  Refused = 'refused',
-  Revoked = 'revoked'
+export enum Stripe_InvoicePaymentMethodOptionsAcssDebitVerificationMethodProperty {
+  Automatic = 'automatic',
+  Instant = 'instant',
+  Microdeposits = 'microdeposits'
 }
 
-export type Stripe_CardMandatePaymentMethodDetails = {
-  __typename?: 'Stripe_CardMandatePaymentMethodDetails';
+export type Stripe_InvoicePaymentMethodOptionsBancontact = {
+  __typename?: 'Stripe_InvoicePaymentMethodOptionsBancontact';
+  /** Preferred language of the Bancontact authorization page that the customer is redirected to. */
+  preferred_language?: Maybe<Stripe_InvoicePaymentMethodOptionsBancontactPreferredLanguageProperty>;
+};
+
+export enum Stripe_InvoicePaymentMethodOptionsBancontactPreferredLanguageProperty {
+  De = 'de',
+  En = 'en',
+  Fr = 'fr',
+  Nl = 'nl'
+}
+
+export type Stripe_InvoicePaymentMethodOptionsCard = {
+  __typename?: 'Stripe_InvoicePaymentMethodOptionsCard';
+  /** We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine. */
+  request_three_d_secure?: Maybe<Stripe_InvoicePaymentMethodOptionsCardRequestThreeDSecureProperty>;
+};
+
+export enum Stripe_InvoicePaymentMethodOptionsCardRequestThreeDSecureProperty {
+  Any = 'any',
+  Automatic = 'automatic'
+}
+
+export type Stripe_InvoicePaymentMethodOptionsCustomerBalance = {
+  __typename?: 'Stripe_InvoicePaymentMethodOptionsCustomerBalance';
+  bank_transfer?: Maybe<Stripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransfer>;
+  /** The funding method type to be used when there are not enough funds in the customer balance. Permitted values include: `bank_transfer`. */
+  funding_type?: Maybe<Stripe_InvoicePaymentMethodOptionsCustomerBalanceFundingTypeProperty>;
+};
+
+export type Stripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransfer = {
+  __typename?: 'Stripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransfer';
+  /** The bank transfer type that can be used for funding. Permitted values include: `us_bank_account`, `eu_bank_account`, `id_bank_account`, `gb_bank_account`, `jp_bank_account`, `mx_bank_account`, `eu_bank_transfer`, `gb_bank_transfer`, `id_bank_transfer`, `jp_bank_transfer`, `mx_bank_transfer`, or `us_bank_transfer`. */
+  type?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_InvoicePaymentMethodOptionsCustomerBalanceFundingTypeProperty {
+  BankTransfer = 'bank_transfer'
+}
+
+export type Stripe_InvoicePaymentMethodOptionsKonbini = {
+  __typename?: 'Stripe_InvoicePaymentMethodOptionsKonbini';
   result?: Maybe<Scalars['JSONObject']>;
 };
 
-export type Stripe_MandateSepaDebit = {
-  __typename?: 'Stripe_MandateSepaDebit';
-  /** The unique reference of the mandate. */
-  reference?: Maybe<Scalars['String']>;
-  /** The URL of the mandate. This URL generally contains sensitive information about the customer and should be shared with them exclusively. */
-  url?: Maybe<Scalars['String']>;
+export type Stripe_InvoicePaymentMethodOptionsUsBankAccount = {
+  __typename?: 'Stripe_InvoicePaymentMethodOptionsUsBankAccount';
+  /** Bank account verification method. */
+  verification_method?: Maybe<Stripe_InvoicePaymentMethodOptionsUsBankAccountVerificationMethodProperty>;
 };
 
-export type Stripe_MandateUsBankAccount = {
-  __typename?: 'Stripe_MandateUsBankAccount';
-  result?: Maybe<Scalars['JSONObject']>;
-};
+export enum Stripe_InvoicePaymentMethodOptionsUsBankAccountVerificationMethodProperty {
+  Automatic = 'automatic',
+  Instant = 'instant',
+  Microdeposits = 'microdeposits'
+}
 
-export type Stripe_MandateSingleUse = {
-  __typename?: 'Stripe_MandateSingleUse';
-  /** On a single use mandate, the amount of the payment. */
-  amount?: Maybe<Scalars['Int']>;
-  /** On a single use mandate, the currency of the payment. */
+export enum Stripe_InvoicesPaymentSettingsPaymentMethodTypesProperty {
+  AchCreditTransfer = 'ach_credit_transfer',
+  AchDebit = 'ach_debit',
+  AcssDebit = 'acss_debit',
+  AuBecsDebit = 'au_becs_debit',
+  BacsDebit = 'bacs_debit',
+  Bancontact = 'bancontact',
+  Boleto = 'boleto',
+  Card = 'card',
+  CustomerBalance = 'customer_balance',
+  Fpx = 'fpx',
+  Giropay = 'giropay',
+  Grabpay = 'grabpay',
+  Ideal = 'ideal',
+  Konbini = 'konbini',
+  Paynow = 'paynow',
+  SepaDebit = 'sepa_debit',
+  Sofort = 'sofort',
+  UsBankAccount = 'us_bank_account',
+  WechatPay = 'wechat_pay'
+}
+
+export type Stripe_InvoiceQuoteProperty = WrappedString | Stripe_Quote;
+
+export type Stripe_Quote = {
+  __typename?: 'Stripe_Quote';
+  /** Total before any discounts or taxes are applied. */
+  amount_subtotal?: Maybe<Scalars['Int']>;
+  /** Total after discounts and taxes are applied. */
+  amount_total?: Maybe<Scalars['Int']>;
+  /** The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. Only applicable if there are no line items with recurring prices on the quote. */
+  application_fee_amount?: Maybe<Scalars['Int']>;
+  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account. Only applicable if there are line items with recurring prices on the quote. */
+  application_fee_percent?: Maybe<Scalars['Float']>;
+  automatic_tax?: Maybe<Stripe_QuotesResourceAutomaticTax>;
+  /** Either `charge_automatically`, or `send_invoice`. When charging automatically, Stripe will attempt to pay invoices at the end of the subscription cycle or on finalization using the default payment method attached to the subscription or customer. When sending an invoice, Stripe will email your customer an invoice with payment instructions. Defaults to `charge_automatically`. */
+  collection_method?: Maybe<Stripe_QuoteCollectionMethodProperty>;
+  computed?: Maybe<Stripe_QuotesResourceComputed>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
   currency?: Maybe<Scalars['String']>;
+  customer?: Maybe<Stripe_QuoteCustomerProperty>;
+  /** The tax rates applied to this quote. */
+  default_tax_rates?: Maybe<Array<Maybe<Stripe_QuoteDefaultTaxRatesProperty>>>;
+  /** A description that will be displayed on the quote PDF. */
+  description?: Maybe<Scalars['String']>;
+  /** The discounts applied to this quote. */
+  discounts?: Maybe<Array<Maybe<Stripe_QuoteDiscountsProperty>>>;
+  /** The date on which the quote will be canceled if in `open` or `draft` status. Measured in seconds since the Unix epoch. */
+  expires_at?: Maybe<Scalars['Int']>;
+  /** A footer that will be displayed on the quote PDF. */
+  footer?: Maybe<Scalars['String']>;
+  from_quote?: Maybe<Stripe_QuotesResourceFromQuote>;
+  /** A header that will be displayed on the quote PDF. */
+  header?: Maybe<Scalars['String']>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  invoice?: Maybe<Stripe_QuoteInvoiceProperty>;
+  invoice_settings?: Maybe<Stripe_InvoiceSettingQuoteSetting>;
+  /** A list of items the customer is being quoted for. */
+  line_items?: Maybe<Stripe_QuoteLineItemsProperty>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  /** A unique number that identifies this particular quote. This number is assigned once the quote is [finalized](https://stripe.com/docs/quotes/overview#finalize). */
+  number?: Maybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_QuoteObjectProperty>;
+  on_behalf_of?: Maybe<Stripe_QuoteOnBehalfOfProperty>;
+  /** The status of the quote. */
+  status?: Maybe<Stripe_QuoteStatusProperty>;
+  status_transitions?: Maybe<Stripe_QuotesResourceStatusTransitions>;
+  subscription?: Maybe<Stripe_QuoteSubscriptionProperty>;
+  subscription_data?: Maybe<Stripe_QuotesResourceSubscriptionData>;
+  subscription_schedule?: Maybe<Stripe_QuoteSubscriptionScheduleProperty>;
+  test_clock?: Maybe<Stripe_QuoteTestClockProperty>;
+  total_details?: Maybe<Stripe_QuotesResourceTotalDetails>;
+  transfer_data?: Maybe<Stripe_QuotesResourceTransferData>;
 };
 
-export enum Stripe_MandateStatusProperty {
-  Active = 'active',
-  Inactive = 'inactive',
-  Pending = 'pending'
-}
-
-export enum Stripe_MandateTypeProperty {
-  MultiUse = 'multi_use',
-  SingleUse = 'single_use'
-}
-
-export enum Stripe_SetupAttemptPaymentMethodDetailsBancontactPreferredLanguageProperty {
-  De = 'de',
-  En = 'en',
-  Fr = 'fr',
-  Nl = 'nl'
-}
-
-export type Stripe_SetupAttemptPaymentMethodDetailsBoleto = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsBoleto';
-  result?: Maybe<Scalars['JSONObject']>;
+export type Stripe_QuotesResourceAutomaticTax = {
+  __typename?: 'Stripe_QuotesResourceAutomaticTax';
+  /** Automatically calculate taxes */
+  enabled?: Maybe<Scalars['Boolean']>;
+  /** The status of the most recent automated tax calculation for this quote. */
+  status?: Maybe<Stripe_QuotesResourceAutomaticTaxStatusProperty>;
 };
 
-export type Stripe_SetupAttemptPaymentMethodDetailsCard = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsCard';
-  three_d_secure?: Maybe<Stripe_ThreeDSecureDetails>;
-};
-
-export type Stripe_ThreeDSecureDetails = {
-  __typename?: 'Stripe_ThreeDSecureDetails';
-  /**
-   * For authenticated transactions: how the customer was authenticated by
-   * the issuing bank.
-   */
-  authentication_flow?: Maybe<Stripe_ThreeDSecureDetailsAuthenticationFlowProperty>;
-  /** Indicates the outcome of 3D Secure authentication. */
-  result?: Maybe<Stripe_ThreeDSecureDetailsResultProperty>;
-  /**
-   * Additional information about why 3D Secure succeeded or failed based
-   * on the `result`.
-   */
-  result_reason?: Maybe<Stripe_ThreeDSecureDetailsResultReasonProperty>;
-  /** The version of 3D Secure that was used. */
-  version?: Maybe<Stripe_ThreeDSecureDetailsVersionProperty>;
-};
-
-export enum Stripe_ThreeDSecureDetailsAuthenticationFlowProperty {
-  Challenge = 'challenge',
-  Frictionless = 'frictionless'
-}
-
-export enum Stripe_ThreeDSecureDetailsResultProperty {
-  AttemptAcknowledged = 'attempt_acknowledged',
-  Authenticated = 'authenticated',
+export enum Stripe_QuotesResourceAutomaticTaxStatusProperty {
+  Complete = 'complete',
   Failed = 'failed',
-  NotSupported = 'not_supported',
-  ProcessingError = 'processing_error'
+  RequiresLocationInputs = 'requires_location_inputs'
 }
 
-export enum Stripe_ThreeDSecureDetailsResultReasonProperty {
-  Abandoned = 'abandoned',
-  Bypassed = 'bypassed',
+export enum Stripe_QuoteCollectionMethodProperty {
+  ChargeAutomatically = 'charge_automatically',
+  SendInvoice = 'send_invoice'
+}
+
+export type Stripe_QuotesResourceComputed = {
+  __typename?: 'Stripe_QuotesResourceComputed';
+  recurring?: Maybe<Stripe_QuotesResourceRecurring>;
+  upfront?: Maybe<Stripe_QuotesResourceUpfront>;
+};
+
+export type Stripe_QuotesResourceRecurring = {
+  __typename?: 'Stripe_QuotesResourceRecurring';
+  /** Total before any discounts or taxes are applied. */
+  amount_subtotal?: Maybe<Scalars['Int']>;
+  /** Total after discounts and taxes are applied. */
+  amount_total?: Maybe<Scalars['Int']>;
+  /** The frequency at which a subscription is billed. One of `day`, `week`, `month` or `year`. */
+  interval?: Maybe<Stripe_QuotesResourceRecurringIntervalProperty>;
+  /** The number of intervals (specified in the `interval` attribute) between subscription billings. For example, `interval=month` and `interval_count=3` bills every 3 months. */
+  interval_count?: Maybe<Scalars['Int']>;
+  total_details?: Maybe<Stripe_QuotesResourceTotalDetails>;
+};
+
+export enum Stripe_QuotesResourceRecurringIntervalProperty {
+  Day = 'day',
+  Month = 'month',
+  Week = 'week',
+  Year = 'year'
+}
+
+export type Stripe_QuotesResourceTotalDetails = {
+  __typename?: 'Stripe_QuotesResourceTotalDetails';
+  /** This is the sum of all the discounts. */
+  amount_discount?: Maybe<Scalars['Int']>;
+  /** This is the sum of all the shipping amounts. */
+  amount_shipping?: Maybe<Scalars['Int']>;
+  /** This is the sum of all the tax amounts. */
+  amount_tax?: Maybe<Scalars['Int']>;
+  breakdown?: Maybe<Stripe_QuotesResourceTotalDetailsResourceBreakdown>;
+};
+
+export type Stripe_QuotesResourceTotalDetailsResourceBreakdown = {
+  __typename?: 'Stripe_QuotesResourceTotalDetailsResourceBreakdown';
+  /** The aggregated discounts. */
+  discounts?: Maybe<Array<Maybe<Stripe_LineItemsDiscountAmount>>>;
+  /** The aggregated tax amounts by rate. */
+  taxes?: Maybe<Array<Maybe<Stripe_LineItemsTaxAmount>>>;
+};
+
+export type Stripe_LineItemsDiscountAmount = {
+  __typename?: 'Stripe_LineItemsDiscountAmount';
+  /** The amount discounted. */
+  amount?: Maybe<Scalars['Int']>;
+  discount?: Maybe<Stripe_Discount>;
+};
+
+export type Stripe_LineItemsTaxAmount = {
+  __typename?: 'Stripe_LineItemsTaxAmount';
+  /** Amount of tax applied for this rate. */
+  amount?: Maybe<Scalars['Int']>;
+  rate?: Maybe<Stripe_TaxRate>;
+};
+
+export type Stripe_QuotesResourceUpfront = {
+  __typename?: 'Stripe_QuotesResourceUpfront';
+  /** Total before any discounts or taxes are applied. */
+  amount_subtotal?: Maybe<Scalars['Int']>;
+  /** Total after discounts and taxes are applied. */
+  amount_total?: Maybe<Scalars['Int']>;
+  /** The line items that will appear on the next invoice after this quote is accepted. This does not include pending invoice items that exist on the customer but may still be included in the next invoice. */
+  line_items?: Maybe<Stripe_QuotesResourceUpfrontLineItemsProperty>;
+  total_details?: Maybe<Stripe_QuotesResourceTotalDetails>;
+};
+
+/** The line items that will appear on the next invoice after this quote is accepted. This does not include pending invoice items that exist on the customer but may still be included in the next invoice. */
+export type Stripe_QuotesResourceUpfrontLineItemsProperty = {
+  __typename?: 'Stripe_QuotesResourceUpfrontLineItemsProperty';
+  /** Details about each object. */
+  data: Array<Stripe_Item>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_QuotesResourceUpfrontLineItemsObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export type Stripe_Item = {
+  __typename?: 'Stripe_Item';
+  /** Total before any discounts or taxes are applied. */
+  amount_subtotal?: Maybe<Scalars['Int']>;
+  /** Total after discounts and taxes. */
+  amount_total?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
+  currency?: Maybe<Scalars['String']>;
+  /** An arbitrary string attached to the object. Often useful for displaying to users. Defaults to product name. */
+  description?: Maybe<Scalars['String']>;
+  /** The discounts applied to the line item. */
+  discounts?: Maybe<Array<Maybe<Stripe_LineItemsDiscountAmount>>>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_ItemObjectProperty>;
+  price?: Maybe<Stripe_Price>;
+  /** The quantity of products being purchased. */
+  quantity?: Maybe<Scalars['Int']>;
+  /** The taxes applied to the line item. */
+  taxes?: Maybe<Array<Maybe<Stripe_LineItemsTaxAmount>>>;
+};
+
+export enum Stripe_ItemObjectProperty {
+  Item = 'item'
+}
+
+export enum Stripe_QuotesResourceUpfrontLineItemsObjectProperty {
+  List = 'list'
+}
+
+export type Stripe_QuoteCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
+
+export type Stripe_QuoteDefaultTaxRatesProperty = WrappedString | Stripe_TaxRate;
+
+export type Stripe_QuoteDiscountsProperty = WrappedString | Stripe_Discount;
+
+export type Stripe_QuotesResourceFromQuote = {
+  __typename?: 'Stripe_QuotesResourceFromQuote';
+  /** Whether this quote is a revision of a different quote. */
+  is_revision?: Maybe<Scalars['Boolean']>;
+  quote?: Maybe<Stripe_QuotesResourceFromQuoteQuoteProperty>;
+};
+
+export type Stripe_QuotesResourceFromQuoteQuoteProperty = WrappedString | Stripe_Quote;
+
+export type Stripe_QuoteInvoiceProperty = WrappedString | Stripe_Invoice | Stripe_DeletedInvoice;
+
+export type Stripe_DeletedInvoice = {
+  __typename?: 'Stripe_DeletedInvoice';
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_DeletedInvoiceObjectProperty>;
+};
+
+export enum Stripe_DeletedInvoiceObjectProperty {
+  Invoice = 'invoice'
+}
+
+export type Stripe_InvoiceSettingQuoteSetting = {
+  __typename?: 'Stripe_InvoiceSettingQuoteSetting';
+  /** Number of days within which a customer must pay invoices generated by this quote. This value will be `null` for quotes where `collection_method=charge_automatically`. */
+  days_until_due?: Maybe<Scalars['Int']>;
+};
+
+/** A list of items the customer is being quoted for. */
+export type Stripe_QuoteLineItemsProperty = {
+  __typename?: 'Stripe_QuoteLineItemsProperty';
+  /** Details about each object. */
+  data: Array<Stripe_Item>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_QuoteLineItemsObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export enum Stripe_QuoteLineItemsObjectProperty {
+  List = 'list'
+}
+
+export enum Stripe_QuoteObjectProperty {
+  Quote = 'quote'
+}
+
+export type Stripe_QuoteOnBehalfOfProperty = WrappedString | Stripe_Account;
+
+export enum Stripe_QuoteStatusProperty {
+  Accepted = 'accepted',
   Canceled = 'canceled',
-  CardNotEnrolled = 'card_not_enrolled',
-  NetworkNotSupported = 'network_not_supported',
-  ProtocolError = 'protocol_error',
-  Rejected = 'rejected'
+  Draft = 'draft',
+  Open = 'open'
 }
 
-export enum Stripe_ThreeDSecureDetailsVersionProperty {
-  Onedot0Dot2 = 'ONEDOT0DOT2',
-  Twodot1Dot0 = 'TWODOT1DOT0',
-  Twodot2Dot0 = 'TWODOT2DOT0'
-}
-
-export type Stripe_SetupAttemptPaymentMethodDetailsCardPresent = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsCardPresent';
-  generated_card?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsCardPresentGeneratedCardProperty>;
+export type Stripe_QuotesResourceStatusTransitions = {
+  __typename?: 'Stripe_QuotesResourceStatusTransitions';
+  /** The time that the quote was accepted. Measured in seconds since Unix epoch. */
+  accepted_at?: Maybe<Scalars['Int']>;
+  /** The time that the quote was canceled. Measured in seconds since Unix epoch. */
+  canceled_at?: Maybe<Scalars['Int']>;
+  /** The time that the quote was finalized. Measured in seconds since Unix epoch. */
+  finalized_at?: Maybe<Scalars['Int']>;
 };
 
-export type Stripe_SetupAttemptPaymentMethodDetailsCardPresentGeneratedCardProperty = WrappedString | Stripe_PaymentMethod;
+export type Stripe_QuoteSubscriptionProperty = WrappedString | Stripe_Subscription;
 
-export type Stripe_SetupAttemptPaymentMethodDetailsIdeal = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsIdeal';
-  /** The customer's bank. Can be one of `abn_amro`, `asn_bank`, `bunq`, `handelsbanken`, `ing`, `knab`, `moneyou`, `rabobank`, `regiobank`, `revolut`, `sns_bank`, `triodos_bank`, or `van_lanschot`. */
-  bank?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsIdealBankProperty>;
-  /** The Bank Identifier Code of the customer's bank. */
-  bic?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsIdealBicProperty>;
-  generated_sepa_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsIdealGeneratedSepaDebitProperty>;
-  generated_sepa_debit_mandate?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsIdealGeneratedSepaDebitMandateProperty>;
-  /** Last four characters of the IBAN. */
-  iban_last4?: Maybe<Scalars['String']>;
+export type Stripe_Subscription = {
+  __typename?: 'Stripe_Subscription';
+  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account. */
+  application_fee_percent?: Maybe<Scalars['Float']>;
+  automatic_tax?: Maybe<Stripe_SubscriptionAutomaticTax>;
+  /** Determines the date of the first full invoice, and, for plans with `month` or `year` intervals, the day of the month for subsequent invoices. */
+  billing_cycle_anchor?: Maybe<Scalars['Int']>;
+  billing_thresholds?: Maybe<Stripe_SubscriptionBillingThresholds>;
+  /** A date in the future at which the subscription will automatically get canceled */
+  cancel_at?: Maybe<Scalars['Int']>;
+  /** If the subscription has been canceled with the `at_period_end` flag set to `true`, `cancel_at_period_end` on the subscription will be true. You can use this attribute to determine whether a subscription that has a status of active is scheduled to be canceled at the end of the current period. */
+  cancel_at_period_end?: Maybe<Scalars['Boolean']>;
+  /** If the subscription has been canceled, the date of that cancellation. If the subscription was canceled with `cancel_at_period_end`, `canceled_at` will reflect the time of the most recent update request, not the end of the subscription period when the subscription is automatically moved to a canceled state. */
+  canceled_at?: Maybe<Scalars['Int']>;
+  /** Either `charge_automatically`, or `send_invoice`. When charging automatically, Stripe will attempt to pay this subscription at the end of the cycle using the default source attached to the customer. When sending an invoice, Stripe will email your customer an invoice with payment instructions. */
+  collection_method?: Maybe<Stripe_SubscriptionCollectionMethodProperty>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  /** End of the current period that the subscription has been invoiced for. At the end of this period, a new invoice will be created. */
+  current_period_end?: Maybe<Scalars['Int']>;
+  /** Start of the current period that the subscription has been invoiced for. */
+  current_period_start?: Maybe<Scalars['Int']>;
+  customer?: Maybe<Scalars['String']>;
+  /** Number of days a customer has to pay invoices generated by this subscription. This value will be `null` for subscriptions where `collection_method=charge_automatically`. */
+  days_until_due?: Maybe<Scalars['Int']>;
+  default_payment_method?: Maybe<Stripe_SubscriptionDefaultPaymentMethodProperty>;
+  default_source?: Maybe<Stripe_SubscriptionDefaultSourceProperty>;
+  /** The tax rates that will apply to any subscription item that does not have `tax_rates` set. Invoices created will have their `default_tax_rates` populated from the subscription. */
+  default_tax_rates?: Maybe<Array<Maybe<Stripe_TaxRate>>>;
+  discount?: Maybe<Stripe_Discount>;
+  /** If the subscription has ended, the date the subscription ended. */
+  ended_at?: Maybe<Scalars['Int']>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** List of subscription items, each with an attached price. */
+  items?: Maybe<Stripe_SubscriptionItemsProperty>;
+  latest_invoice?: Maybe<Stripe_SubscriptionLatestInvoiceProperty>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  /** Specifies the approximate timestamp on which any pending invoice items will be billed according to the schedule provided at `pending_invoice_item_interval`. */
+  next_pending_invoice_item_invoice?: Maybe<Scalars['Int']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_SubscriptionObjectProperty>;
+  pause_collection?: Maybe<Stripe_SubscriptionsResourcePauseCollection>;
+  payment_settings?: Maybe<Stripe_SubscriptionsResourcePaymentSettings>;
+  pending_invoice_item_interval?: Maybe<Stripe_SubscriptionPendingInvoiceItemInterval>;
+  pending_setup_intent?: Maybe<Stripe_SubscriptionPendingSetupIntentProperty>;
+  pending_update?: Maybe<Stripe_SubscriptionsResourcePendingUpdate>;
+  schedule?: Maybe<Stripe_SubscriptionScheduleProperty>;
+  /** Date when the subscription was first created. The date might differ from the `created` date due to backdating. */
+  start_date?: Maybe<Scalars['Int']>;
   /**
-   * Owner's verified full name. Values are verified or provided by iDEAL directly
-   * (if supported) at the time of authorization or settlement. They cannot be set or mutated.
+   * Possible values are `incomplete`, `incomplete_expired`, `trialing`, `active`, `past_due`, `canceled`, or `unpaid`.
+   *
+   * For `collection_method=charge_automatically` a subscription moves into `incomplete` if the initial payment attempt fails. A subscription in this state can only have metadata and default_source updated. Once the first invoice is paid, the subscription moves into an `active` state. If the first invoice is not paid within 23 hours, the subscription transitions to `incomplete_expired`. This is a terminal state, the open invoice will be voided and no further invoices will be generated.
+   *
+   * A subscription that is currently in a trial period is `trialing` and moves to `active` when the trial period is over.
+   *
+   * If subscription `collection_method=charge_automatically` it becomes `past_due` when payment to renew it fails and `canceled` or `unpaid` (depending on your subscriptions settings) when Stripe has exhausted all payment retry attempts.
+   *
+   * If subscription `collection_method=send_invoice` it becomes `past_due` when its invoice is not paid by the due date, and `canceled` or `unpaid` if it is still not paid by an additional deadline after that. Note that when a subscription has a status of `unpaid`, no subsequent invoices will be attempted (invoices will be created, but then immediately automatically closed). After receiving updated payment information from a customer, you may choose to reopen and pay their closed invoices.
    */
-  verified_name?: Maybe<Scalars['String']>;
+  status?: Maybe<Stripe_SubscriptionStatusProperty>;
+  test_clock?: Maybe<Stripe_SubscriptionTestClockProperty>;
+  transfer_data?: Maybe<Stripe_SubscriptionTransferData>;
+  /** If the subscription has a trial, the end of that trial. */
+  trial_end?: Maybe<Scalars['Int']>;
+  /** If the subscription has a trial, the beginning of that trial. */
+  trial_start?: Maybe<Scalars['Int']>;
 };
 
-export enum Stripe_SetupAttemptPaymentMethodDetailsIdealBankProperty {
-  AbnAmro = 'abn_amro',
-  AsnBank = 'asn_bank',
-  Bunq = 'bunq',
-  Handelsbanken = 'handelsbanken',
-  Ing = 'ing',
-  Knab = 'knab',
-  Moneyou = 'moneyou',
-  Rabobank = 'rabobank',
-  Regiobank = 'regiobank',
-  Revolut = 'revolut',
-  SnsBank = 'sns_bank',
-  TriodosBank = 'triodos_bank',
-  VanLanschot = 'van_lanschot'
+export type Stripe_SubscriptionAutomaticTax = {
+  __typename?: 'Stripe_SubscriptionAutomaticTax';
+  /** Whether Stripe automatically computes tax on this subscription. */
+  enabled?: Maybe<Scalars['Boolean']>;
+};
+
+export type Stripe_SubscriptionBillingThresholds = {
+  __typename?: 'Stripe_SubscriptionBillingThresholds';
+  /** Monetary threshold that triggers the subscription to create an invoice */
+  amount_gte?: Maybe<Scalars['Int']>;
+  /** Indicates if the `billing_cycle_anchor` should be reset when a threshold is reached. If true, `billing_cycle_anchor` will be updated to the date/time the threshold was last reached; otherwise, the value will remain unchanged. This value may not be `true` if the subscription contains items with plans that have `aggregate_usage=last_ever`. */
+  reset_billing_cycle_anchor?: Maybe<Scalars['Boolean']>;
+};
+
+export enum Stripe_SubscriptionCollectionMethodProperty {
+  ChargeAutomatically = 'charge_automatically',
+  SendInvoice = 'send_invoice'
 }
 
-export enum Stripe_SetupAttemptPaymentMethodDetailsIdealBicProperty {
-  Abnanl2A = 'ABNANL2A',
-  Asnbnl21 = 'ASNBNL21',
-  Bunqnl2A = 'BUNQNL2A',
-  Fvlbnl22 = 'FVLBNL22',
-  Handnl2A = 'HANDNL2A',
-  Ingbnl2A = 'INGBNL2A',
-  Knabnl2H = 'KNABNL2H',
-  Moyonl21 = 'MOYONL21',
-  Rabonl2U = 'RABONL2U',
-  Rbrbnl21 = 'RBRBNL21',
-  Revolt21 = 'REVOLT21',
-  Snsbnl2A = 'SNSBNL2A',
-  Trionl2U = 'TRIONL2U'
+export type Stripe_SubscriptionDefaultPaymentMethodProperty = WrappedString | Stripe_PaymentMethod;
+
+export type Stripe_SubscriptionDefaultSourceProperty = WrappedString | Stripe_AlipayAccount | Stripe_BankAccount | Stripe_BitcoinReceiver | Stripe_Card | Stripe_Source;
+
+/** List of subscription items, each with an attached price. */
+export type Stripe_SubscriptionItemsProperty = {
+  __typename?: 'Stripe_SubscriptionItemsProperty';
+  /** Details about each object. */
+  data: Array<Stripe_SubscriptionItem>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_SubscriptionItemsObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export type Stripe_SubscriptionItem = {
+  __typename?: 'Stripe_SubscriptionItem';
+  billing_thresholds?: Maybe<Stripe_SubscriptionItemBillingThresholds>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: Maybe<Scalars['Int']>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_SubscriptionItemObjectProperty>;
+  price?: Maybe<Stripe_Price>;
+  /** The [quantity](https://stripe.com/docs/subscriptions/quantities) of the plan to which the customer should be subscribed. */
+  quantity?: Maybe<Scalars['Int']>;
+  /** The `subscription` this `subscription_item` belongs to. */
+  subscription?: Maybe<Scalars['String']>;
+  /** The tax rates which apply to this `subscription_item`. When set, the `default_tax_rates` on the subscription do not apply to this `subscription_item`. */
+  tax_rates?: Maybe<Array<Maybe<Stripe_TaxRate>>>;
+};
+
+export type Stripe_SubscriptionItemBillingThresholds = {
+  __typename?: 'Stripe_SubscriptionItemBillingThresholds';
+  /** Usage threshold that triggers the subscription to create an invoice */
+  usage_gte?: Maybe<Scalars['Int']>;
+};
+
+export enum Stripe_SubscriptionItemObjectProperty {
+  SubscriptionItem = 'subscription_item'
 }
 
-export type Stripe_SetupAttemptPaymentMethodDetailsIdealGeneratedSepaDebitProperty = WrappedString | Stripe_PaymentMethod;
-
-export type Stripe_SetupAttemptPaymentMethodDetailsIdealGeneratedSepaDebitMandateProperty = WrappedString | Stripe_Mandate;
-
-export type Stripe_SetupAttemptPaymentMethodDetailsSepaDebit = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsSepaDebit';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_SetupAttemptPaymentMethodDetailsSofort = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsSofort';
-  /** Bank code of bank associated with the bank account. */
-  bank_code?: Maybe<Scalars['String']>;
-  /** Name of the bank associated with the bank account. */
-  bank_name?: Maybe<Scalars['String']>;
-  /** Bank Identifier Code of the bank associated with the bank account. */
-  bic?: Maybe<Scalars['String']>;
-  generated_sepa_debit?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsSofortGeneratedSepaDebitProperty>;
-  generated_sepa_debit_mandate?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsSofortGeneratedSepaDebitMandateProperty>;
-  /** Last four characters of the IBAN. */
-  iban_last4?: Maybe<Scalars['String']>;
-  /**
-   * Preferred language of the Sofort authorization page that the customer is redirected to.
-   * Can be one of `en`, `de`, `fr`, or `nl`
-   */
-  preferred_language?: Maybe<Stripe_SetupAttemptPaymentMethodDetailsSofortPreferredLanguageProperty>;
-  /**
-   * Owner's verified full name. Values are verified or provided by Sofort directly
-   * (if supported) at the time of authorization or settlement. They cannot be set or mutated.
-   */
-  verified_name?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SetupAttemptPaymentMethodDetailsSofortGeneratedSepaDebitProperty = WrappedString | Stripe_PaymentMethod;
-
-export type Stripe_SetupAttemptPaymentMethodDetailsSofortGeneratedSepaDebitMandateProperty = WrappedString | Stripe_Mandate;
-
-export enum Stripe_SetupAttemptPaymentMethodDetailsSofortPreferredLanguageProperty {
-  De = 'de',
-  En = 'en',
-  Fr = 'fr',
-  Nl = 'nl'
+export enum Stripe_SubscriptionItemsObjectProperty {
+  List = 'list'
 }
 
-export type Stripe_SetupAttemptPaymentMethodDetailsUsBankAccount = {
-  __typename?: 'Stripe_SetupAttemptPaymentMethodDetailsUsBankAccount';
-  result?: Maybe<Scalars['JSONObject']>;
+export type Stripe_SubscriptionLatestInvoiceProperty = WrappedString | Stripe_Invoice;
+
+export enum Stripe_SubscriptionObjectProperty {
+  Subscription = 'subscription'
+}
+
+export type Stripe_SubscriptionsResourcePauseCollection = {
+  __typename?: 'Stripe_SubscriptionsResourcePauseCollection';
+  /** The payment collection behavior for this subscription while paused. One of `keep_as_draft`, `mark_uncollectible`, or `void`. */
+  behavior?: Maybe<Stripe_SubscriptionsResourcePauseCollectionBehaviorProperty>;
+  /** The time after which the subscription will resume collecting payments. */
+  resumes_at?: Maybe<Scalars['Int']>;
 };
 
-export type Stripe_ApiErrors = {
-  __typename?: 'Stripe_ApiErrors';
-  /** For card errors, the ID of the failed charge. */
-  charge?: Maybe<Scalars['String']>;
-  /** For some errors that could be handled programmatically, a short string indicating the [error code](https://stripe.com/docs/error-codes) reported. */
-  code?: Maybe<Scalars['String']>;
-  /** For card errors resulting from a card issuer decline, a short string indicating the [card issuer's reason for the decline](https://stripe.com/docs/declines#issuer-declines) if they provide one. */
-  decline_code?: Maybe<Scalars['String']>;
-  /** A URL to more information about the [error code](https://stripe.com/docs/error-codes) reported. */
-  doc_url?: Maybe<Scalars['String']>;
-  /** A human-readable message providing more details about the error. For card errors, these messages can be shown to your users. */
-  message?: Maybe<Scalars['String']>;
-  /** If the error is parameter-specific, the parameter related to the error. For example, you can use this to display a message near the correct form field. */
-  param?: Maybe<Scalars['String']>;
-  payment_intent?: Maybe<Stripe_PaymentIntent>;
-  payment_method?: Maybe<Stripe_PaymentMethod>;
-  /** If the error is specific to the type of payment method, the payment method type that had a problem. This field is only populated for invoice-related errors. */
-  payment_method_type?: Maybe<Scalars['String']>;
-  setup_intent?: Maybe<Stripe_SetupIntent>;
-  source?: Maybe<Stripe_ApiErrorsSourceProperty>;
-  /** The type of error returned. One of `api_error`, `card_error`, `idempotency_error`, or `invalid_request_error` */
-  type?: Maybe<Stripe_ApiErrorsTypeProperty>;
+export enum Stripe_SubscriptionsResourcePauseCollectionBehaviorProperty {
+  KeepAsDraft = 'keep_as_draft',
+  MarkUncollectible = 'mark_uncollectible',
+  Void = 'void'
+}
+
+export type Stripe_SubscriptionsResourcePaymentSettings = {
+  __typename?: 'Stripe_SubscriptionsResourcePaymentSettings';
+  payment_method_options?: Maybe<Stripe_SubscriptionsResourcePaymentMethodOptions>;
+  /** The list of payment method types to provide to every invoice created by the subscription. If not set, Stripe attempts to automatically determine the types to use by looking at the invoice’s default payment method, the subscription’s default payment method, the customer’s default payment method, and your [invoice template settings](https://dashboard.stripe.com/settings/billing/invoice). */
+  payment_method_types?: Maybe<Array<Maybe<Stripe_SubscriptionsResourcePaymentSettingsPaymentMethodTypesProperty>>>;
 };
+
+export type Stripe_SubscriptionsResourcePaymentMethodOptions = {
+  __typename?: 'Stripe_SubscriptionsResourcePaymentMethodOptions';
+  acss_debit?: Maybe<Stripe_InvoicePaymentMethodOptionsAcssDebit>;
+  bancontact?: Maybe<Stripe_InvoicePaymentMethodOptionsBancontact>;
+  card?: Maybe<Stripe_SubscriptionPaymentMethodOptionsCard>;
+  customer_balance?: Maybe<Stripe_InvoicePaymentMethodOptionsCustomerBalance>;
+  konbini?: Maybe<Stripe_InvoicePaymentMethodOptionsKonbini>;
+  us_bank_account?: Maybe<Stripe_InvoicePaymentMethodOptionsUsBankAccount>;
+};
+
+export type Stripe_SubscriptionPaymentMethodOptionsCard = {
+  __typename?: 'Stripe_SubscriptionPaymentMethodOptionsCard';
+  mandate_options?: Maybe<Stripe_InvoiceMandateOptionsCard>;
+  /** We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine. */
+  request_three_d_secure?: Maybe<Stripe_SubscriptionPaymentMethodOptionsCardRequestThreeDSecureProperty>;
+};
+
+export type Stripe_InvoiceMandateOptionsCard = {
+  __typename?: 'Stripe_InvoiceMandateOptionsCard';
+  /** Amount to be charged for future payments. */
+  amount?: Maybe<Scalars['Int']>;
+  /** One of `fixed` or `maximum`. If `fixed`, the `amount` param refers to the exact amount to be charged in future payments. If `maximum`, the amount charged can be up to the value passed for the `amount` param. */
+  amount_type?: Maybe<Stripe_InvoiceMandateOptionsCardAmountTypeProperty>;
+  /** A description of the mandate or subscription that is meant to be displayed to the customer. */
+  description?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_InvoiceMandateOptionsCardAmountTypeProperty {
+  Fixed = 'fixed',
+  Maximum = 'maximum'
+}
+
+export enum Stripe_SubscriptionPaymentMethodOptionsCardRequestThreeDSecureProperty {
+  Any = 'any',
+  Automatic = 'automatic'
+}
+
+export enum Stripe_SubscriptionsResourcePaymentSettingsPaymentMethodTypesProperty {
+  AchCreditTransfer = 'ach_credit_transfer',
+  AchDebit = 'ach_debit',
+  AcssDebit = 'acss_debit',
+  AuBecsDebit = 'au_becs_debit',
+  BacsDebit = 'bacs_debit',
+  Bancontact = 'bancontact',
+  Boleto = 'boleto',
+  Card = 'card',
+  CustomerBalance = 'customer_balance',
+  Fpx = 'fpx',
+  Giropay = 'giropay',
+  Grabpay = 'grabpay',
+  Ideal = 'ideal',
+  Konbini = 'konbini',
+  Paynow = 'paynow',
+  SepaDebit = 'sepa_debit',
+  Sofort = 'sofort',
+  UsBankAccount = 'us_bank_account',
+  WechatPay = 'wechat_pay'
+}
+
+export type Stripe_SubscriptionPendingInvoiceItemInterval = {
+  __typename?: 'Stripe_SubscriptionPendingInvoiceItemInterval';
+  /** Specifies invoicing frequency. Either `day`, `week`, `month` or `year`. */
+  interval?: Maybe<Stripe_SubscriptionPendingInvoiceItemIntervalIntervalProperty>;
+  /** The number of intervals between invoices. For example, `interval=month` and `interval_count=3` bills every 3 months. Maximum of one year interval allowed (1 year, 12 months, or 52 weeks). */
+  interval_count?: Maybe<Scalars['Int']>;
+};
+
+export enum Stripe_SubscriptionPendingInvoiceItemIntervalIntervalProperty {
+  Day = 'day',
+  Month = 'month',
+  Week = 'week',
+  Year = 'year'
+}
+
+export type Stripe_SubscriptionPendingSetupIntentProperty = WrappedString | Stripe_SetupIntent;
 
 export type Stripe_SetupIntent = {
   __typename?: 'Stripe_SetupIntent';
@@ -8993,779 +8720,6 @@ export enum Stripe_SetupIntentStatusProperty {
   RequiresPaymentMethod = 'requires_payment_method',
   Succeeded = 'succeeded'
 }
-
-export type Stripe_ApiErrorsSourceProperty = Stripe_BankAccount | Stripe_Card | Stripe_Source;
-
-export enum Stripe_ApiErrorsTypeProperty {
-  ApiError = 'api_error',
-  CardError = 'card_error',
-  IdempotencyError = 'idempotency_error',
-  InvalidRequestError = 'invalid_request_error'
-}
-
-export type Stripe_SetupAttemptSetupIntentProperty = WrappedString | Stripe_SetupIntent;
-
-export type Stripe_Networks = {
-  __typename?: 'Stripe_Networks';
-  /** All available networks for the card. */
-  available?: Maybe<Array<Maybe<Scalars['String']>>>;
-  /** The preferred network for the card. */
-  preferred?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_ThreeDSecureUsage = {
-  __typename?: 'Stripe_ThreeDSecureUsage';
-  /** Whether 3D Secure is supported on this card. */
-  supported?: Maybe<Scalars['Boolean']>;
-};
-
-export type Stripe_PaymentMethodCardWallet = {
-  __typename?: 'Stripe_PaymentMethodCardWallet';
-  amex_express_checkout?: Maybe<Stripe_PaymentMethodCardWalletAmexExpressCheckout>;
-  apple_pay?: Maybe<Stripe_PaymentMethodCardWalletApplePay>;
-  /** (For tokenized numbers only.) The last four digits of the device account number. */
-  dynamic_last4?: Maybe<Scalars['String']>;
-  google_pay?: Maybe<Stripe_PaymentMethodCardWalletGooglePay>;
-  masterpass?: Maybe<Stripe_PaymentMethodCardWalletMasterpass>;
-  samsung_pay?: Maybe<Stripe_PaymentMethodCardWalletSamsungPay>;
-  /** The type of the card wallet, one of `amex_express_checkout`, `apple_pay`, `google_pay`, `masterpass`, `samsung_pay`, or `visa_checkout`. An additional hash is included on the Wallet subhash with a name matching this value. It contains additional information specific to the card wallet type. */
-  type?: Maybe<Stripe_PaymentMethodCardWalletTypeProperty>;
-  visa_checkout?: Maybe<Stripe_PaymentMethodCardWalletVisaCheckout>;
-};
-
-export type Stripe_PaymentMethodCardWalletAmexExpressCheckout = {
-  __typename?: 'Stripe_PaymentMethodCardWalletAmexExpressCheckout';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodCardWalletApplePay = {
-  __typename?: 'Stripe_PaymentMethodCardWalletApplePay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodCardWalletGooglePay = {
-  __typename?: 'Stripe_PaymentMethodCardWalletGooglePay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodCardWalletMasterpass = {
-  __typename?: 'Stripe_PaymentMethodCardWalletMasterpass';
-  billing_address?: Maybe<Stripe_Address>;
-  /** Owner's verified email. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
-  email?: Maybe<Scalars['String']>;
-  /** Owner's verified full name. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
-  name?: Maybe<Scalars['String']>;
-  shipping_address?: Maybe<Stripe_Address>;
-};
-
-export type Stripe_PaymentMethodCardWalletSamsungPay = {
-  __typename?: 'Stripe_PaymentMethodCardWalletSamsungPay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export enum Stripe_PaymentMethodCardWalletTypeProperty {
-  AmexExpressCheckout = 'amex_express_checkout',
-  ApplePay = 'apple_pay',
-  GooglePay = 'google_pay',
-  Masterpass = 'masterpass',
-  SamsungPay = 'samsung_pay',
-  VisaCheckout = 'visa_checkout'
-}
-
-export type Stripe_PaymentMethodCardWalletVisaCheckout = {
-  __typename?: 'Stripe_PaymentMethodCardWalletVisaCheckout';
-  billing_address?: Maybe<Stripe_Address>;
-  /** Owner's verified email. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
-  email?: Maybe<Scalars['String']>;
-  /** Owner's verified full name. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
-  name?: Maybe<Scalars['String']>;
-  shipping_address?: Maybe<Stripe_Address>;
-};
-
-export type Stripe_PaymentMethodCardPresent = {
-  __typename?: 'Stripe_PaymentMethodCardPresent';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodCustomerProperty = WrappedString | Stripe_Customer;
-
-export type Stripe_PaymentMethodEps = {
-  __typename?: 'Stripe_PaymentMethodEps';
-  /** The customer's bank. Should be one of `arzte_und_apotheker_bank`, `austrian_anadi_bank_ag`, `bank_austria`, `bankhaus_carl_spangler`, `bankhaus_schelhammer_und_schattera_ag`, `bawag_psk_ag`, `bks_bank_ag`, `brull_kallmus_bank_ag`, `btv_vier_lander_bank`, `capital_bank_grawe_gruppe_ag`, `dolomitenbank`, `easybank_ag`, `erste_bank_und_sparkassen`, `hypo_alpeadriabank_international_ag`, `hypo_noe_lb_fur_niederosterreich_u_wien`, `hypo_oberosterreich_salzburg_steiermark`, `hypo_tirol_bank_ag`, `hypo_vorarlberg_bank_ag`, `hypo_bank_burgenland_aktiengesellschaft`, `marchfelder_bank`, `oberbank_ag`, `raiffeisen_bankengruppe_osterreich`, `schoellerbank_ag`, `sparda_bank_wien`, `volksbank_gruppe`, `volkskreditbank_ag`, or `vr_bank_braunau`. */
-  bank?: Maybe<Stripe_PaymentMethodEpsBankProperty>;
-};
-
-export enum Stripe_PaymentMethodEpsBankProperty {
-  ArzteUndApothekerBank = 'arzte_und_apotheker_bank',
-  AustrianAnadiBankAg = 'austrian_anadi_bank_ag',
-  BankAustria = 'bank_austria',
-  BankhausCarlSpangler = 'bankhaus_carl_spangler',
-  BankhausSchelhammerUndSchatteraAg = 'bankhaus_schelhammer_und_schattera_ag',
-  BawagPskAg = 'bawag_psk_ag',
-  BksBankAg = 'bks_bank_ag',
-  BrullKallmusBankAg = 'brull_kallmus_bank_ag',
-  BtvVierLanderBank = 'btv_vier_lander_bank',
-  CapitalBankGraweGruppeAg = 'capital_bank_grawe_gruppe_ag',
-  Dolomitenbank = 'dolomitenbank',
-  EasybankAg = 'easybank_ag',
-  ErsteBankUndSparkassen = 'erste_bank_und_sparkassen',
-  HypoAlpeadriabankInternationalAg = 'hypo_alpeadriabank_international_ag',
-  HypoBankBurgenlandAktiengesellschaft = 'hypo_bank_burgenland_aktiengesellschaft',
-  HypoNoeLbFurNiederosterreichUWien = 'hypo_noe_lb_fur_niederosterreich_u_wien',
-  HypoOberosterreichSalzburgSteiermark = 'hypo_oberosterreich_salzburg_steiermark',
-  HypoTirolBankAg = 'hypo_tirol_bank_ag',
-  HypoVorarlbergBankAg = 'hypo_vorarlberg_bank_ag',
-  MarchfelderBank = 'marchfelder_bank',
-  OberbankAg = 'oberbank_ag',
-  RaiffeisenBankengruppeOsterreich = 'raiffeisen_bankengruppe_osterreich',
-  SchoellerbankAg = 'schoellerbank_ag',
-  SpardaBankWien = 'sparda_bank_wien',
-  VolksbankGruppe = 'volksbank_gruppe',
-  VolkskreditbankAg = 'volkskreditbank_ag',
-  VrBankBraunau = 'vr_bank_braunau'
-}
-
-export type Stripe_PaymentMethodFpx = {
-  __typename?: 'Stripe_PaymentMethodFpx';
-  /** The customer's bank, if provided. Can be one of `affin_bank`, `agrobank`, `alliance_bank`, `ambank`, `bank_islam`, `bank_muamalat`, `bank_rakyat`, `bsn`, `cimb`, `hong_leong_bank`, `hsbc`, `kfh`, `maybank2u`, `ocbc`, `public_bank`, `rhb`, `standard_chartered`, `uob`, `deutsche_bank`, `maybank2e`, or `pb_enterprise`. */
-  bank?: Maybe<Stripe_PaymentMethodFpxBankProperty>;
-};
-
-export enum Stripe_PaymentMethodFpxBankProperty {
-  AffinBank = 'affin_bank',
-  Agrobank = 'agrobank',
-  AllianceBank = 'alliance_bank',
-  Ambank = 'ambank',
-  BankIslam = 'bank_islam',
-  BankMuamalat = 'bank_muamalat',
-  BankRakyat = 'bank_rakyat',
-  Bsn = 'bsn',
-  Cimb = 'cimb',
-  DeutscheBank = 'deutsche_bank',
-  HongLeongBank = 'hong_leong_bank',
-  Hsbc = 'hsbc',
-  Kfh = 'kfh',
-  Maybank2e = 'maybank2e',
-  Maybank2u = 'maybank2u',
-  Ocbc = 'ocbc',
-  PbEnterprise = 'pb_enterprise',
-  PublicBank = 'public_bank',
-  Rhb = 'rhb',
-  StandardChartered = 'standard_chartered',
-  Uob = 'uob'
-}
-
-export type Stripe_PaymentMethodGiropay = {
-  __typename?: 'Stripe_PaymentMethodGiropay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodGrabpay = {
-  __typename?: 'Stripe_PaymentMethodGrabpay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodIdeal = {
-  __typename?: 'Stripe_PaymentMethodIdeal';
-  /** The customer's bank, if provided. Can be one of `abn_amro`, `asn_bank`, `bunq`, `handelsbanken`, `ing`, `knab`, `moneyou`, `rabobank`, `regiobank`, `revolut`, `sns_bank`, `triodos_bank`, or `van_lanschot`. */
-  bank?: Maybe<Stripe_PaymentMethodIdealBankProperty>;
-  /** The Bank Identifier Code of the customer's bank, if the bank was provided. */
-  bic?: Maybe<Stripe_PaymentMethodIdealBicProperty>;
-};
-
-export enum Stripe_PaymentMethodIdealBankProperty {
-  AbnAmro = 'abn_amro',
-  AsnBank = 'asn_bank',
-  Bunq = 'bunq',
-  Handelsbanken = 'handelsbanken',
-  Ing = 'ing',
-  Knab = 'knab',
-  Moneyou = 'moneyou',
-  Rabobank = 'rabobank',
-  Regiobank = 'regiobank',
-  Revolut = 'revolut',
-  SnsBank = 'sns_bank',
-  TriodosBank = 'triodos_bank',
-  VanLanschot = 'van_lanschot'
-}
-
-export enum Stripe_PaymentMethodIdealBicProperty {
-  Abnanl2A = 'ABNANL2A',
-  Asnbnl21 = 'ASNBNL21',
-  Bunqnl2A = 'BUNQNL2A',
-  Fvlbnl22 = 'FVLBNL22',
-  Handnl2A = 'HANDNL2A',
-  Ingbnl2A = 'INGBNL2A',
-  Knabnl2H = 'KNABNL2H',
-  Moyonl21 = 'MOYONL21',
-  Rabonl2U = 'RABONL2U',
-  Rbrbnl21 = 'RBRBNL21',
-  Revolt21 = 'REVOLT21',
-  Snsbnl2A = 'SNSBNL2A',
-  Trionl2U = 'TRIONL2U'
-}
-
-export type Stripe_PaymentMethodInteracPresent = {
-  __typename?: 'Stripe_PaymentMethodInteracPresent';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodKlarna = {
-  __typename?: 'Stripe_PaymentMethodKlarna';
-  dob?: Maybe<Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob>;
-};
-
-export type Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob = {
-  __typename?: 'Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob';
-  /** The day of birth, between 1 and 31. */
-  day?: Maybe<Scalars['Int']>;
-  /** The month of birth, between 1 and 12. */
-  month?: Maybe<Scalars['Int']>;
-  /** The four-digit year of birth. */
-  year?: Maybe<Scalars['Int']>;
-};
-
-export type Stripe_PaymentMethodKonbini = {
-  __typename?: 'Stripe_PaymentMethodKonbini';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export enum Stripe_PaymentMethodObjectProperty {
-  PaymentMethod = 'payment_method'
-}
-
-export type Stripe_PaymentMethodOxxo = {
-  __typename?: 'Stripe_PaymentMethodOxxo';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodP24 = {
-  __typename?: 'Stripe_PaymentMethodP24';
-  /** The customer's bank, if provided. */
-  bank?: Maybe<Stripe_PaymentMethodP24BankProperty>;
-};
-
-export enum Stripe_PaymentMethodP24BankProperty {
-  AliorBank = 'alior_bank',
-  BankMillennium = 'bank_millennium',
-  BankNowyBfgSa = 'bank_nowy_bfg_sa',
-  BankPekaoSa = 'bank_pekao_sa',
-  BankiSpbdzielcze = 'banki_spbdzielcze',
-  Blik = 'blik',
-  BnpParibas = 'bnp_paribas',
-  Boz = 'boz',
-  CitiHandlowy = 'citi_handlowy',
-  CreditAgricole = 'credit_agricole',
-  Envelobank = 'envelobank',
-  EtransferPocztowy24 = 'etransfer_pocztowy24',
-  GetinBank = 'getin_bank',
-  Ideabank = 'ideabank',
-  Ing = 'ing',
-  Inteligo = 'inteligo',
-  MbankMtransfer = 'mbank_mtransfer',
-  NestPrzelew = 'nest_przelew',
-  NoblePay = 'noble_pay',
-  PbacZIpko = 'pbac_z_ipko',
-  PlusBank = 'plus_bank',
-  SantanderPrzelew24 = 'santander_przelew24',
-  TmobileUsbugiBankowe = 'tmobile_usbugi_bankowe',
-  ToyotaBank = 'toyota_bank',
-  VolkswagenBank = 'volkswagen_bank'
-}
-
-export type Stripe_PaymentMethodPaynow = {
-  __typename?: 'Stripe_PaymentMethodPaynow';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodSepaDebit = {
-  __typename?: 'Stripe_PaymentMethodSepaDebit';
-  /** Bank code of bank associated with the bank account. */
-  bank_code?: Maybe<Scalars['String']>;
-  /** Branch code of bank associated with the bank account. */
-  branch_code?: Maybe<Scalars['String']>;
-  /** Two-letter ISO code representing the country the bank account is located in. */
-  country?: Maybe<Scalars['String']>;
-  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
-  fingerprint?: Maybe<Scalars['String']>;
-  generated_from?: Maybe<Stripe_SepaDebitGeneratedFrom>;
-  /** Last four characters of the IBAN. */
-  last4?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SepaDebitGeneratedFrom = {
-  __typename?: 'Stripe_SepaDebitGeneratedFrom';
-  charge?: Maybe<Stripe_SepaDebitGeneratedFromChargeProperty>;
-  setup_attempt?: Maybe<Stripe_SepaDebitGeneratedFromSetupAttemptProperty>;
-};
-
-export type Stripe_SepaDebitGeneratedFromChargeProperty = WrappedString | Stripe_Charge;
-
-export type Stripe_SepaDebitGeneratedFromSetupAttemptProperty = WrappedString | Stripe_SetupAttempt;
-
-export type Stripe_PaymentMethodSofort = {
-  __typename?: 'Stripe_PaymentMethodSofort';
-  /** Two-letter ISO code representing the country the bank account is located in. */
-  country?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_PaymentMethodTypeProperty {
-  AcssDebit = 'acss_debit',
-  AfterpayClearpay = 'afterpay_clearpay',
-  Alipay = 'alipay',
-  AuBecsDebit = 'au_becs_debit',
-  BacsDebit = 'bacs_debit',
-  Bancontact = 'bancontact',
-  Boleto = 'boleto',
-  Card = 'card',
-  CardPresent = 'card_present',
-  Eps = 'eps',
-  Fpx = 'fpx',
-  Giropay = 'giropay',
-  Grabpay = 'grabpay',
-  Ideal = 'ideal',
-  InteracPresent = 'interac_present',
-  Klarna = 'klarna',
-  Konbini = 'konbini',
-  Oxxo = 'oxxo',
-  P24 = 'p24',
-  Paynow = 'paynow',
-  SepaDebit = 'sepa_debit',
-  Sofort = 'sofort',
-  UsBankAccount = 'us_bank_account',
-  WechatPay = 'wechat_pay'
-}
-
-export type Stripe_PaymentMethodUsBankAccount = {
-  __typename?: 'Stripe_PaymentMethodUsBankAccount';
-  /** Account holder type: individual or company. */
-  account_holder_type?: Maybe<Stripe_PaymentMethodUsBankAccountAccountHolderTypeProperty>;
-  /** Account type: checkings or savings. Defaults to checking if omitted. */
-  account_type?: Maybe<Stripe_PaymentMethodUsBankAccountAccountTypeProperty>;
-  /** The name of the bank. */
-  bank_name?: Maybe<Scalars['String']>;
-  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
-  fingerprint?: Maybe<Scalars['String']>;
-  /** Last four digits of the bank account number. */
-  last4?: Maybe<Scalars['String']>;
-  /** Routing number of the bank account. */
-  routing_number?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_PaymentMethodUsBankAccountAccountHolderTypeProperty {
-  Company = 'company',
-  Individual = 'individual'
-}
-
-export enum Stripe_PaymentMethodUsBankAccountAccountTypeProperty {
-  Checking = 'checking',
-  Savings = 'savings'
-}
-
-export type Stripe_PaymentMethodWechatPay = {
-  __typename?: 'Stripe_PaymentMethodWechatPay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export enum Stripe_CustomerObjectProperty {
-  Customer = 'customer'
-}
-
-/** The customer's payment sources, if any. */
-export type Stripe_CustomerSourcesProperty = {
-  __typename?: 'Stripe_CustomerSourcesProperty';
-  /** Details about each object. */
-  data: Array<Stripe_CustomerSourcesDataProperty>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_CustomerSourcesObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export type Stripe_CustomerSourcesDataProperty = Stripe_AlipayAccount | Stripe_BankAccount | Stripe_BitcoinReceiver | Stripe_Card | Stripe_Source;
-
-export enum Stripe_CustomerSourcesObjectProperty {
-  List = 'list'
-}
-
-/** The customer's current subscriptions, if any. */
-export type Stripe_CustomerSubscriptionsProperty = {
-  __typename?: 'Stripe_CustomerSubscriptionsProperty';
-  /** Details about each object. */
-  data: Array<Stripe_Subscription>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_CustomerSubscriptionsObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export type Stripe_Subscription = {
-  __typename?: 'Stripe_Subscription';
-  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account. */
-  application_fee_percent?: Maybe<Scalars['Float']>;
-  automatic_tax?: Maybe<Stripe_SubscriptionAutomaticTax>;
-  /** Determines the date of the first full invoice, and, for plans with `month` or `year` intervals, the day of the month for subsequent invoices. */
-  billing_cycle_anchor?: Maybe<Scalars['Int']>;
-  billing_thresholds?: Maybe<Stripe_SubscriptionBillingThresholds>;
-  /** A date in the future at which the subscription will automatically get canceled */
-  cancel_at?: Maybe<Scalars['Int']>;
-  /** If the subscription has been canceled with the `at_period_end` flag set to `true`, `cancel_at_period_end` on the subscription will be true. You can use this attribute to determine whether a subscription that has a status of active is scheduled to be canceled at the end of the current period. */
-  cancel_at_period_end?: Maybe<Scalars['Boolean']>;
-  /** If the subscription has been canceled, the date of that cancellation. If the subscription was canceled with `cancel_at_period_end`, `canceled_at` will reflect the time of the most recent update request, not the end of the subscription period when the subscription is automatically moved to a canceled state. */
-  canceled_at?: Maybe<Scalars['Int']>;
-  /** Either `charge_automatically`, or `send_invoice`. When charging automatically, Stripe will attempt to pay this subscription at the end of the cycle using the default source attached to the customer. When sending an invoice, Stripe will email your customer an invoice with payment instructions. */
-  collection_method?: Maybe<Stripe_SubscriptionCollectionMethodProperty>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  /** End of the current period that the subscription has been invoiced for. At the end of this period, a new invoice will be created. */
-  current_period_end?: Maybe<Scalars['Int']>;
-  /** Start of the current period that the subscription has been invoiced for. */
-  current_period_start?: Maybe<Scalars['Int']>;
-  customer?: Maybe<Scalars['String']>;
-  /** Number of days a customer has to pay invoices generated by this subscription. This value will be `null` for subscriptions where `collection_method=charge_automatically`. */
-  days_until_due?: Maybe<Scalars['Int']>;
-  default_payment_method?: Maybe<Stripe_SubscriptionDefaultPaymentMethodProperty>;
-  default_source?: Maybe<Stripe_SubscriptionDefaultSourceProperty>;
-  /** The tax rates that will apply to any subscription item that does not have `tax_rates` set. Invoices created will have their `default_tax_rates` populated from the subscription. */
-  default_tax_rates?: Maybe<Array<Maybe<Stripe_TaxRate>>>;
-  discount?: Maybe<Stripe_Discount>;
-  /** If the subscription has ended, the date the subscription ended. */
-  ended_at?: Maybe<Scalars['Int']>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** List of subscription items, each with an attached price. */
-  items?: Maybe<Stripe_SubscriptionItemsProperty>;
-  latest_invoice?: Maybe<Stripe_SubscriptionLatestInvoiceProperty>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  /** Specifies the approximate timestamp on which any pending invoice items will be billed according to the schedule provided at `pending_invoice_item_interval`. */
-  next_pending_invoice_item_invoice?: Maybe<Scalars['Int']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_SubscriptionObjectProperty>;
-  pause_collection?: Maybe<Stripe_SubscriptionsResourcePauseCollection>;
-  payment_settings?: Maybe<Stripe_SubscriptionsResourcePaymentSettings>;
-  pending_invoice_item_interval?: Maybe<Stripe_SubscriptionPendingInvoiceItemInterval>;
-  pending_setup_intent?: Maybe<Stripe_SubscriptionPendingSetupIntentProperty>;
-  pending_update?: Maybe<Stripe_SubscriptionsResourcePendingUpdate>;
-  schedule?: Maybe<Stripe_SubscriptionScheduleProperty>;
-  /** Date when the subscription was first created. The date might differ from the `created` date due to backdating. */
-  start_date?: Maybe<Scalars['Int']>;
-  /**
-   * Possible values are `incomplete`, `incomplete_expired`, `trialing`, `active`, `past_due`, `canceled`, or `unpaid`.
-   *
-   * For `collection_method=charge_automatically` a subscription moves into `incomplete` if the initial payment attempt fails. A subscription in this state can only have metadata and default_source updated. Once the first invoice is paid, the subscription moves into an `active` state. If the first invoice is not paid within 23 hours, the subscription transitions to `incomplete_expired`. This is a terminal state, the open invoice will be voided and no further invoices will be generated.
-   *
-   * A subscription that is currently in a trial period is `trialing` and moves to `active` when the trial period is over.
-   *
-   * If subscription `collection_method=charge_automatically` it becomes `past_due` when payment to renew it fails and `canceled` or `unpaid` (depending on your subscriptions settings) when Stripe has exhausted all payment retry attempts.
-   *
-   * If subscription `collection_method=send_invoice` it becomes `past_due` when its invoice is not paid by the due date, and `canceled` or `unpaid` if it is still not paid by an additional deadline after that. Note that when a subscription has a status of `unpaid`, no subsequent invoices will be attempted (invoices will be created, but then immediately automatically closed). After receiving updated payment information from a customer, you may choose to reopen and pay their closed invoices.
-   */
-  status?: Maybe<Stripe_SubscriptionStatusProperty>;
-  test_clock?: Maybe<Stripe_SubscriptionTestClockProperty>;
-  transfer_data?: Maybe<Stripe_SubscriptionTransferData>;
-  /** If the subscription has a trial, the end of that trial. */
-  trial_end?: Maybe<Scalars['Int']>;
-  /** If the subscription has a trial, the beginning of that trial. */
-  trial_start?: Maybe<Scalars['Int']>;
-};
-
-export type Stripe_SubscriptionAutomaticTax = {
-  __typename?: 'Stripe_SubscriptionAutomaticTax';
-  /** Whether Stripe automatically computes tax on this subscription. */
-  enabled?: Maybe<Scalars['Boolean']>;
-};
-
-export type Stripe_SubscriptionBillingThresholds = {
-  __typename?: 'Stripe_SubscriptionBillingThresholds';
-  /** Monetary threshold that triggers the subscription to create an invoice */
-  amount_gte?: Maybe<Scalars['Int']>;
-  /** Indicates if the `billing_cycle_anchor` should be reset when a threshold is reached. If true, `billing_cycle_anchor` will be updated to the date/time the threshold was last reached; otherwise, the value will remain unchanged. This value may not be `true` if the subscription contains items with plans that have `aggregate_usage=last_ever`. */
-  reset_billing_cycle_anchor?: Maybe<Scalars['Boolean']>;
-};
-
-export enum Stripe_SubscriptionCollectionMethodProperty {
-  ChargeAutomatically = 'charge_automatically',
-  SendInvoice = 'send_invoice'
-}
-
-export type Stripe_SubscriptionDefaultPaymentMethodProperty = WrappedString | Stripe_PaymentMethod;
-
-export type Stripe_SubscriptionDefaultSourceProperty = WrappedString | Stripe_AlipayAccount | Stripe_BankAccount | Stripe_BitcoinReceiver | Stripe_Card | Stripe_Source;
-
-export type Stripe_TaxRate = {
-  __typename?: 'Stripe_TaxRate';
-  /** Defaults to `true`. When set to `false`, this tax rate cannot be used with new applications or Checkout Sessions, but will still work for subscriptions and invoices that already have it set. */
-  active?: Maybe<Scalars['Boolean']>;
-  /** Two-letter country code ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)). */
-  country?: Maybe<Scalars['String']>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  /** An arbitrary string attached to the tax rate for your internal use only. It will not be visible to your customers. */
-  description?: Maybe<Scalars['String']>;
-  /** The display name of the tax rates as it will appear to your customer on their receipt email, PDF, and the hosted invoice page. */
-  display_name?: Maybe<Scalars['String']>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** This specifies if the tax rate is inclusive or exclusive. */
-  inclusive?: Maybe<Scalars['Boolean']>;
-  /** The jurisdiction for the tax rate. You can use this label field for tax reporting purposes. It also appears on your customer’s invoice. */
-  jurisdiction?: Maybe<Scalars['String']>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_TaxRateObjectProperty>;
-  /** This represents the tax rate percent out of 100. */
-  percentage?: Maybe<Scalars['Float']>;
-  /** [ISO 3166-2 subdivision code](https://en.wikipedia.org/wiki/ISO_3166-2:US), without country prefix. For example, "NY" for New York, United States. */
-  state?: Maybe<Scalars['String']>;
-  /** The high-level tax type, such as `vat` or `sales_tax`. */
-  tax_type?: Maybe<Stripe_TaxRateTaxTypeProperty>;
-};
-
-export enum Stripe_TaxRateObjectProperty {
-  TaxRate = 'tax_rate'
-}
-
-export enum Stripe_TaxRateTaxTypeProperty {
-  Gst = 'gst',
-  Hst = 'hst',
-  Jct = 'jct',
-  Pst = 'pst',
-  Qst = 'qst',
-  Rst = 'rst',
-  SalesTax = 'sales_tax',
-  Vat = 'vat'
-}
-
-/** List of subscription items, each with an attached price. */
-export type Stripe_SubscriptionItemsProperty = {
-  __typename?: 'Stripe_SubscriptionItemsProperty';
-  /** Details about each object. */
-  data: Array<Stripe_SubscriptionItem>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_SubscriptionItemsObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export type Stripe_SubscriptionItem = {
-  __typename?: 'Stripe_SubscriptionItem';
-  billing_thresholds?: Maybe<Stripe_SubscriptionItemBillingThresholds>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_SubscriptionItemObjectProperty>;
-  price?: Maybe<Stripe_Price>;
-  /** The [quantity](https://stripe.com/docs/subscriptions/quantities) of the plan to which the customer should be subscribed. */
-  quantity?: Maybe<Scalars['Int']>;
-  /** The `subscription` this `subscription_item` belongs to. */
-  subscription?: Maybe<Scalars['String']>;
-  /** The tax rates which apply to this `subscription_item`. When set, the `default_tax_rates` on the subscription do not apply to this `subscription_item`. */
-  tax_rates?: Maybe<Array<Maybe<Stripe_TaxRate>>>;
-};
-
-export type Stripe_SubscriptionItemBillingThresholds = {
-  __typename?: 'Stripe_SubscriptionItemBillingThresholds';
-  /** Usage threshold that triggers the subscription to create an invoice */
-  usage_gte?: Maybe<Scalars['Int']>;
-};
-
-export enum Stripe_SubscriptionItemObjectProperty {
-  SubscriptionItem = 'subscription_item'
-}
-
-export enum Stripe_SubscriptionItemsObjectProperty {
-  List = 'list'
-}
-
-export type Stripe_SubscriptionLatestInvoiceProperty = WrappedString | Stripe_Invoice;
-
-export enum Stripe_SubscriptionObjectProperty {
-  Subscription = 'subscription'
-}
-
-export type Stripe_SubscriptionsResourcePauseCollection = {
-  __typename?: 'Stripe_SubscriptionsResourcePauseCollection';
-  /** The payment collection behavior for this subscription while paused. One of `keep_as_draft`, `mark_uncollectible`, or `void`. */
-  behavior?: Maybe<Stripe_SubscriptionsResourcePauseCollectionBehaviorProperty>;
-  /** The time after which the subscription will resume collecting payments. */
-  resumes_at?: Maybe<Scalars['Int']>;
-};
-
-export enum Stripe_SubscriptionsResourcePauseCollectionBehaviorProperty {
-  KeepAsDraft = 'keep_as_draft',
-  MarkUncollectible = 'mark_uncollectible',
-  Void = 'void'
-}
-
-export type Stripe_SubscriptionsResourcePaymentSettings = {
-  __typename?: 'Stripe_SubscriptionsResourcePaymentSettings';
-  payment_method_options?: Maybe<Stripe_SubscriptionsResourcePaymentMethodOptions>;
-  /** The list of payment method types to provide to every invoice created by the subscription. If not set, Stripe attempts to automatically determine the types to use by looking at the invoice’s default payment method, the subscription’s default payment method, the customer’s default payment method, and your [invoice template settings](https://dashboard.stripe.com/settings/billing/invoice). */
-  payment_method_types?: Maybe<Array<Maybe<Stripe_SubscriptionsResourcePaymentSettingsPaymentMethodTypesProperty>>>;
-};
-
-export type Stripe_SubscriptionsResourcePaymentMethodOptions = {
-  __typename?: 'Stripe_SubscriptionsResourcePaymentMethodOptions';
-  acss_debit?: Maybe<Stripe_InvoicePaymentMethodOptionsAcssDebit>;
-  bancontact?: Maybe<Stripe_InvoicePaymentMethodOptionsBancontact>;
-  card?: Maybe<Stripe_SubscriptionPaymentMethodOptionsCard>;
-  customer_balance?: Maybe<Stripe_InvoicePaymentMethodOptionsCustomerBalance>;
-  konbini?: Maybe<Stripe_InvoicePaymentMethodOptionsKonbini>;
-  us_bank_account?: Maybe<Stripe_InvoicePaymentMethodOptionsUsBankAccount>;
-};
-
-export type Stripe_InvoicePaymentMethodOptionsAcssDebit = {
-  __typename?: 'Stripe_InvoicePaymentMethodOptionsAcssDebit';
-  mandate_options?: Maybe<Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptions>;
-  /** Bank account verification method. */
-  verification_method?: Maybe<Stripe_InvoicePaymentMethodOptionsAcssDebitVerificationMethodProperty>;
-};
-
-export type Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptions = {
-  __typename?: 'Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptions';
-  /** Transaction type of the mandate. */
-  transaction_type?: Maybe<Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptionsTransactionTypeProperty>;
-};
-
-export enum Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptionsTransactionTypeProperty {
-  Business = 'business',
-  Personal = 'personal'
-}
-
-export enum Stripe_InvoicePaymentMethodOptionsAcssDebitVerificationMethodProperty {
-  Automatic = 'automatic',
-  Instant = 'instant',
-  Microdeposits = 'microdeposits'
-}
-
-export type Stripe_InvoicePaymentMethodOptionsBancontact = {
-  __typename?: 'Stripe_InvoicePaymentMethodOptionsBancontact';
-  /** Preferred language of the Bancontact authorization page that the customer is redirected to. */
-  preferred_language?: Maybe<Stripe_InvoicePaymentMethodOptionsBancontactPreferredLanguageProperty>;
-};
-
-export enum Stripe_InvoicePaymentMethodOptionsBancontactPreferredLanguageProperty {
-  De = 'de',
-  En = 'en',
-  Fr = 'fr',
-  Nl = 'nl'
-}
-
-export type Stripe_SubscriptionPaymentMethodOptionsCard = {
-  __typename?: 'Stripe_SubscriptionPaymentMethodOptionsCard';
-  mandate_options?: Maybe<Stripe_InvoiceMandateOptionsCard>;
-  /** We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine. */
-  request_three_d_secure?: Maybe<Stripe_SubscriptionPaymentMethodOptionsCardRequestThreeDSecureProperty>;
-};
-
-export type Stripe_InvoiceMandateOptionsCard = {
-  __typename?: 'Stripe_InvoiceMandateOptionsCard';
-  /** Amount to be charged for future payments. */
-  amount?: Maybe<Scalars['Int']>;
-  /** One of `fixed` or `maximum`. If `fixed`, the `amount` param refers to the exact amount to be charged in future payments. If `maximum`, the amount charged can be up to the value passed for the `amount` param. */
-  amount_type?: Maybe<Stripe_InvoiceMandateOptionsCardAmountTypeProperty>;
-  /** A description of the mandate or subscription that is meant to be displayed to the customer. */
-  description?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_InvoiceMandateOptionsCardAmountTypeProperty {
-  Fixed = 'fixed',
-  Maximum = 'maximum'
-}
-
-export enum Stripe_SubscriptionPaymentMethodOptionsCardRequestThreeDSecureProperty {
-  Any = 'any',
-  Automatic = 'automatic'
-}
-
-export type Stripe_InvoicePaymentMethodOptionsCustomerBalance = {
-  __typename?: 'Stripe_InvoicePaymentMethodOptionsCustomerBalance';
-  bank_transfer?: Maybe<Stripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransfer>;
-  /** The funding method type to be used when there are not enough funds in the customer balance. Permitted values include: `bank_transfer`. */
-  funding_type?: Maybe<Stripe_InvoicePaymentMethodOptionsCustomerBalanceFundingTypeProperty>;
-};
-
-export type Stripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransfer = {
-  __typename?: 'Stripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransfer';
-  /** The bank transfer type that can be used for funding. Permitted values include: `us_bank_account`, `eu_bank_account`, `id_bank_account`, `gb_bank_account`, `jp_bank_account`, `mx_bank_account`, `eu_bank_transfer`, `gb_bank_transfer`, `id_bank_transfer`, `jp_bank_transfer`, `mx_bank_transfer`, or `us_bank_transfer`. */
-  type?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_InvoicePaymentMethodOptionsCustomerBalanceFundingTypeProperty {
-  BankTransfer = 'bank_transfer'
-}
-
-export type Stripe_InvoicePaymentMethodOptionsKonbini = {
-  __typename?: 'Stripe_InvoicePaymentMethodOptionsKonbini';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_InvoicePaymentMethodOptionsUsBankAccount = {
-  __typename?: 'Stripe_InvoicePaymentMethodOptionsUsBankAccount';
-  /** Bank account verification method. */
-  verification_method?: Maybe<Stripe_InvoicePaymentMethodOptionsUsBankAccountVerificationMethodProperty>;
-};
-
-export enum Stripe_InvoicePaymentMethodOptionsUsBankAccountVerificationMethodProperty {
-  Automatic = 'automatic',
-  Instant = 'instant',
-  Microdeposits = 'microdeposits'
-}
-
-export enum Stripe_SubscriptionsResourcePaymentSettingsPaymentMethodTypesProperty {
-  AchCreditTransfer = 'ach_credit_transfer',
-  AchDebit = 'ach_debit',
-  AcssDebit = 'acss_debit',
-  AuBecsDebit = 'au_becs_debit',
-  BacsDebit = 'bacs_debit',
-  Bancontact = 'bancontact',
-  Boleto = 'boleto',
-  Card = 'card',
-  CustomerBalance = 'customer_balance',
-  Fpx = 'fpx',
-  Giropay = 'giropay',
-  Grabpay = 'grabpay',
-  Ideal = 'ideal',
-  Konbini = 'konbini',
-  Paynow = 'paynow',
-  SepaDebit = 'sepa_debit',
-  Sofort = 'sofort',
-  UsBankAccount = 'us_bank_account',
-  WechatPay = 'wechat_pay'
-}
-
-export type Stripe_SubscriptionPendingInvoiceItemInterval = {
-  __typename?: 'Stripe_SubscriptionPendingInvoiceItemInterval';
-  /** Specifies invoicing frequency. Either `day`, `week`, `month` or `year`. */
-  interval?: Maybe<Stripe_SubscriptionPendingInvoiceItemIntervalIntervalProperty>;
-  /** The number of intervals between invoices. For example, `interval=month` and `interval_count=3` bills every 3 months. Maximum of one year interval allowed (1 year, 12 months, or 52 weeks). */
-  interval_count?: Maybe<Scalars['Int']>;
-};
-
-export enum Stripe_SubscriptionPendingInvoiceItemIntervalIntervalProperty {
-  Day = 'day',
-  Month = 'month',
-  Week = 'week',
-  Year = 'year'
-}
-
-export type Stripe_SubscriptionPendingSetupIntentProperty = WrappedString | Stripe_SetupIntent;
 
 export type Stripe_SubscriptionsResourcePendingUpdate = {
   __typename?: 'Stripe_SubscriptionsResourcePendingUpdate';
@@ -10042,693 +8996,6 @@ export enum Stripe_SubscriptionStatusProperty {
 
 export type Stripe_SubscriptionTestClockProperty = WrappedString | Stripe_TestHelpersTestClock;
 
-export enum Stripe_CustomerSubscriptionsObjectProperty {
-  List = 'list'
-}
-
-export type Stripe_CustomerTax = {
-  __typename?: 'Stripe_CustomerTax';
-  /** Surfaces if automatic tax computation is possible given the current customer location information. */
-  automatic_tax?: Maybe<Stripe_CustomerTaxAutomaticTaxProperty>;
-  /** A recent IP address of the customer used for tax reporting and tax location inference. */
-  ip_address?: Maybe<Scalars['String']>;
-  location?: Maybe<Stripe_CustomerTaxLocation>;
-};
-
-export enum Stripe_CustomerTaxAutomaticTaxProperty {
-  Failed = 'failed',
-  NotCollecting = 'not_collecting',
-  Supported = 'supported',
-  UnrecognizedLocation = 'unrecognized_location'
-}
-
-export type Stripe_CustomerTaxLocation = {
-  __typename?: 'Stripe_CustomerTaxLocation';
-  /** The customer's country as identified by Stripe Tax. */
-  country?: Maybe<Scalars['String']>;
-  /** The data source used to infer the customer's location. */
-  source?: Maybe<Stripe_CustomerTaxLocationSourceProperty>;
-  /** The customer's state, county, province, or region as identified by Stripe Tax. */
-  state?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_CustomerTaxLocationSourceProperty {
-  BillingAddress = 'billing_address',
-  IpAddress = 'ip_address',
-  PaymentMethod = 'payment_method',
-  ShippingDestination = 'shipping_destination'
-}
-
-export enum Stripe_CustomerTaxExemptProperty {
-  Exempt = 'exempt',
-  None = 'none',
-  Reverse = 'reverse'
-}
-
-/** The customer's tax IDs. */
-export type Stripe_CustomerTaxIdsProperty = {
-  __typename?: 'Stripe_CustomerTaxIdsProperty';
-  /** Details about each object. */
-  data: Array<Stripe_TaxId>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_CustomerTaxIdsObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export enum Stripe_CustomerTaxIdsObjectProperty {
-  List = 'list'
-}
-
-export type Stripe_CustomerTestClockProperty = WrappedString | Stripe_TestHelpersTestClock;
-
-export enum Stripe_TaxIdObjectProperty {
-  TaxId = 'tax_id'
-}
-
-export enum Stripe_TaxIdTypeProperty {
-  AeTrn = 'ae_trn',
-  AuAbn = 'au_abn',
-  AuArn = 'au_arn',
-  BgUic = 'bg_uic',
-  BrCnpj = 'br_cnpj',
-  BrCpf = 'br_cpf',
-  CaBn = 'ca_bn',
-  CaGstHst = 'ca_gst_hst',
-  CaPstBc = 'ca_pst_bc',
-  CaPstMb = 'ca_pst_mb',
-  CaPstSk = 'ca_pst_sk',
-  CaQst = 'ca_qst',
-  ChVat = 'ch_vat',
-  ClTin = 'cl_tin',
-  EsCif = 'es_cif',
-  EuVat = 'eu_vat',
-  GbVat = 'gb_vat',
-  GeVat = 'ge_vat',
-  HkBr = 'hk_br',
-  HuTin = 'hu_tin',
-  IdNpwp = 'id_npwp',
-  IlVat = 'il_vat',
-  InGst = 'in_gst',
-  IsVat = 'is_vat',
-  JpCn = 'jp_cn',
-  JpRn = 'jp_rn',
-  KrBrn = 'kr_brn',
-  LiUid = 'li_uid',
-  MxRfc = 'mx_rfc',
-  MyFrp = 'my_frp',
-  MyItn = 'my_itn',
-  MySst = 'my_sst',
-  NoVat = 'no_vat',
-  NzGst = 'nz_gst',
-  RuInn = 'ru_inn',
-  RuKpp = 'ru_kpp',
-  SaVat = 'sa_vat',
-  SgGst = 'sg_gst',
-  SgUen = 'sg_uen',
-  SiTin = 'si_tin',
-  ThVat = 'th_vat',
-  TwVat = 'tw_vat',
-  UaVat = 'ua_vat',
-  Unknown = 'unknown',
-  UsEin = 'us_ein',
-  ZaVat = 'za_vat'
-}
-
-export type Stripe_TaxIdVerification = {
-  __typename?: 'Stripe_TaxIdVerification';
-  /** Verification status, one of `pending`, `verified`, `unverified`, or `unavailable`. */
-  status?: Maybe<Stripe_TaxIdVerificationStatusProperty>;
-  /** Verified address. */
-  verified_address?: Maybe<Scalars['String']>;
-  /** Verified name. */
-  verified_name?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_TaxIdVerificationStatusProperty {
-  Pending = 'pending',
-  Unavailable = 'unavailable',
-  Unverified = 'unverified',
-  Verified = 'verified'
-}
-
-export type Stripe_AutomaticTax = {
-  __typename?: 'Stripe_AutomaticTax';
-  /** Whether Stripe automatically computes tax on this invoice. */
-  enabled?: Maybe<Scalars['Boolean']>;
-  /** The status of the most recent automated tax calculation for this invoice. */
-  status?: Maybe<Stripe_AutomaticTaxStatusProperty>;
-};
-
-export enum Stripe_AutomaticTaxStatusProperty {
-  Complete = 'complete',
-  Failed = 'failed',
-  RequiresLocationInputs = 'requires_location_inputs'
-}
-
-export enum Stripe_InvoiceBillingReasonProperty {
-  AutomaticPendingInvoiceItemInvoice = 'automatic_pending_invoice_item_invoice',
-  Manual = 'manual',
-  QuoteAccept = 'quote_accept',
-  Subscription = 'subscription',
-  SubscriptionCreate = 'subscription_create',
-  SubscriptionCycle = 'subscription_cycle',
-  SubscriptionThreshold = 'subscription_threshold',
-  SubscriptionUpdate = 'subscription_update',
-  Upcoming = 'upcoming'
-}
-
-export type Stripe_InvoiceChargeProperty = WrappedString | Stripe_Charge;
-
-export enum Stripe_InvoiceCollectionMethodProperty {
-  ChargeAutomatically = 'charge_automatically',
-  SendInvoice = 'send_invoice'
-}
-
-export enum Stripe_InvoiceCustomerTaxExemptProperty {
-  Exempt = 'exempt',
-  None = 'none',
-  Reverse = 'reverse'
-}
-
-export type Stripe_InvoicesResourceInvoiceTaxId = {
-  __typename?: 'Stripe_InvoicesResourceInvoiceTaxId';
-  /** The type of the tax ID, one of `eu_vat`, `br_cnpj`, `br_cpf`, `gb_vat`, `nz_gst`, `au_abn`, `au_arn`, `in_gst`, `no_vat`, `za_vat`, `ch_vat`, `mx_rfc`, `sg_uen`, `ru_inn`, `ru_kpp`, `ca_bn`, `hk_br`, `es_cif`, `tw_vat`, `th_vat`, `jp_cn`, `jp_rn`, `li_uid`, `my_itn`, `us_ein`, `kr_brn`, `ca_qst`, `ca_gst_hst`, `ca_pst_bc`, `ca_pst_mb`, `ca_pst_sk`, `my_sst`, `sg_gst`, `ae_trn`, `cl_tin`, `sa_vat`, `id_npwp`, `my_frp`, `il_vat`, `ge_vat`, `ua_vat`, `is_vat`, `bg_uic`, `hu_tin`, `si_tin`, or `unknown` */
-  type?: Maybe<Stripe_InvoicesResourceInvoiceTaxIdTypeProperty>;
-  /** The value of the tax ID. */
-  value?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_InvoicesResourceInvoiceTaxIdTypeProperty {
-  AeTrn = 'ae_trn',
-  AuAbn = 'au_abn',
-  AuArn = 'au_arn',
-  BgUic = 'bg_uic',
-  BrCnpj = 'br_cnpj',
-  BrCpf = 'br_cpf',
-  CaBn = 'ca_bn',
-  CaGstHst = 'ca_gst_hst',
-  CaPstBc = 'ca_pst_bc',
-  CaPstMb = 'ca_pst_mb',
-  CaPstSk = 'ca_pst_sk',
-  CaQst = 'ca_qst',
-  ChVat = 'ch_vat',
-  ClTin = 'cl_tin',
-  EsCif = 'es_cif',
-  EuVat = 'eu_vat',
-  GbVat = 'gb_vat',
-  GeVat = 'ge_vat',
-  HkBr = 'hk_br',
-  HuTin = 'hu_tin',
-  IdNpwp = 'id_npwp',
-  IlVat = 'il_vat',
-  InGst = 'in_gst',
-  IsVat = 'is_vat',
-  JpCn = 'jp_cn',
-  JpRn = 'jp_rn',
-  KrBrn = 'kr_brn',
-  LiUid = 'li_uid',
-  MxRfc = 'mx_rfc',
-  MyFrp = 'my_frp',
-  MyItn = 'my_itn',
-  MySst = 'my_sst',
-  NoVat = 'no_vat',
-  NzGst = 'nz_gst',
-  RuInn = 'ru_inn',
-  RuKpp = 'ru_kpp',
-  SaVat = 'sa_vat',
-  SgGst = 'sg_gst',
-  SgUen = 'sg_uen',
-  SiTin = 'si_tin',
-  ThVat = 'th_vat',
-  TwVat = 'tw_vat',
-  UaVat = 'ua_vat',
-  Unknown = 'unknown',
-  UsEin = 'us_ein',
-  ZaVat = 'za_vat'
-}
-
-export type Stripe_InvoiceDefaultPaymentMethodProperty = WrappedString | Stripe_PaymentMethod;
-
-export type Stripe_InvoiceDefaultSourceProperty = WrappedString | Stripe_AlipayAccount | Stripe_BankAccount | Stripe_BitcoinReceiver | Stripe_Card | Stripe_Source;
-
-export type Stripe_InvoiceDiscountsProperty = WrappedString | Stripe_Discount | Stripe_DeletedDiscount;
-
-export type Stripe_DeletedDiscount = {
-  __typename?: 'Stripe_DeletedDiscount';
-  /** The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode. Will not be present for subscription mode. */
-  checkout_session?: Maybe<Scalars['String']>;
-  coupon?: Maybe<Stripe_Coupon>;
-  customer?: Maybe<Scalars['String']>;
-  /** If the coupon has a duration of `repeating`, the date that this discount will end. If the coupon has a duration of `once` or `forever`, this attribute will be null. */
-  end?: Maybe<Scalars['Int']>;
-  /** The ID of the discount object. Discounts cannot be fetched by ID. Use `expand[]=discounts` in API calls to expand discount IDs in an array. */
-  id?: Maybe<Scalars['String']>;
-  /** The invoice that the discount's coupon was applied to, if it was applied directly to a particular invoice. */
-  invoice?: Maybe<Scalars['String']>;
-  /** The invoice item `id` (or invoice line item `id` for invoice line items of type='subscription') that the discount's coupon was applied to, if it was applied directly to a particular invoice item or invoice line item. */
-  invoice_item?: Maybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_DeletedDiscountObjectProperty>;
-  promotion_code?: Maybe<Stripe_DeletedDiscountPromotionCodeProperty>;
-  /** Date that the coupon was applied. */
-  start?: Maybe<Scalars['Int']>;
-  /** The subscription that this coupon is applied to, if it is applied to a particular subscription. */
-  subscription?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_DeletedDiscountObjectProperty {
-  Discount = 'discount'
-}
-
-export type Stripe_DeletedDiscountPromotionCodeProperty = WrappedString | Stripe_PromotionCode;
-
-/** The individual line items that make up the invoice. `lines` is sorted as follows: invoice items in reverse chronological order, followed by the subscription, if any. */
-export type Stripe_InvoiceLinesProperty = {
-  __typename?: 'Stripe_InvoiceLinesProperty';
-  /** Details about each object. */
-  data: Array<Stripe_LineItem>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_InvoiceLinesObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export type Stripe_LineItem = {
-  __typename?: 'Stripe_LineItem';
-  /** The amount, in %s. */
-  amount?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
-  currency?: Maybe<Scalars['String']>;
-  /** An arbitrary string attached to the object. Often useful for displaying to users. */
-  description?: Maybe<Scalars['String']>;
-  /** The amount of discount calculated per discount for this line item. */
-  discount_amounts?: Maybe<Array<Maybe<Stripe_DiscountsResourceDiscountAmount>>>;
-  /** If true, discounts will apply to this line item. Always false for prorations. */
-  discountable?: Maybe<Scalars['Boolean']>;
-  /** The discounts applied to the invoice line item. Line item discounts are applied before invoice discounts. Use `expand[]=discounts` to expand each discount. */
-  discounts?: Maybe<Array<Maybe<Stripe_LineItemDiscountsProperty>>>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** The ID of the [invoice item](https://stripe.com/docs/api/invoiceitems) associated with this line item if any. */
-  invoice_item?: Maybe<Scalars['String']>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Note that for line items with `type=subscription` this will reflect the metadata of the subscription that caused the line item to be created. */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_LineItemObjectProperty>;
-  period?: Maybe<Stripe_InvoiceLineItemPeriod>;
-  price?: Maybe<Stripe_Price>;
-  /** Whether this is a proration. */
-  proration?: Maybe<Scalars['Boolean']>;
-  proration_details?: Maybe<Stripe_InvoicesLineItemsProrationDetails>;
-  /** The quantity of the subscription, if the line item is a subscription or a proration. */
-  quantity?: Maybe<Scalars['Int']>;
-  /** The subscription that the invoice item pertains to, if any. */
-  subscription?: Maybe<Scalars['String']>;
-  /** The subscription item that generated this invoice item. Left empty if the line item is not an explicit result of a subscription. */
-  subscription_item?: Maybe<Scalars['String']>;
-  /** The amount of tax calculated per tax rate for this line item */
-  tax_amounts?: Maybe<Array<Maybe<Stripe_InvoiceTaxAmount>>>;
-  /** The tax rates which apply to the line item. */
-  tax_rates?: Maybe<Array<Maybe<Stripe_TaxRate>>>;
-  /** A string identifying the type of the source of this line item, either an `invoiceitem` or a `subscription`. */
-  type?: Maybe<Stripe_LineItemTypeProperty>;
-};
-
-export type Stripe_DiscountsResourceDiscountAmount = {
-  __typename?: 'Stripe_DiscountsResourceDiscountAmount';
-  /** The amount, in %s, of the discount. */
-  amount?: Maybe<Scalars['Int']>;
-  discount?: Maybe<Stripe_DiscountsResourceDiscountAmountDiscountProperty>;
-};
-
-export type Stripe_DiscountsResourceDiscountAmountDiscountProperty = WrappedString | Stripe_Discount | Stripe_DeletedDiscount;
-
-export type Stripe_LineItemDiscountsProperty = WrappedString | Stripe_Discount;
-
-export enum Stripe_LineItemObjectProperty {
-  LineItem = 'line_item'
-}
-
-export type Stripe_InvoiceLineItemPeriod = {
-  __typename?: 'Stripe_InvoiceLineItemPeriod';
-  /** The end of the period, which must be greater than or equal to the start. */
-  end?: Maybe<Scalars['Int']>;
-  /** The start of the period. */
-  start?: Maybe<Scalars['Int']>;
-};
-
-export type Stripe_InvoicesLineItemsProrationDetails = {
-  __typename?: 'Stripe_InvoicesLineItemsProrationDetails';
-  credited_items?: Maybe<Stripe_InvoicesLineItemsCreditedItems>;
-};
-
-export type Stripe_InvoicesLineItemsCreditedItems = {
-  __typename?: 'Stripe_InvoicesLineItemsCreditedItems';
-  /** Invoice containing the credited invoice line items */
-  invoice?: Maybe<Scalars['String']>;
-  /** Credited invoice line items */
-  invoice_line_items?: Maybe<Array<Maybe<Scalars['String']>>>;
-};
-
-export type Stripe_InvoiceTaxAmount = {
-  __typename?: 'Stripe_InvoiceTaxAmount';
-  /** The amount, in %s, of the tax. */
-  amount?: Maybe<Scalars['Int']>;
-  /** Whether this tax amount is inclusive or exclusive. */
-  inclusive?: Maybe<Scalars['Boolean']>;
-  tax_rate?: Maybe<Stripe_InvoiceTaxAmountTaxRateProperty>;
-};
-
-export type Stripe_InvoiceTaxAmountTaxRateProperty = WrappedString | Stripe_TaxRate;
-
-export enum Stripe_LineItemTypeProperty {
-  Invoiceitem = 'invoiceitem',
-  Subscription = 'subscription'
-}
-
-export enum Stripe_InvoiceLinesObjectProperty {
-  List = 'list'
-}
-
-export enum Stripe_InvoiceObjectProperty {
-  Invoice = 'invoice'
-}
-
-export type Stripe_InvoiceOnBehalfOfProperty = WrappedString | Stripe_Account;
-
-export type Stripe_InvoicePaymentIntentProperty = WrappedString | Stripe_PaymentIntent;
-
-export type Stripe_InvoicesPaymentSettings = {
-  __typename?: 'Stripe_InvoicesPaymentSettings';
-  payment_method_options?: Maybe<Stripe_InvoicesPaymentMethodOptions>;
-  /** The list of payment method types (e.g. card) to provide to the invoice’s PaymentIntent. If not set, Stripe attempts to automatically determine the types to use by looking at the invoice’s default payment method, the subscription’s default payment method, the customer’s default payment method, and your [invoice template settings](https://dashboard.stripe.com/settings/billing/invoice). */
-  payment_method_types?: Maybe<Array<Maybe<Stripe_InvoicesPaymentSettingsPaymentMethodTypesProperty>>>;
-};
-
-export type Stripe_InvoicesPaymentMethodOptions = {
-  __typename?: 'Stripe_InvoicesPaymentMethodOptions';
-  acss_debit?: Maybe<Stripe_InvoicePaymentMethodOptionsAcssDebit>;
-  bancontact?: Maybe<Stripe_InvoicePaymentMethodOptionsBancontact>;
-  card?: Maybe<Stripe_InvoicePaymentMethodOptionsCard>;
-  customer_balance?: Maybe<Stripe_InvoicePaymentMethodOptionsCustomerBalance>;
-  konbini?: Maybe<Stripe_InvoicePaymentMethodOptionsKonbini>;
-  us_bank_account?: Maybe<Stripe_InvoicePaymentMethodOptionsUsBankAccount>;
-};
-
-export type Stripe_InvoicePaymentMethodOptionsCard = {
-  __typename?: 'Stripe_InvoicePaymentMethodOptionsCard';
-  /** We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine. */
-  request_three_d_secure?: Maybe<Stripe_InvoicePaymentMethodOptionsCardRequestThreeDSecureProperty>;
-};
-
-export enum Stripe_InvoicePaymentMethodOptionsCardRequestThreeDSecureProperty {
-  Any = 'any',
-  Automatic = 'automatic'
-}
-
-export enum Stripe_InvoicesPaymentSettingsPaymentMethodTypesProperty {
-  AchCreditTransfer = 'ach_credit_transfer',
-  AchDebit = 'ach_debit',
-  AcssDebit = 'acss_debit',
-  AuBecsDebit = 'au_becs_debit',
-  BacsDebit = 'bacs_debit',
-  Bancontact = 'bancontact',
-  Boleto = 'boleto',
-  Card = 'card',
-  CustomerBalance = 'customer_balance',
-  Fpx = 'fpx',
-  Giropay = 'giropay',
-  Grabpay = 'grabpay',
-  Ideal = 'ideal',
-  Konbini = 'konbini',
-  Paynow = 'paynow',
-  SepaDebit = 'sepa_debit',
-  Sofort = 'sofort',
-  UsBankAccount = 'us_bank_account',
-  WechatPay = 'wechat_pay'
-}
-
-export type Stripe_InvoiceQuoteProperty = WrappedString | Stripe_Quote;
-
-export type Stripe_Quote = {
-  __typename?: 'Stripe_Quote';
-  /** Total before any discounts or taxes are applied. */
-  amount_subtotal?: Maybe<Scalars['Int']>;
-  /** Total after discounts and taxes are applied. */
-  amount_total?: Maybe<Scalars['Int']>;
-  /** The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. Only applicable if there are no line items with recurring prices on the quote. */
-  application_fee_amount?: Maybe<Scalars['Int']>;
-  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account. Only applicable if there are line items with recurring prices on the quote. */
-  application_fee_percent?: Maybe<Scalars['Float']>;
-  automatic_tax?: Maybe<Stripe_QuotesResourceAutomaticTax>;
-  /** Either `charge_automatically`, or `send_invoice`. When charging automatically, Stripe will attempt to pay invoices at the end of the subscription cycle or on finalization using the default payment method attached to the subscription or customer. When sending an invoice, Stripe will email your customer an invoice with payment instructions. Defaults to `charge_automatically`. */
-  collection_method?: Maybe<Stripe_QuoteCollectionMethodProperty>;
-  computed?: Maybe<Stripe_QuotesResourceComputed>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
-  currency?: Maybe<Scalars['String']>;
-  customer?: Maybe<Scalars['String']>;
-  /** The tax rates applied to this quote. */
-  default_tax_rates?: Maybe<Array<Maybe<Stripe_QuoteDefaultTaxRatesProperty>>>;
-  /** A description that will be displayed on the quote PDF. */
-  description?: Maybe<Scalars['String']>;
-  /** The discounts applied to this quote. */
-  discounts?: Maybe<Array<Maybe<Stripe_QuoteDiscountsProperty>>>;
-  /** The date on which the quote will be canceled if in `open` or `draft` status. Measured in seconds since the Unix epoch. */
-  expires_at?: Maybe<Scalars['Int']>;
-  /** A footer that will be displayed on the quote PDF. */
-  footer?: Maybe<Scalars['String']>;
-  from_quote?: Maybe<Stripe_QuotesResourceFromQuote>;
-  /** A header that will be displayed on the quote PDF. */
-  header?: Maybe<Scalars['String']>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  invoice?: Maybe<Stripe_Invoice>;
-  invoice_settings?: Maybe<Stripe_InvoiceSettingQuoteSetting>;
-  /** A list of items the customer is being quoted for. */
-  line_items?: Maybe<Stripe_QuoteLineItemsProperty>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: Maybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: Maybe<Scalars['JSONObject']>;
-  /** A unique number that identifies this particular quote. This number is assigned once the quote is [finalized](https://stripe.com/docs/quotes/overview#finalize). */
-  number?: Maybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_QuoteObjectProperty>;
-  on_behalf_of?: Maybe<Stripe_QuoteOnBehalfOfProperty>;
-  /** The status of the quote. */
-  status?: Maybe<Stripe_QuoteStatusProperty>;
-  status_transitions?: Maybe<Stripe_QuotesResourceStatusTransitions>;
-  subscription?: Maybe<Stripe_QuoteSubscriptionProperty>;
-  subscription_data?: Maybe<Stripe_QuotesResourceSubscriptionData>;
-  subscription_schedule?: Maybe<Stripe_QuoteSubscriptionScheduleProperty>;
-  test_clock?: Maybe<Stripe_QuoteTestClockProperty>;
-  total_details?: Maybe<Stripe_QuotesResourceTotalDetails>;
-  transfer_data?: Maybe<Stripe_QuotesResourceTransferData>;
-};
-
-export type Stripe_QuotesResourceAutomaticTax = {
-  __typename?: 'Stripe_QuotesResourceAutomaticTax';
-  /** Automatically calculate taxes */
-  enabled?: Maybe<Scalars['Boolean']>;
-  /** The status of the most recent automated tax calculation for this quote. */
-  status?: Maybe<Stripe_QuotesResourceAutomaticTaxStatusProperty>;
-};
-
-export enum Stripe_QuotesResourceAutomaticTaxStatusProperty {
-  Complete = 'complete',
-  Failed = 'failed',
-  RequiresLocationInputs = 'requires_location_inputs'
-}
-
-export enum Stripe_QuoteCollectionMethodProperty {
-  ChargeAutomatically = 'charge_automatically',
-  SendInvoice = 'send_invoice'
-}
-
-export type Stripe_QuotesResourceComputed = {
-  __typename?: 'Stripe_QuotesResourceComputed';
-  recurring?: Maybe<Stripe_QuotesResourceRecurring>;
-  upfront?: Maybe<Stripe_QuotesResourceUpfront>;
-};
-
-export type Stripe_QuotesResourceRecurring = {
-  __typename?: 'Stripe_QuotesResourceRecurring';
-  /** Total before any discounts or taxes are applied. */
-  amount_subtotal?: Maybe<Scalars['Int']>;
-  /** Total after discounts and taxes are applied. */
-  amount_total?: Maybe<Scalars['Int']>;
-  /** The frequency at which a subscription is billed. One of `day`, `week`, `month` or `year`. */
-  interval?: Maybe<Stripe_QuotesResourceRecurringIntervalProperty>;
-  /** The number of intervals (specified in the `interval` attribute) between subscription billings. For example, `interval=month` and `interval_count=3` bills every 3 months. */
-  interval_count?: Maybe<Scalars['Int']>;
-  total_details?: Maybe<Stripe_QuotesResourceTotalDetails>;
-};
-
-export enum Stripe_QuotesResourceRecurringIntervalProperty {
-  Day = 'day',
-  Month = 'month',
-  Week = 'week',
-  Year = 'year'
-}
-
-export type Stripe_QuotesResourceTotalDetails = {
-  __typename?: 'Stripe_QuotesResourceTotalDetails';
-  /** This is the sum of all the discounts. */
-  amount_discount?: Maybe<Scalars['Int']>;
-  /** This is the sum of all the shipping amounts. */
-  amount_shipping?: Maybe<Scalars['Int']>;
-  /** This is the sum of all the tax amounts. */
-  amount_tax?: Maybe<Scalars['Int']>;
-  breakdown?: Maybe<Stripe_QuotesResourceTotalDetailsResourceBreakdown>;
-};
-
-export type Stripe_QuotesResourceTotalDetailsResourceBreakdown = {
-  __typename?: 'Stripe_QuotesResourceTotalDetailsResourceBreakdown';
-  /** The aggregated discounts. */
-  discounts?: Maybe<Array<Maybe<Stripe_LineItemsDiscountAmount>>>;
-  /** The aggregated tax amounts by rate. */
-  taxes?: Maybe<Array<Maybe<Stripe_LineItemsTaxAmount>>>;
-};
-
-export type Stripe_LineItemsDiscountAmount = {
-  __typename?: 'Stripe_LineItemsDiscountAmount';
-  /** The amount discounted. */
-  amount?: Maybe<Scalars['Int']>;
-  discount?: Maybe<Stripe_Discount>;
-};
-
-export type Stripe_LineItemsTaxAmount = {
-  __typename?: 'Stripe_LineItemsTaxAmount';
-  /** Amount of tax applied for this rate. */
-  amount?: Maybe<Scalars['Int']>;
-  rate?: Maybe<Stripe_TaxRate>;
-};
-
-export type Stripe_QuotesResourceUpfront = {
-  __typename?: 'Stripe_QuotesResourceUpfront';
-  /** Total before any discounts or taxes are applied. */
-  amount_subtotal?: Maybe<Scalars['Int']>;
-  /** Total after discounts and taxes are applied. */
-  amount_total?: Maybe<Scalars['Int']>;
-  /** The line items that will appear on the next invoice after this quote is accepted. This does not include pending invoice items that exist on the customer but may still be included in the next invoice. */
-  line_items?: Maybe<Stripe_QuotesResourceUpfrontLineItemsProperty>;
-  total_details?: Maybe<Stripe_QuotesResourceTotalDetails>;
-};
-
-/** The line items that will appear on the next invoice after this quote is accepted. This does not include pending invoice items that exist on the customer but may still be included in the next invoice. */
-export type Stripe_QuotesResourceUpfrontLineItemsProperty = {
-  __typename?: 'Stripe_QuotesResourceUpfrontLineItemsProperty';
-  /** Details about each object. */
-  data: Array<Stripe_Item>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_QuotesResourceUpfrontLineItemsObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export type Stripe_Item = {
-  __typename?: 'Stripe_Item';
-  /** Total before any discounts or taxes are applied. */
-  amount_subtotal?: Maybe<Scalars['Int']>;
-  /** Total after discounts and taxes. */
-  amount_total?: Maybe<Scalars['Int']>;
-  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
-  currency?: Maybe<Scalars['String']>;
-  /** An arbitrary string attached to the object. Often useful for displaying to users. Defaults to product name. */
-  description?: Maybe<Scalars['String']>;
-  /** The discounts applied to the line item. */
-  discounts?: Maybe<Array<Maybe<Stripe_LineItemsDiscountAmount>>>;
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_ItemObjectProperty>;
-  price?: Maybe<Stripe_Price>;
-  /** The quantity of products being purchased. */
-  quantity?: Maybe<Scalars['Int']>;
-  /** The taxes applied to the line item. */
-  taxes?: Maybe<Array<Maybe<Stripe_LineItemsTaxAmount>>>;
-};
-
-export enum Stripe_ItemObjectProperty {
-  Item = 'item'
-}
-
-export enum Stripe_QuotesResourceUpfrontLineItemsObjectProperty {
-  List = 'list'
-}
-
-export type Stripe_QuoteDefaultTaxRatesProperty = WrappedString | Stripe_TaxRate;
-
-export type Stripe_QuoteDiscountsProperty = WrappedString | Stripe_Discount;
-
-export type Stripe_QuotesResourceFromQuote = {
-  __typename?: 'Stripe_QuotesResourceFromQuote';
-  /** Whether this quote is a revision of a different quote. */
-  is_revision?: Maybe<Scalars['Boolean']>;
-  quote?: Maybe<Stripe_QuotesResourceFromQuoteQuoteProperty>;
-};
-
-export type Stripe_QuotesResourceFromQuoteQuoteProperty = WrappedString | Stripe_Quote;
-
-export type Stripe_InvoiceSettingQuoteSetting = {
-  __typename?: 'Stripe_InvoiceSettingQuoteSetting';
-  /** Number of days within which a customer must pay invoices generated by this quote. This value will be `null` for quotes where `collection_method=charge_automatically`. */
-  days_until_due?: Maybe<Scalars['Int']>;
-};
-
-/** A list of items the customer is being quoted for. */
-export type Stripe_QuoteLineItemsProperty = {
-  __typename?: 'Stripe_QuoteLineItemsProperty';
-  /** Details about each object. */
-  data: Array<Stripe_Item>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_QuoteLineItemsObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export enum Stripe_QuoteLineItemsObjectProperty {
-  List = 'list'
-}
-
-export enum Stripe_QuoteObjectProperty {
-  Quote = 'quote'
-}
-
-export type Stripe_QuoteOnBehalfOfProperty = WrappedString | Stripe_Account;
-
-export enum Stripe_QuoteStatusProperty {
-  Accepted = 'accepted',
-  Canceled = 'canceled',
-  Draft = 'draft',
-  Open = 'open'
-}
-
-export type Stripe_QuotesResourceStatusTransitions = {
-  __typename?: 'Stripe_QuotesResourceStatusTransitions';
-  /** The time that the quote was accepted. Measured in seconds since Unix epoch. */
-  accepted_at?: Maybe<Scalars['Int']>;
-  /** The time that the quote was canceled. Measured in seconds since Unix epoch. */
-  canceled_at?: Maybe<Scalars['Int']>;
-  /** The time that the quote was finalized. Measured in seconds since Unix epoch. */
-  finalized_at?: Maybe<Scalars['Int']>;
-};
-
-export type Stripe_QuoteSubscriptionProperty = WrappedString | Stripe_Subscription;
-
 export type Stripe_QuotesResourceSubscriptionData = {
   __typename?: 'Stripe_QuotesResourceSubscriptionData';
   /** When creating a new subscription, the date of which the subscription schedule will start after the quote is accepted. This date is ignored if it is in the past when the quote is accepted. Measured in seconds since the Unix epoch. */
@@ -10825,7 +9092,7 @@ export type Stripe_Order = {
   created?: Maybe<Scalars['Int']>;
   /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
   currency?: Maybe<Scalars['String']>;
-  customer?: Maybe<Scalars['String']>;
+  customer?: Maybe<Stripe_OrderCustomerProperty>;
   /** The email address of the customer placing the order. */
   email?: Maybe<Scalars['String']>;
   /** External coupon code to load for this order. */
@@ -10857,6 +9124,8 @@ export type Stripe_Order = {
 };
 
 export type Stripe_OrderChargeProperty = WrappedString | Stripe_Charge;
+
+export type Stripe_OrderCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
 
 export type Stripe_OrderItem = {
   __typename?: 'Stripe_OrderItem';
@@ -14015,80 +12284,476 @@ export type ShipEngine_Dimensions = {
   unit?: Maybe<Scalars['String']>;
 };
 
-export type TsWhereStripePaymentIntentInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  amount_capturable?: InputMaybe<TsWhereIntegerInput>;
-  amount_received?: InputMaybe<TsWhereIntegerInput>;
-  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
-  automatic_payment_methods?: InputMaybe<TsWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput>;
-  canceled_at?: InputMaybe<TsWhereIntegerInput>;
-  cancellation_reason?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  charges?: InputMaybe<TsWhereStripe_PaymentIntentChargesInput>;
-  client_secret?: InputMaybe<TsWhereStringInput>;
-  confirmation_method?: InputMaybe<TsWhereInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  last_payment_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  next_action?: InputMaybe<TsWhereStripe_PaymentIntentNextActionInput>;
-  object?: InputMaybe<TsWhereInput>;
-  payment_method_options?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodOptionsInput>;
-  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
-  processing?: InputMaybe<TsWhereStripe_PaymentIntentProcessingInput>;
-  receipt_email?: InputMaybe<TsWhereStringInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
-  status?: InputMaybe<TsWhereInput>;
-  transfer_data?: InputMaybe<TsWhereStripe_TransferDataInput>;
-  transfer_group?: InputMaybe<TsWhereStringInput>;
-  _shapeId?: InputMaybe<TsWhereIdInput>;
-  _id?: InputMaybe<TsWhereIdInput>;
-  AND?: InputMaybe<Array<InputMaybe<TsWhereStripePaymentIntentInput>>>;
-  OR?: InputMaybe<Array<InputMaybe<TsWhereStripePaymentIntentInput>>>;
-  NOT?: InputMaybe<TsWhereStripePaymentIntentInput>;
+export type Stripe_ApiErrorsSourceProperty = Stripe_BankAccount | Stripe_Card | Stripe_Source;
+
+export enum Stripe_ApiErrorsTypeProperty {
+  ApiError = 'api_error',
+  CardError = 'card_error',
+  IdempotencyError = 'idempotency_error',
+  InvalidRequestError = 'invalid_request_error'
+}
+
+export type Stripe_SetupAttemptSetupIntentProperty = WrappedString | Stripe_SetupIntent;
+
+export type Stripe_Networks = {
+  __typename?: 'Stripe_Networks';
+  /** All available networks for the card. */
+  available?: Maybe<Array<Maybe<Scalars['String']>>>;
+  /** The preferred network for the card. */
+  preferred?: Maybe<Scalars['String']>;
 };
 
-export type Profile = TsSearchable & {
-  __typename?: 'Profile';
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
+export type Stripe_ThreeDSecureUsage = {
+  __typename?: 'Stripe_ThreeDSecureUsage';
+  /** Whether 3D Secure is supported on this card. */
+  supported?: Maybe<Scalars['Boolean']>;
+};
+
+export type Stripe_PaymentMethodCardWallet = {
+  __typename?: 'Stripe_PaymentMethodCardWallet';
+  amex_express_checkout?: Maybe<Stripe_PaymentMethodCardWalletAmexExpressCheckout>;
+  apple_pay?: Maybe<Stripe_PaymentMethodCardWalletApplePay>;
+  /** (For tokenized numbers only.) The last four digits of the device account number. */
+  dynamic_last4?: Maybe<Scalars['String']>;
+  google_pay?: Maybe<Stripe_PaymentMethodCardWalletGooglePay>;
+  masterpass?: Maybe<Stripe_PaymentMethodCardWalletMasterpass>;
+  samsung_pay?: Maybe<Stripe_PaymentMethodCardWalletSamsungPay>;
+  /** The type of the card wallet, one of `amex_express_checkout`, `apple_pay`, `google_pay`, `masterpass`, `samsung_pay`, or `visa_checkout`. An additional hash is included on the Wallet subhash with a name matching this value. It contains additional information specific to the card wallet type. */
+  type?: Maybe<Stripe_PaymentMethodCardWalletTypeProperty>;
+  visa_checkout?: Maybe<Stripe_PaymentMethodCardWalletVisaCheckout>;
+};
+
+export type Stripe_PaymentMethodCardWalletAmexExpressCheckout = {
+  __typename?: 'Stripe_PaymentMethodCardWalletAmexExpressCheckout';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodCardWalletApplePay = {
+  __typename?: 'Stripe_PaymentMethodCardWalletApplePay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodCardWalletGooglePay = {
+  __typename?: 'Stripe_PaymentMethodCardWalletGooglePay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodCardWalletMasterpass = {
+  __typename?: 'Stripe_PaymentMethodCardWalletMasterpass';
+  billing_address?: Maybe<Stripe_Address>;
+  /** Owner's verified email. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
   email?: Maybe<Scalars['String']>;
-  bio?: Maybe<Scalars['String']>;
-  avatar?: Maybe<Asset>;
-  stripeCustomerId?: Maybe<Scalars['String']>;
-  stripeCustomer?: Maybe<Stripe_Customer>;
-  loyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
-  orders?: Maybe<Array<Maybe<Stripe_Invoice>>>;
-  _shapeId?: Maybe<Scalars['String']>;
-  _id?: Maybe<Scalars['ID']>;
-  _version?: Maybe<Scalars['Int']>;
-  _shapeName?: Maybe<Scalars['String']>;
-  _createdAt?: Maybe<Scalars['String']>;
-  _createdBy?: Maybe<TsUser>;
-  _updatedAt?: Maybe<Scalars['String']>;
-  _updatedBy?: Maybe<TsUser>;
-  _schemaVersion?: Maybe<Scalars['Float']>;
-  /** @deprecated Use _status instead */
-  _enabled?: Maybe<Scalars['Boolean']>;
-  /** @deprecated Use a custom date field instead */
-  _enabledAt?: Maybe<Scalars['String']>;
-  _status?: Maybe<DefaultWorkflow>;
-  _contentTypeId?: Maybe<Scalars['String']>;
-  _contentTypeName?: Maybe<Scalars['String']>;
-  searchSummary?: Maybe<Scalars['String']>;
+  /** Owner's verified full name. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
+  name?: Maybe<Scalars['String']>;
+  shipping_address?: Maybe<Stripe_Address>;
 };
 
-
-export type ProfileAvatarArgs = {
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+export type Stripe_PaymentMethodCardWalletSamsungPay = {
+  __typename?: 'Stripe_PaymentMethodCardWalletSamsungPay';
+  result?: Maybe<Scalars['JSONObject']>;
 };
+
+export enum Stripe_PaymentMethodCardWalletTypeProperty {
+  AmexExpressCheckout = 'amex_express_checkout',
+  ApplePay = 'apple_pay',
+  GooglePay = 'google_pay',
+  Masterpass = 'masterpass',
+  SamsungPay = 'samsung_pay',
+  VisaCheckout = 'visa_checkout'
+}
+
+export type Stripe_PaymentMethodCardWalletVisaCheckout = {
+  __typename?: 'Stripe_PaymentMethodCardWalletVisaCheckout';
+  billing_address?: Maybe<Stripe_Address>;
+  /** Owner's verified email. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
+  email?: Maybe<Scalars['String']>;
+  /** Owner's verified full name. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
+  name?: Maybe<Scalars['String']>;
+  shipping_address?: Maybe<Stripe_Address>;
+};
+
+export type Stripe_PaymentMethodCardPresent = {
+  __typename?: 'Stripe_PaymentMethodCardPresent';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodCustomerProperty = WrappedString | Stripe_Customer;
+
+export type Stripe_PaymentMethodEps = {
+  __typename?: 'Stripe_PaymentMethodEps';
+  /** The customer's bank. Should be one of `arzte_und_apotheker_bank`, `austrian_anadi_bank_ag`, `bank_austria`, `bankhaus_carl_spangler`, `bankhaus_schelhammer_und_schattera_ag`, `bawag_psk_ag`, `bks_bank_ag`, `brull_kallmus_bank_ag`, `btv_vier_lander_bank`, `capital_bank_grawe_gruppe_ag`, `dolomitenbank`, `easybank_ag`, `erste_bank_und_sparkassen`, `hypo_alpeadriabank_international_ag`, `hypo_noe_lb_fur_niederosterreich_u_wien`, `hypo_oberosterreich_salzburg_steiermark`, `hypo_tirol_bank_ag`, `hypo_vorarlberg_bank_ag`, `hypo_bank_burgenland_aktiengesellschaft`, `marchfelder_bank`, `oberbank_ag`, `raiffeisen_bankengruppe_osterreich`, `schoellerbank_ag`, `sparda_bank_wien`, `volksbank_gruppe`, `volkskreditbank_ag`, or `vr_bank_braunau`. */
+  bank?: Maybe<Stripe_PaymentMethodEpsBankProperty>;
+};
+
+export enum Stripe_PaymentMethodEpsBankProperty {
+  ArzteUndApothekerBank = 'arzte_und_apotheker_bank',
+  AustrianAnadiBankAg = 'austrian_anadi_bank_ag',
+  BankAustria = 'bank_austria',
+  BankhausCarlSpangler = 'bankhaus_carl_spangler',
+  BankhausSchelhammerUndSchatteraAg = 'bankhaus_schelhammer_und_schattera_ag',
+  BawagPskAg = 'bawag_psk_ag',
+  BksBankAg = 'bks_bank_ag',
+  BrullKallmusBankAg = 'brull_kallmus_bank_ag',
+  BtvVierLanderBank = 'btv_vier_lander_bank',
+  CapitalBankGraweGruppeAg = 'capital_bank_grawe_gruppe_ag',
+  Dolomitenbank = 'dolomitenbank',
+  EasybankAg = 'easybank_ag',
+  ErsteBankUndSparkassen = 'erste_bank_und_sparkassen',
+  HypoAlpeadriabankInternationalAg = 'hypo_alpeadriabank_international_ag',
+  HypoBankBurgenlandAktiengesellschaft = 'hypo_bank_burgenland_aktiengesellschaft',
+  HypoNoeLbFurNiederosterreichUWien = 'hypo_noe_lb_fur_niederosterreich_u_wien',
+  HypoOberosterreichSalzburgSteiermark = 'hypo_oberosterreich_salzburg_steiermark',
+  HypoTirolBankAg = 'hypo_tirol_bank_ag',
+  HypoVorarlbergBankAg = 'hypo_vorarlberg_bank_ag',
+  MarchfelderBank = 'marchfelder_bank',
+  OberbankAg = 'oberbank_ag',
+  RaiffeisenBankengruppeOsterreich = 'raiffeisen_bankengruppe_osterreich',
+  SchoellerbankAg = 'schoellerbank_ag',
+  SpardaBankWien = 'sparda_bank_wien',
+  VolksbankGruppe = 'volksbank_gruppe',
+  VolkskreditbankAg = 'volkskreditbank_ag',
+  VrBankBraunau = 'vr_bank_braunau'
+}
+
+export type Stripe_PaymentMethodFpx = {
+  __typename?: 'Stripe_PaymentMethodFpx';
+  /** The customer's bank, if provided. Can be one of `affin_bank`, `agrobank`, `alliance_bank`, `ambank`, `bank_islam`, `bank_muamalat`, `bank_rakyat`, `bsn`, `cimb`, `hong_leong_bank`, `hsbc`, `kfh`, `maybank2u`, `ocbc`, `public_bank`, `rhb`, `standard_chartered`, `uob`, `deutsche_bank`, `maybank2e`, or `pb_enterprise`. */
+  bank?: Maybe<Stripe_PaymentMethodFpxBankProperty>;
+};
+
+export enum Stripe_PaymentMethodFpxBankProperty {
+  AffinBank = 'affin_bank',
+  Agrobank = 'agrobank',
+  AllianceBank = 'alliance_bank',
+  Ambank = 'ambank',
+  BankIslam = 'bank_islam',
+  BankMuamalat = 'bank_muamalat',
+  BankRakyat = 'bank_rakyat',
+  Bsn = 'bsn',
+  Cimb = 'cimb',
+  DeutscheBank = 'deutsche_bank',
+  HongLeongBank = 'hong_leong_bank',
+  Hsbc = 'hsbc',
+  Kfh = 'kfh',
+  Maybank2e = 'maybank2e',
+  Maybank2u = 'maybank2u',
+  Ocbc = 'ocbc',
+  PbEnterprise = 'pb_enterprise',
+  PublicBank = 'public_bank',
+  Rhb = 'rhb',
+  StandardChartered = 'standard_chartered',
+  Uob = 'uob'
+}
+
+export type Stripe_PaymentMethodGiropay = {
+  __typename?: 'Stripe_PaymentMethodGiropay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodGrabpay = {
+  __typename?: 'Stripe_PaymentMethodGrabpay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodIdeal = {
+  __typename?: 'Stripe_PaymentMethodIdeal';
+  /** The customer's bank, if provided. Can be one of `abn_amro`, `asn_bank`, `bunq`, `handelsbanken`, `ing`, `knab`, `moneyou`, `rabobank`, `regiobank`, `revolut`, `sns_bank`, `triodos_bank`, or `van_lanschot`. */
+  bank?: Maybe<Stripe_PaymentMethodIdealBankProperty>;
+  /** The Bank Identifier Code of the customer's bank, if the bank was provided. */
+  bic?: Maybe<Stripe_PaymentMethodIdealBicProperty>;
+};
+
+export enum Stripe_PaymentMethodIdealBankProperty {
+  AbnAmro = 'abn_amro',
+  AsnBank = 'asn_bank',
+  Bunq = 'bunq',
+  Handelsbanken = 'handelsbanken',
+  Ing = 'ing',
+  Knab = 'knab',
+  Moneyou = 'moneyou',
+  Rabobank = 'rabobank',
+  Regiobank = 'regiobank',
+  Revolut = 'revolut',
+  SnsBank = 'sns_bank',
+  TriodosBank = 'triodos_bank',
+  VanLanschot = 'van_lanschot'
+}
+
+export enum Stripe_PaymentMethodIdealBicProperty {
+  Abnanl2A = 'ABNANL2A',
+  Asnbnl21 = 'ASNBNL21',
+  Bunqnl2A = 'BUNQNL2A',
+  Fvlbnl22 = 'FVLBNL22',
+  Handnl2A = 'HANDNL2A',
+  Ingbnl2A = 'INGBNL2A',
+  Knabnl2H = 'KNABNL2H',
+  Moyonl21 = 'MOYONL21',
+  Rabonl2U = 'RABONL2U',
+  Rbrbnl21 = 'RBRBNL21',
+  Revolt21 = 'REVOLT21',
+  Snsbnl2A = 'SNSBNL2A',
+  Trionl2U = 'TRIONL2U'
+}
+
+export type Stripe_PaymentMethodInteracPresent = {
+  __typename?: 'Stripe_PaymentMethodInteracPresent';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodKlarna = {
+  __typename?: 'Stripe_PaymentMethodKlarna';
+  dob?: Maybe<Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob>;
+};
+
+export type Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob = {
+  __typename?: 'Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob';
+  /** The day of birth, between 1 and 31. */
+  day?: Maybe<Scalars['Int']>;
+  /** The month of birth, between 1 and 12. */
+  month?: Maybe<Scalars['Int']>;
+  /** The four-digit year of birth. */
+  year?: Maybe<Scalars['Int']>;
+};
+
+export type Stripe_PaymentMethodKonbini = {
+  __typename?: 'Stripe_PaymentMethodKonbini';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export enum Stripe_PaymentMethodObjectProperty {
+  PaymentMethod = 'payment_method'
+}
+
+export type Stripe_PaymentMethodOxxo = {
+  __typename?: 'Stripe_PaymentMethodOxxo';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodP24 = {
+  __typename?: 'Stripe_PaymentMethodP24';
+  /** The customer's bank, if provided. */
+  bank?: Maybe<Stripe_PaymentMethodP24BankProperty>;
+};
+
+export enum Stripe_PaymentMethodP24BankProperty {
+  AliorBank = 'alior_bank',
+  BankMillennium = 'bank_millennium',
+  BankNowyBfgSa = 'bank_nowy_bfg_sa',
+  BankPekaoSa = 'bank_pekao_sa',
+  BankiSpbdzielcze = 'banki_spbdzielcze',
+  Blik = 'blik',
+  BnpParibas = 'bnp_paribas',
+  Boz = 'boz',
+  CitiHandlowy = 'citi_handlowy',
+  CreditAgricole = 'credit_agricole',
+  Envelobank = 'envelobank',
+  EtransferPocztowy24 = 'etransfer_pocztowy24',
+  GetinBank = 'getin_bank',
+  Ideabank = 'ideabank',
+  Ing = 'ing',
+  Inteligo = 'inteligo',
+  MbankMtransfer = 'mbank_mtransfer',
+  NestPrzelew = 'nest_przelew',
+  NoblePay = 'noble_pay',
+  PbacZIpko = 'pbac_z_ipko',
+  PlusBank = 'plus_bank',
+  SantanderPrzelew24 = 'santander_przelew24',
+  TmobileUsbugiBankowe = 'tmobile_usbugi_bankowe',
+  ToyotaBank = 'toyota_bank',
+  VolkswagenBank = 'volkswagen_bank'
+}
+
+export type Stripe_PaymentMethodPaynow = {
+  __typename?: 'Stripe_PaymentMethodPaynow';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodSepaDebit = {
+  __typename?: 'Stripe_PaymentMethodSepaDebit';
+  /** Bank code of bank associated with the bank account. */
+  bank_code?: Maybe<Scalars['String']>;
+  /** Branch code of bank associated with the bank account. */
+  branch_code?: Maybe<Scalars['String']>;
+  /** Two-letter ISO code representing the country the bank account is located in. */
+  country?: Maybe<Scalars['String']>;
+  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
+  fingerprint?: Maybe<Scalars['String']>;
+  generated_from?: Maybe<Stripe_SepaDebitGeneratedFrom>;
+  /** Last four characters of the IBAN. */
+  last4?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SepaDebitGeneratedFrom = {
+  __typename?: 'Stripe_SepaDebitGeneratedFrom';
+  charge?: Maybe<Stripe_SepaDebitGeneratedFromChargeProperty>;
+  setup_attempt?: Maybe<Stripe_SepaDebitGeneratedFromSetupAttemptProperty>;
+};
+
+export type Stripe_SepaDebitGeneratedFromChargeProperty = WrappedString | Stripe_Charge;
+
+export type Stripe_SepaDebitGeneratedFromSetupAttemptProperty = WrappedString | Stripe_SetupAttempt;
+
+export type Stripe_PaymentMethodSofort = {
+  __typename?: 'Stripe_PaymentMethodSofort';
+  /** Two-letter ISO code representing the country the bank account is located in. */
+  country?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_PaymentMethodTypeProperty {
+  AcssDebit = 'acss_debit',
+  AfterpayClearpay = 'afterpay_clearpay',
+  Alipay = 'alipay',
+  AuBecsDebit = 'au_becs_debit',
+  BacsDebit = 'bacs_debit',
+  Bancontact = 'bancontact',
+  Boleto = 'boleto',
+  Card = 'card',
+  CardPresent = 'card_present',
+  Eps = 'eps',
+  Fpx = 'fpx',
+  Giropay = 'giropay',
+  Grabpay = 'grabpay',
+  Ideal = 'ideal',
+  InteracPresent = 'interac_present',
+  Klarna = 'klarna',
+  Konbini = 'konbini',
+  Oxxo = 'oxxo',
+  P24 = 'p24',
+  Paynow = 'paynow',
+  SepaDebit = 'sepa_debit',
+  Sofort = 'sofort',
+  UsBankAccount = 'us_bank_account',
+  WechatPay = 'wechat_pay'
+}
+
+export type Stripe_PaymentMethodUsBankAccount = {
+  __typename?: 'Stripe_PaymentMethodUsBankAccount';
+  /** Account holder type: individual or company. */
+  account_holder_type?: Maybe<Stripe_PaymentMethodUsBankAccountAccountHolderTypeProperty>;
+  /** Account type: checkings or savings. Defaults to checking if omitted. */
+  account_type?: Maybe<Stripe_PaymentMethodUsBankAccountAccountTypeProperty>;
+  /** The name of the bank. */
+  bank_name?: Maybe<Scalars['String']>;
+  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
+  fingerprint?: Maybe<Scalars['String']>;
+  /** Last four digits of the bank account number. */
+  last4?: Maybe<Scalars['String']>;
+  /** Routing number of the bank account. */
+  routing_number?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_PaymentMethodUsBankAccountAccountHolderTypeProperty {
+  Company = 'company',
+  Individual = 'individual'
+}
+
+export enum Stripe_PaymentMethodUsBankAccountAccountTypeProperty {
+  Checking = 'checking',
+  Savings = 'savings'
+}
+
+export type Stripe_PaymentMethodWechatPay = {
+  __typename?: 'Stripe_PaymentMethodWechatPay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export enum Stripe_CustomerObjectProperty {
+  Customer = 'customer'
+}
+
+/** The customer's payment sources, if any. */
+export type Stripe_CustomerSourcesProperty = {
+  __typename?: 'Stripe_CustomerSourcesProperty';
+  /** Details about each object. */
+  data: Array<Stripe_CustomerSourcesDataProperty>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_CustomerSourcesObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export type Stripe_CustomerSourcesDataProperty = Stripe_AlipayAccount | Stripe_BankAccount | Stripe_BitcoinReceiver | Stripe_Card | Stripe_Source;
+
+export enum Stripe_CustomerSourcesObjectProperty {
+  List = 'list'
+}
+
+/** The customer's current subscriptions, if any. */
+export type Stripe_CustomerSubscriptionsProperty = {
+  __typename?: 'Stripe_CustomerSubscriptionsProperty';
+  /** Details about each object. */
+  data: Array<Stripe_Subscription>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_CustomerSubscriptionsObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export enum Stripe_CustomerSubscriptionsObjectProperty {
+  List = 'list'
+}
+
+export type Stripe_CustomerTax = {
+  __typename?: 'Stripe_CustomerTax';
+  /** Surfaces if automatic tax computation is possible given the current customer location information. */
+  automatic_tax?: Maybe<Stripe_CustomerTaxAutomaticTaxProperty>;
+  /** A recent IP address of the customer used for tax reporting and tax location inference. */
+  ip_address?: Maybe<Scalars['String']>;
+  location?: Maybe<Stripe_CustomerTaxLocation>;
+};
+
+export enum Stripe_CustomerTaxAutomaticTaxProperty {
+  Failed = 'failed',
+  NotCollecting = 'not_collecting',
+  Supported = 'supported',
+  UnrecognizedLocation = 'unrecognized_location'
+}
+
+export type Stripe_CustomerTaxLocation = {
+  __typename?: 'Stripe_CustomerTaxLocation';
+  /** The customer's country as identified by Stripe Tax. */
+  country?: Maybe<Scalars['String']>;
+  /** The data source used to infer the customer's location. */
+  source?: Maybe<Stripe_CustomerTaxLocationSourceProperty>;
+  /** The customer's state, county, province, or region as identified by Stripe Tax. */
+  state?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_CustomerTaxLocationSourceProperty {
+  BillingAddress = 'billing_address',
+  IpAddress = 'ip_address',
+  PaymentMethod = 'payment_method',
+  ShippingDestination = 'shipping_destination'
+}
+
+export enum Stripe_CustomerTaxExemptProperty {
+  Exempt = 'exempt',
+  None = 'none',
+  Reverse = 'reverse'
+}
+
+/** The customer's tax IDs. */
+export type Stripe_CustomerTaxIdsProperty = {
+  __typename?: 'Stripe_CustomerTaxIdsProperty';
+  /** Details about each object. */
+  data: Array<Stripe_TaxId>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_CustomerTaxIdsObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export enum Stripe_CustomerTaxIdsObjectProperty {
+  List = 'list'
+}
+
+export type Stripe_CustomerTestClockProperty = WrappedString | Stripe_TestHelpersTestClock;
 
 export type Voucherify_LoyaltyCard = {
   __typename?: 'Voucherify_LoyaltyCard';
@@ -14118,6 +12783,13 @@ export type Voucherify_LoyaltyCardAsset = {
   __typename?: 'Voucherify_LoyaltyCardAsset';
   id?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
+};
+
+export type ProfileNewsletterStatus = {
+  __typename?: 'ProfileNewsletterStatus';
+  listId?: Maybe<Scalars['String']>;
+  listName?: Maybe<Scalars['String']>;
+  subscribed?: Maybe<Scalars['Boolean']>;
 };
 
 export type ProfilePaginatedList = {
@@ -14164,66 +12836,6 @@ export enum Stripe_ListProductsResponseObjectProperty {
   List = 'list'
 }
 
-export type Klaviyo_GetListsResponse = {
-  __typename?: 'Klaviyo_GetListsResponse';
-  items?: Maybe<Array<Maybe<Klaviyo_GetListsResponseItemsProperty>>>;
-};
-
-export type Klaviyo_GetListsResponseItemsProperty = {
-  __typename?: 'Klaviyo_GetListsResponseItemsProperty';
-  list_id?: Maybe<Scalars['String']>;
-  list_name?: Maybe<Scalars['String']>;
-};
-
-export type ProfileNewsletterStatus = {
-  __typename?: 'ProfileNewsletterStatus';
-  listId?: Maybe<Scalars['String']>;
-  listName?: Maybe<Scalars['String']>;
-  subscribed?: Maybe<Scalars['Boolean']>;
-};
-
-export type Stripe_ListCheckoutSessionsResponse = {
-  __typename?: 'Stripe_ListCheckoutSessionsResponse';
-  data?: Maybe<Array<Maybe<Stripe_CheckoutSession>>>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more?: Maybe<Scalars['Boolean']>;
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object?: Maybe<Stripe_ListCheckoutSessionsResponseObjectProperty>;
-  /** The URL where this list can be accessed. */
-  url?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_ListCheckoutSessionsResponseObjectProperty {
-  List = 'list'
-}
-
-export type Stripe_ListPaymentIntentsResponse = {
-  __typename?: 'Stripe_ListPaymentIntentsResponse';
-  data?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more?: Maybe<Scalars['Boolean']>;
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object?: Maybe<Stripe_ListPaymentIntentsResponseObjectProperty>;
-  /** The URL where this list can be accessed. */
-  url?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_ListPaymentIntentsResponseObjectProperty {
-  List = 'list'
-}
-
-export type ReviewsIo_ListProductReviewAllsResponse = {
-  __typename?: 'ReviewsIo_ListProductReviewAllsResponse';
-  status?: Maybe<Scalars['String']>;
-  total_pages?: Maybe<Scalars['Int']>;
-  per_page?: Maybe<Scalars['Int']>;
-  current_page?: Maybe<Scalars['Int']>;
-  count?: Maybe<Scalars['Int']>;
-  reviews?: Maybe<Array<Maybe<ReviewsIo_ProductReview>>>;
-  rating?: Maybe<Scalars['String']>;
-  ratings?: Maybe<Array<Maybe<Scalars['JSONObject']>>>;
-};
-
 /** Asset search results */
 export type AssetSearchResults = {
   __typename?: 'AssetSearchResults';
@@ -14268,20 +12880,15 @@ export type WithContext = {
   getTsStaticSite?: Maybe<TsStaticSite>;
   /** Returns a list TsStaticSite in natural order. */
   getTsStaticSiteList?: Maybe<TsStaticSitePaginatedList>;
+  ReviewsIo_listProductReviews?: Maybe<ReviewsIo_ListProductReviewsResponse>;
   /** Get Stripe products from the TakeShape API Index */
   getIndexedProductList?: Maybe<Stripe_ProductPaginatedList>;
-  /** Get Stripe payment intents from the TakeShape API Index */
-  getIndexedPaymentIntents?: Maybe<Stripe_PaymentIntentPaginatedList>;
   /** Get the signed in user's profile from ShapeDB */
   getMyProfile?: Maybe<Profile>;
   /** Get the signed in user's subscriptions from Stripe */
   getMySubscriptions?: Maybe<Array<Maybe<Stripe_Subscription>>>;
-  /** Get the signed in user's invoices from Stripe */
-  getMyInvoices?: Maybe<Array<Maybe<Stripe_Invoice>>>;
   /** Get the signed-in user's payments from Stripe */
   getMyPayments?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
-  /** Get the signed-in user's payments from Stripe */
-  getMyPayments_TEST?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
   /** Get a profile by ID */
   getProfile?: Maybe<Profile>;
   /** Returns a list of profiles in natural order. */
@@ -14292,14 +12899,7 @@ export type WithContext = {
   Stripe_getProduct?: Maybe<Stripe_Product>;
   /** Get a loyalty card from Voucherify */
   getMyLoyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
-  Klaviyo_getLists?: Maybe<Klaviyo_GetListsResponse>;
   getMyNewsletterSubscriptions?: Maybe<Array<Maybe<ProfileNewsletterStatus>>>;
-  /** <p>Returns a list of Checkout Sessions.</p> */
-  listCheckoutSessions?: Maybe<Stripe_ListCheckoutSessionsResponse>;
-  /** <p>Returns a list of PaymentIntents.</p> */
-  Stripe_listPaymentIntents?: Maybe<Stripe_ListPaymentIntentsResponse>;
-  ReviewsIo_listProductReviews?: Maybe<ReviewsIo_ListProductReviewsResponse>;
-  ReviewsIo_listAllProductReviews?: Maybe<ReviewsIo_ListProductReviewAllsResponse>;
   searchAssetIndex?: Maybe<AssetSearchResults>;
   searchTsStaticSiteIndex?: Maybe<TsStaticSiteSearchResults>;
   searchProfileIndex?: Maybe<ProfileSearchResults>;
@@ -14385,6 +12985,24 @@ export type WithContextGetTsStaticSiteListArgs = {
 
 
 /** This query allow you to pass context to your queries */
+export type WithContextReviewsIo_ListProductReviewsArgs = {
+  sku?: InputMaybe<Scalars['String']>;
+  mpn?: InputMaybe<Scalars['String']>;
+  page?: InputMaybe<Scalars['String']>;
+  per_page?: InputMaybe<Scalars['String']>;
+  photos?: InputMaybe<Scalars['Int']>;
+  verified_only?: InputMaybe<Scalars['Int']>;
+  comments_only?: InputMaybe<Scalars['Int']>;
+  minRating?: InputMaybe<Scalars['Int']>;
+  include_unpublished_images?: InputMaybe<Scalars['Int']>;
+  include_moderated?: InputMaybe<Scalars['Int']>;
+  order_id?: InputMaybe<Scalars['String']>;
+  min_date?: InputMaybe<Scalars['String']>;
+  max_date?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
 export type WithContextGetIndexedProductListArgs = {
   terms?: InputMaybe<Scalars['String']>;
   from?: InputMaybe<Scalars['Int']>;
@@ -14399,32 +13017,8 @@ export type WithContextGetIndexedProductListArgs = {
 
 
 /** This query allow you to pass context to your queries */
-export type WithContextGetIndexedPaymentIntentsArgs = {
-  terms?: InputMaybe<Scalars['String']>;
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  filter?: InputMaybe<Scalars['JSONObject']>;
-  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
-  where?: InputMaybe<TsWhereStripePaymentIntentInput>;
-};
-
-
-/** This query allow you to pass context to your queries */
 export type WithContextGetMySubscriptionsArgs = {
   expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetMyInvoicesArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  status?: InputMaybe<Scalars['String']>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  startingAfter?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -14435,16 +13029,6 @@ export type WithContextGetMyPaymentsArgs = {
   created?: InputMaybe<Scalars['JSON']>;
   startingAfter?: InputMaybe<Scalars['String']>;
   endingBefore?: InputMaybe<Scalars['String']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetMyPayments_TestArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-  ending_before?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -14488,59 +13072,6 @@ export type WithContextStripe_ListProductsArgs = {
 export type WithContextStripe_GetProductArgs = {
   expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   id: Scalars['String'];
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextListCheckoutSessionsArgs = {
-  ending_before?: InputMaybe<Scalars['String']>;
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  payment_intent?: InputMaybe<Scalars['String']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-  subscription?: InputMaybe<Scalars['String']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextStripe_ListPaymentIntentsArgs = {
-  created?: InputMaybe<Scalars['JSON']>;
-  customer?: InputMaybe<Scalars['String']>;
-  ending_before?: InputMaybe<Scalars['String']>;
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextReviewsIo_ListProductReviewsArgs = {
-  sku?: InputMaybe<Scalars['String']>;
-  mpn?: InputMaybe<Scalars['String']>;
-  page?: InputMaybe<Scalars['String']>;
-  per_page?: InputMaybe<Scalars['String']>;
-  photos?: InputMaybe<Scalars['Int']>;
-  verified_only?: InputMaybe<Scalars['Int']>;
-  comments_only?: InputMaybe<Scalars['Int']>;
-  minRating?: InputMaybe<Scalars['Int']>;
-  include_unpublished_images?: InputMaybe<Scalars['Int']>;
-  include_moderated?: InputMaybe<Scalars['Int']>;
-  order_id?: InputMaybe<Scalars['String']>;
-  min_date?: InputMaybe<Scalars['String']>;
-  max_date?: InputMaybe<Scalars['String']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextReviewsIo_ListAllProductReviewsArgs = {
-  order_id?: InputMaybe<Scalars['String']>;
-  page?: InputMaybe<Scalars['String']>;
-  per_page?: InputMaybe<Scalars['String']>;
-  photos?: InputMaybe<Scalars['Int']>;
-  include_moderated?: InputMaybe<Scalars['Int']>;
-  include_no_comments?: InputMaybe<Scalars['Int']>;
-  min_date?: InputMaybe<Scalars['String']>;
-  max_date?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -14641,9 +13172,10 @@ export type Mutation = {
   deleteProfile?: Maybe<DeleteProfileResult>;
   /** Create an order in Voucherify */
   Voucherify_createOrder?: Maybe<Voucherify_Order>;
-  Klaviyo_getListMembers?: Maybe<Array<Maybe<GetListMemberItem>>>;
   Klaviyo_addMembers?: Maybe<Klaviyo_AddMembersResponse>;
   Klaviyo_removeMembers?: Maybe<Klaviyo_200Ok>;
+  /** <p>Returns a list of Checkout Sessions.</p> */
+  listCheckoutSessions?: Maybe<Stripe_ListCheckoutSessionsResponse>;
   ReviewsIo_createInvitation?: Maybe<ReviewsIo_CreateInvitationResponse>;
 };
 
@@ -14802,12 +13334,6 @@ export type MutationVoucherify_CreateOrderArgs = {
 };
 
 
-export type MutationKlaviyo_GetListMembersArgs = {
-  input?: InputMaybe<GetListMembersInput>;
-  list_id: Scalars['String'];
-};
-
-
 export type MutationKlaviyo_AddMembersArgs = {
   input?: InputMaybe<AddListMembersInput>;
   list_id: Scalars['String'];
@@ -14817,6 +13343,16 @@ export type MutationKlaviyo_AddMembersArgs = {
 export type MutationKlaviyo_RemoveMembersArgs = {
   input?: InputMaybe<Klaviyo_200OkPropertyInput>;
   list_id: Scalars['String'];
+};
+
+
+export type MutationListCheckoutSessionsArgs = {
+  ending_before?: InputMaybe<Scalars['String']>;
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  payment_intent?: InputMaybe<Scalars['String']>;
+  starting_after?: InputMaybe<Scalars['String']>;
+  subscription?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -15151,6 +13687,7 @@ export type UpdateProfileInput = {
   avatar?: InputMaybe<TsRelationshipInput>;
   stripeCustomerId?: InputMaybe<Scalars['String']>;
   orders?: InputMaybe<Array<InputMaybe<Stripe_InvoiceInput>>>;
+  newsletters?: InputMaybe<Array<InputMaybe<ProfileNewsletterStatusInput>>>;
   _shapeId?: InputMaybe<Scalars['String']>;
   _version?: InputMaybe<Scalars['Int']>;
   _shapeName?: InputMaybe<Scalars['String']>;
@@ -15214,7 +13751,7 @@ export type Stripe_InvoiceInput = {
   customer_name?: InputMaybe<Scalars['String']>;
   /** The customer's phone number. Until the invoice is finalized, this field will equal `customer.phone`. Once the invoice is finalized, this field will no longer be updated. */
   customer_phone?: InputMaybe<Scalars['String']>;
-  customer_shipping?: InputMaybe<Scalars['String']>;
+  customer_shipping?: InputMaybe<Scalars['JSONObject']>;
   /** The customer's tax exempt status. Until the invoice is finalized, this field will equal `customer.tax_exempt`. Once the invoice is finalized, this field will no longer be updated. */
   customer_tax_exempt?: InputMaybe<UpdateProfileResultCustomerTaxExempt>;
   /** The customer's tax IDs. Until the invoice is finalized, this field will contain the same tax IDs as `customer.tax_ids`. Once the invoice is finalized, this field will no longer be updated. */
@@ -15410,7 +13947,7 @@ export type AlipayAccountBankAccountBitcoinReceiverCardSourceWrappedStringInputU
 export type Stripe_AlipayAccountInput = {
   /** Time at which the object was created. Measured in seconds since the Unix epoch. */
   created?: InputMaybe<Scalars['Int']>;
-  customer?: InputMaybe<Scalars['String']>;
+  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
   /** Uniquely identifies the account and will be the same across all Alipay account objects that are linked to the same Alipay account. */
   fingerprint?: InputMaybe<Scalars['String']>;
   /** Unique identifier for the object. */
@@ -15433,6 +13970,25 @@ export type Stripe_AlipayAccountInput = {
   username?: InputMaybe<Scalars['String']>;
 };
 
+export type CustomerDeletedCustomerWrappedStringInputUnion = {
+  wrappedString?: InputMaybe<WrappedStringInput>;
+  customer?: InputMaybe<Stripe_CustomerInput>;
+  deletedCustomer?: InputMaybe<Stripe_DeletedCustomerInput>;
+};
+
+export type Stripe_DeletedCustomerInput = {
+  /** Always true for a deleted object */
+  deleted?: InputMaybe<UpdateProfileResultDeleted>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+};
+
+export enum UpdateProfileResultDeleted {
+  BooleanTrue = 'booleanTrue'
+}
+
 export enum UpdateProfileResultObject {
   Invoice = 'invoice'
 }
@@ -15453,7 +14009,7 @@ export type Stripe_BankAccountInput = {
   country?: InputMaybe<Scalars['String']>;
   /** Three-letter [ISO code for the currency](https://stripe.com/docs/payouts) paid out to the bank account. */
   currency?: InputMaybe<Scalars['String']>;
-  customer?: InputMaybe<Scalars['String']>;
+  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
   /** Whether this bank account is the default external account for its currency. */
   default_for_currency?: InputMaybe<Scalars['Boolean']>;
   /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
@@ -16041,7 +14597,7 @@ export type Stripe_CardInput = {
   country?: InputMaybe<Scalars['String']>;
   /** Three-letter [ISO code for currency](https://stripe.com/docs/payouts). Only applicable on accounts (not customers or recipients). The card can be used as a transfer destination for funds in this currency. */
   currency?: InputMaybe<Scalars['String']>;
-  customer?: InputMaybe<Scalars['String']>;
+  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
   /** If a CVC was provided, results of the check: `pass`, `fail`, `unavailable`, or `unchecked`. A result of unchecked indicates that CVC was provided but hasn't been checked yet. Checks are typically performed when attaching a card to a Customer object, or when creating a charge. For more details, see [Check if a card is valid without a charge](https://support.stripe.com/questions/check-if-a-card-is-valid-without-a-charge). */
   cvc_check?: InputMaybe<Scalars['String']>;
   /** Whether this card is the default external account for its currency. */
@@ -16892,7 +15448,7 @@ export type Stripe_DiscountInput = {
   /** The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode. Will not be present for subscription mode. */
   checkout_session?: InputMaybe<Scalars['String']>;
   coupon?: InputMaybe<Stripe_CouponInput>;
-  customer?: InputMaybe<Scalars['String']>;
+  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
   /** If the coupon has a duration of `repeating`, the date that this discount will end. If the coupon has a duration of `once` or `forever`, this attribute will be null. */
   end?: InputMaybe<Scalars['Int']>;
   /** The ID of the discount object. Discounts cannot be fetched by ID. Use `expand[]=discounts` in API calls to expand discount IDs in an array. */
@@ -16985,25 +15541,6 @@ export type Stripe_PromotionCodeInput = {
   /** Number of times this promotion code has been used. */
   times_redeemed?: InputMaybe<Scalars['Int']>;
 };
-
-export type CustomerDeletedCustomerWrappedStringInputUnion = {
-  wrappedString?: InputMaybe<WrappedStringInput>;
-  customer?: InputMaybe<Stripe_CustomerInput>;
-  deletedCustomer?: InputMaybe<Stripe_DeletedCustomerInput>;
-};
-
-export type Stripe_DeletedCustomerInput = {
-  /** Always true for a deleted object */
-  deleted?: InputMaybe<UpdateProfileResultDeleted>;
-  /** Unique identifier for the object. */
-  id?: InputMaybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: InputMaybe<UpdateProfileResultObject>;
-};
-
-export enum UpdateProfileResultDeleted {
-  BooleanTrue = 'booleanTrue'
-}
 
 export type Stripe_PromotionCodesResourceRestrictionsInput = {
   /** A Boolean indicating if the Promotion Code should only be redeemed for Customers without any successful payments or invoices */
@@ -17724,8 +16261,6 @@ export type Stripe_PaymentIntentInput = {
   transfer_data?: InputMaybe<Stripe_TransferDataInput>;
   /** A string that identifies the resulting payment as part of a group. See the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts) for details. */
   transfer_group?: InputMaybe<Scalars['String']>;
-  _shapeId?: InputMaybe<Scalars['String']>;
-  _id?: InputMaybe<Scalars['ID']>;
 };
 
 export type Stripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput = {
@@ -17781,7 +16316,7 @@ export type Stripe_ChargeInput = {
   created?: InputMaybe<Scalars['Int']>;
   /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
   currency?: InputMaybe<Scalars['String']>;
-  customer?: InputMaybe<Scalars['String']>;
+  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
   /** An arbitrary string attached to the object. Often useful for displaying to users. */
   description?: InputMaybe<Scalars['String']>;
   /** Whether the charge has been disputed. */
@@ -19927,7 +18462,7 @@ export type Stripe_OrderInput = {
   created?: InputMaybe<Scalars['Int']>;
   /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
   currency?: InputMaybe<Scalars['String']>;
-  customer?: InputMaybe<Scalars['String']>;
+  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
   /** The email address of the customer placing the order. */
   email?: InputMaybe<Scalars['String']>;
   /** External coupon code to load for this order. */
@@ -22556,9 +21091,9 @@ export type Stripe_DeletedDiscountInput = {
   /** The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode. Will not be present for subscription mode. */
   checkout_session?: InputMaybe<Scalars['String']>;
   coupon?: InputMaybe<Stripe_CouponInput>;
-  customer?: InputMaybe<Scalars['String']>;
-  /** If the coupon has a duration of `repeating`, the date that this discount will end. If the coupon has a duration of `once` or `forever`, this attribute will be null. */
-  end?: InputMaybe<Scalars['Int']>;
+  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
+  /** Always true for a deleted object */
+  deleted?: InputMaybe<UpdateProfileResultDeleted>;
   /** The ID of the discount object. Discounts cannot be fetched by ID. Use `expand[]=discounts` in API calls to expand discount IDs in an array. */
   id?: InputMaybe<Scalars['String']>;
   /** The invoice that the discount's coupon was applied to, if it was applied directly to a particular invoice. */
@@ -22712,7 +21247,7 @@ export type Stripe_QuoteInput = {
   created?: InputMaybe<Scalars['Int']>;
   /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
   currency?: InputMaybe<Scalars['String']>;
-  customer?: InputMaybe<Scalars['String']>;
+  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
   /** The tax rates applied to this quote. */
   default_tax_rates?: InputMaybe<Array<InputMaybe<TaxRateWrappedStringInputUnion>>>;
   /** A description that will be displayed on the quote PDF. */
@@ -22728,7 +21263,7 @@ export type Stripe_QuoteInput = {
   header?: InputMaybe<Scalars['String']>;
   /** Unique identifier for the object. */
   id?: InputMaybe<Scalars['String']>;
-  invoice?: InputMaybe<Stripe_InvoiceInput>;
+  invoice?: InputMaybe<DeletedInvoiceInvoiceWrappedStringInputUnion>;
   invoice_settings?: InputMaybe<Stripe_InvoiceSettingQuoteSettingInput>;
   /** A list of items the customer is being quoted for. */
   line_items?: InputMaybe<UpdateProfileResultOrdersQuoteQuoteLineItemsPropertyInput>;
@@ -22855,6 +21390,21 @@ export type Stripe_QuotesResourceFromQuoteInput = {
   quote?: InputMaybe<QuoteWrappedStringInputUnion>;
 };
 
+export type DeletedInvoiceInvoiceWrappedStringInputUnion = {
+  wrappedString?: InputMaybe<WrappedStringInput>;
+  invoice?: InputMaybe<Stripe_InvoiceInput>;
+  deletedInvoice?: InputMaybe<Stripe_DeletedInvoiceInput>;
+};
+
+export type Stripe_DeletedInvoiceInput = {
+  /** Always true for a deleted object */
+  deleted?: InputMaybe<UpdateProfileResultDeleted>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+};
+
 export type Stripe_InvoiceSettingQuoteSettingInput = {
   /** Number of days within which a customer must pay invoices generated by this quote. This value will be `null` for quotes where `collection_method=charge_automatically`. */
   days_until_due?: InputMaybe<Scalars['Int']>;
@@ -22927,6 +21477,12 @@ export type Stripe_InvoiceTransferDataInput = {
   destination?: InputMaybe<AccountWrappedStringInputUnion>;
 };
 
+export type ProfileNewsletterStatusInput = {
+  listId?: InputMaybe<Scalars['String']>;
+  listName?: InputMaybe<Scalars['String']>;
+  subscribed?: InputMaybe<Scalars['Boolean']>;
+};
+
 export type CreateProfileResult = {
   __typename?: 'CreateProfileResult';
   clientMutationId?: Maybe<Scalars['String']>;
@@ -22942,6 +21498,7 @@ export type CreateProfileInput = {
   avatar?: InputMaybe<TsRelationshipInput>;
   stripeCustomerId?: InputMaybe<Scalars['String']>;
   orders?: InputMaybe<Array<InputMaybe<Stripe_InvoiceInput>>>;
+  newsletters?: InputMaybe<Array<InputMaybe<ProfileNewsletterStatusInput>>>;
   _shapeId?: InputMaybe<Scalars['String']>;
   _id?: InputMaybe<Scalars['ID']>;
   _version?: InputMaybe<Scalars['Int']>;
@@ -22974,6 +21531,7 @@ export type DuplicateProfileInput = {
   avatar?: InputMaybe<TsRelationshipInput>;
   stripeCustomerId?: InputMaybe<Scalars['String']>;
   orders?: InputMaybe<Array<InputMaybe<Stripe_InvoiceInput>>>;
+  newsletters?: InputMaybe<Array<InputMaybe<ProfileNewsletterStatusInput>>>;
   _shapeId?: InputMaybe<Scalars['String']>;
   _version?: InputMaybe<Scalars['Int']>;
   _shapeName?: InputMaybe<Scalars['String']>;
@@ -23010,21 +21568,6 @@ export type Voucherify_OrderItemInput = {
   id?: InputMaybe<Scalars['String']>;
   quantity?: InputMaybe<Scalars['Int']>;
   price?: InputMaybe<Scalars['Int']>;
-};
-
-export type GetListMemberItem = {
-  __typename?: 'GetListMemberItem';
-  id?: Maybe<Scalars['String']>;
-  created?: Maybe<Scalars['String']>;
-  email?: Maybe<Scalars['String']>;
-  push_token?: Maybe<Scalars['String']>;
-  phone_number?: Maybe<Scalars['String']>;
-};
-
-export type GetListMembersInput = {
-  emails?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  phone_numbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  push_tokens?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type Klaviyo_AddMembersResponse = {
@@ -23070,6 +21613,21 @@ export type Klaviyo_200OkPropertyInput = {
   phone_numbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   push_tokens?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
+
+export type Stripe_ListCheckoutSessionsResponse = {
+  __typename?: 'Stripe_ListCheckoutSessionsResponse';
+  data?: Maybe<Array<Maybe<Stripe_CheckoutSession>>>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more?: Maybe<Scalars['Boolean']>;
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object?: Maybe<Stripe_ListCheckoutSessionsResponseObjectProperty>;
+  /** The URL where this list can be accessed. */
+  url?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_ListCheckoutSessionsResponseObjectProperty {
+  List = 'list'
+}
 
 export type ReviewsIo_CreateInvitationResponse = {
   __typename?: 'ReviewsIo_CreateInvitationResponse';
