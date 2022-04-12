@@ -64,7 +64,7 @@ export interface ProductLineItemProps {
   quantity: number;
 }
 
-const ProductLineItem = ({ id, name, description, images, quantity, amount, currency }: ProductLineItemProps) => {
+const ProductLineItem = ({ id, name, images, quantity, amount, currency }: ProductLineItemProps) => {
   return (
     <Card sx={{ height: '100%', cursor: 'pointer', p: 0 }}>
       <NextLink href={`/product/${id}`} passHref>
@@ -117,7 +117,7 @@ function isStripeCheckoutSession(maybe: unknown): maybe is Stripe_CheckoutSessio
 function getLineItems(invoiceOrSession: Stripe_Invoice | Stripe_CheckoutSession): ProductLineItemProps[] | undefined {
   if (isStripeInvoice(invoiceOrSession)) {
     return invoiceOrSession.lines?.data?.map((line) => ({
-      id: line.id,
+      id: line.price.product.id,
       name: line.price.product.name,
       description: line.price.product.description,
       images: line.price.product.images,
@@ -128,7 +128,7 @@ function getLineItems(invoiceOrSession: Stripe_Invoice | Stripe_CheckoutSession)
   }
 
   return invoiceOrSession.line_items?.data?.map((line) => ({
-    id: line.id,
+    id: line.price.product.id,
     name: line.price.product.name,
     description: line.price.product.description,
     images: line.price.product.images,
