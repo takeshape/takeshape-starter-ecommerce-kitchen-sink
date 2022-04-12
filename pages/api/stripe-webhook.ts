@@ -100,8 +100,28 @@ async function handleLoyaltyCard(customer: Stripe.Customer, session: Stripe.Chec
   }
 }
 
-async function handleShipping(customer: Stripe.Customer, session: Stripe.Checkout.Session) {
+async function handleShipping(customer: Stripe.Customer, session: Stripe.Checkout.Session, event: Stripe.Event) {
   try {
+    let shipmentId = session.payment_intent as string;
+
+    if (!shipmentId) {
+      // This is required for subscriptions, which don't reveal their payment intent
+      // Find the most recent successful payment intent before this checkout session event
+      const paymentIntentList = await stripe.paymentIntents.search({
+        query: `customer:'${session.customer}' AND status:'succeeded' AND created<=${event.created}`,
+        limit: 1
+      });
+
+      if (paymentIntentList.data.length) {
+        const paymentIntent = paymentIntentList.data[0];
+        shipmentId = paymentIntent.id;
+      }
+    }
+
+    if (!shipmentId) {
+      return { errors: ['Could not find a shipment ID'] };
+    }
+
     const shippingOption = session.shipping_options.find((o) => o.shipping_rate === session.shipping_rate) ?? {
       shipping_amount: 0
     };
@@ -140,7 +160,7 @@ async function handleShipping(customer: Stripe.Customer, session: Stripe.Checkou
       variables: {
         carrier_id: 'se-2074501',
         service_code: shippingOption.shipping_amount === 0 ? 'ups_ground' : 'ups_2nd_day_air',
-        external_shipment_id: session.payment_intent as string,
+        external_shipment_id: shipmentId,
         ship_to: {
           name: session.shipping.name ?? customer.name,
           phone: shipFrom.phone,
@@ -206,7 +226,7 @@ const handler: NextApiHandler = async (req, res) => {
 
         tasks.push(handleReviews(customer, fullSession));
         tasks.push(handleLoyaltyCard(customer, fullSession));
-        tasks.push(handleShipping(customer, fullSession));
+        tasks.push(handleShipping(customer, fullSession, event));
 
         const results = await Promise.all(tasks);
 

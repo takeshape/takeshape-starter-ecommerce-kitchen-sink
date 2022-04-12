@@ -1483,10 +1483,6 @@
                 {
                   "path": "customer_update.shipping",
                   "value": "auto"
-                },
-                {
-                  "path": "customer_update.address",
-                  "value": "auto"
                 }
               ],
               "serialize": {
