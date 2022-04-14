@@ -40,7 +40,13 @@ export type Query = {
   /** Get the signed in user's subscriptions from Stripe */
   getMySubscriptions?: Maybe<Array<Maybe<Stripe_Subscription>>>;
   /** Get the signed-in user's payments from Stripe */
+  getMyPayments_UNINDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** Get the signed-in user's payments from Stripe */
+  getMyPayments_INDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** Get the signed-in user's payments from Stripe */
   getMyPayments?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** Get the signed-in user's payments from Stripe */
+  getMyPaymentsIndexed?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
   /** Get a profile by ID */
   getProfile?: Maybe<Profile>;
   /** Returns a list of profiles in natural order. */
@@ -52,6 +58,8 @@ export type Query = {
   /** Get a loyalty card from Voucherify */
   getMyLoyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
   getMyNewsletterSubscriptions?: Maybe<Array<Maybe<ProfileNewsletterStatus>>>;
+  /** <p>Returns a list of PaymentIntents.</p> */
+  listPaymentIntents?: Maybe<Stripe_ListPaymentIntentsResponse>;
   searchAssetIndex?: Maybe<AssetSearchResults>;
   searchTsStaticSiteIndex?: Maybe<TsStaticSiteSearchResults>;
   searchProfileIndex?: Maybe<ProfileSearchResults>;
@@ -176,12 +184,42 @@ export type QueryGetMySubscriptionsArgs = {
 
 
 /** Root of the Schema */
+export type QueryGetMyPayments_UnindexedArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Float']>;
+  created?: InputMaybe<Scalars['JSON']>;
+  startingAfter?: InputMaybe<Scalars['String']>;
+  endingBefore?: InputMaybe<Scalars['String']>;
+};
+
+
+/** Root of the Schema */
+export type QueryGetMyPayments_IndexedArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Float']>;
+  created?: InputMaybe<Scalars['JSON']>;
+  startingAfter?: InputMaybe<Scalars['String']>;
+  endingBefore?: InputMaybe<Scalars['String']>;
+};
+
+
+/** Root of the Schema */
 export type QueryGetMyPaymentsArgs = {
   expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   limit?: InputMaybe<Scalars['Float']>;
   created?: InputMaybe<Scalars['JSON']>;
   startingAfter?: InputMaybe<Scalars['String']>;
   endingBefore?: InputMaybe<Scalars['String']>;
+};
+
+
+/** Root of the Schema */
+export type QueryGetMyPaymentsIndexedArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Float']>;
+  created?: InputMaybe<Scalars['JSON']>;
+  starting_after?: InputMaybe<Scalars['String']>;
+  ending_before?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -225,6 +263,17 @@ export type QueryStripe_ListProductsArgs = {
 export type QueryStripe_GetProductArgs = {
   expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   id: Scalars['String'];
+};
+
+
+/** Root of the Schema */
+export type QueryListPaymentIntentsArgs = {
+  created?: InputMaybe<Scalars['JSON']>;
+  customer?: InputMaybe<Scalars['String']>;
+  ending_before?: InputMaybe<Scalars['String']>;
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  starting_after?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -709,6 +758,8 @@ export type ReviewsIo_Product = {
   description?: Maybe<Scalars['String']>;
   /** Product image URL */
   image_url?: Maybe<Scalars['String']>;
+  /** Product link URL */
+  link?: Maybe<Scalars['String']>;
   /** Product MPN */
   mpn?: Maybe<Scalars['String']>;
   /** Product GTIN */
@@ -1030,16 +1081,48 @@ export type TsWhereInput = {
   environmentVariables?: InputMaybe<TsWhereTsStaticSiteEnvironmentVariablesInput>;
   triggers?: InputMaybe<TsWhereTsStaticSiteTriggersInput>;
   templateHash?: InputMaybe<TsWhereStringInput>;
-  active?: InputMaybe<TsWhereBooleanInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_capturable?: InputMaybe<TsWhereIntegerInput>;
+  amount_received?: InputMaybe<TsWhereIntegerInput>;
+  application?: InputMaybe<TsWhereStripe_ApplicationWrappedStringUnionInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  automatic_payment_methods?: InputMaybe<TsWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput>;
+  canceled_at?: InputMaybe<TsWhereIntegerInput>;
+  cancellation_reason?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  charges?: InputMaybe<TsWhereStripe_PaymentIntentChargesInput>;
+  client_secret?: InputMaybe<TsWhereStringInput>;
+  confirmation_method?: InputMaybe<TsWhereInput>;
   created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
   id?: InputMaybe<TsWhereStringInput>;
-  images?: InputMaybe<TsWhereStripe_ProductImagesInput>;
+  invoice?: InputMaybe<TsWhereStripe_InvoiceInput>;
+  last_payment_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
   livemode?: InputMaybe<TsWhereBooleanInput>;
-  name?: InputMaybe<TsWhereStringInput>;
+  next_action?: InputMaybe<TsWhereStripe_PaymentIntentNextActionInput>;
   object?: InputMaybe<TsWhereInput>;
+  on_behalf_of?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+  payment_method?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  payment_method_options?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodOptionsInput>;
+  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
+  processing?: InputMaybe<TsWhereStripe_PaymentIntentProcessingInput>;
+  receipt_email?: InputMaybe<TsWhereStringInput>;
+  review?: InputMaybe<TsWhereStripe_ReviewWrappedStringUnionInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_TransferDataInput>;
+  transfer_group?: InputMaybe<TsWhereStringInput>;
+  session?: InputMaybe<TsWhereStripe_CheckoutSessionInput>;
+  shipment?: InputMaybe<TsWhereShipEngine_LabelInput>;
+  active?: InputMaybe<TsWhereBooleanInput>;
+  images?: InputMaybe<TsWhereStripe_ProductImagesInput>;
+  name?: InputMaybe<TsWhereStringInput>;
   package_dimensions?: InputMaybe<TsWhereStripe_PackageDimensionsInput>;
   shippable?: InputMaybe<TsWhereBooleanInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
   tax_code?: InputMaybe<TsWhereStripe_TaxCodeWrappedStringUnionInput>;
   unit_label?: InputMaybe<TsWhereStringInput>;
   updated?: InputMaybe<TsWhereIntegerInput>;
@@ -1055,19 +1138,2080 @@ export type TsWhereInput = {
   NOT?: InputMaybe<TsWhereInput>;
 };
 
-export type TsWhereStripe_PackageDimensionsInput = {
-  height?: InputMaybe<TsWhereNumberInput>;
-  length?: InputMaybe<TsWhereNumberInput>;
-  weight?: InputMaybe<TsWhereNumberInput>;
-  width?: InputMaybe<TsWhereNumberInput>;
-};
-
-export type TsWhereStripe_TaxCodeWrappedStringUnionInput = {
+export type TsWhereStripe_ApplicationWrappedStringUnionInput = {
   value?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
   id?: InputMaybe<TsWhereStringInput>;
   name?: InputMaybe<TsWhereStringInput>;
   object?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput = {
+  enabled?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_PaymentIntentChargesInput = {
+  data?: InputMaybe<TsWhereStripe_ChargeInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ChargeInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_captured?: InputMaybe<TsWhereIntegerInput>;
+  amount_refunded?: InputMaybe<TsWhereIntegerInput>;
+  application?: InputMaybe<TsWhereStripe_ApplicationWrappedStringUnionInput>;
+  application_fee?: InputMaybe<TsWhereStripe_ApplicationFeeWrappedStringUnionInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  balance_transaction?: InputMaybe<TsWhereStripe_BalanceTransactionWrappedStringUnionInput>;
+  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
+  calculated_statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  captured?: InputMaybe<TsWhereBooleanInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  disputed?: InputMaybe<TsWhereBooleanInput>;
+  failure_balance_transaction?: InputMaybe<TsWhereStripe_BalanceTransactionWrappedStringUnionInput>;
+  failure_code?: InputMaybe<TsWhereStringInput>;
+  failure_message?: InputMaybe<TsWhereStringInput>;
+  fraud_details?: InputMaybe<TsWhereStripe_ChargeFraudDetailsInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice?: InputMaybe<TsWhereStripe_InvoiceWrappedStringUnionInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  on_behalf_of?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+  order?: InputMaybe<TsWhereStripe_OrderWrappedStringUnionInput>;
+  outcome?: InputMaybe<TsWhereStripe_ChargeOutcomeInput>;
+  paid?: InputMaybe<TsWhereBooleanInput>;
+  payment_intent?: InputMaybe<TsWhereStripe_PaymentIntentWrappedStringUnionInput>;
+  payment_method?: InputMaybe<TsWhereStringInput>;
+  payment_method_details?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInput>;
+  receipt_email?: InputMaybe<TsWhereStringInput>;
+  receipt_number?: InputMaybe<TsWhereStringInput>;
+  receipt_url?: InputMaybe<TsWhereStringInput>;
+  refunded?: InputMaybe<TsWhereBooleanInput>;
+  refunds?: InputMaybe<TsWhereStripe_PaymentIntentRefundsInput>;
+  review?: InputMaybe<TsWhereStripe_ReviewWrappedStringUnionInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  source_transfer?: InputMaybe<TsWhereStripe_TransferWrappedStringUnionInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereInput>;
+  transfer?: InputMaybe<TsWhereStripe_TransferWrappedStringUnionInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_ChargeTransferDataInput>;
+  transfer_group?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ApplicationFeeWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_refunded?: InputMaybe<TsWhereIntegerInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  refunded?: InputMaybe<TsWhereBooleanInput>;
+  refunds?: InputMaybe<TsWhereStripe_ApplicationFeeRefundsInput>;
+};
+
+export type TsWhereStripe_ApplicationFeeRefundsInput = {
+  data?: InputMaybe<TsWhereStripe_FeeRefundInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_FeeRefundInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_BalanceTransactionWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  available_on?: InputMaybe<TsWhereIntegerInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  exchange_rate?: InputMaybe<TsWhereNumberInput>;
+  fee?: InputMaybe<TsWhereIntegerInput>;
+  fee_details?: InputMaybe<TsWhereStripe_FeeInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  net?: InputMaybe<TsWhereIntegerInput>;
+  object?: InputMaybe<TsWhereInput>;
+  reporting_category?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_FeeInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  application?: InputMaybe<TsWhereStringInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_BillingDetailsInput = {
+  address?: InputMaybe<TsWhereStripe_AddressInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  phone?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AddressInput = {
+  city?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  line1?: InputMaybe<TsWhereStringInput>;
+  line2?: InputMaybe<TsWhereStringInput>;
+  postal_code?: InputMaybe<TsWhereStringInput>;
+  state?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ChargeFraudDetailsInput = {
+  stripe_report?: InputMaybe<TsWhereStringInput>;
+  user_report?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_InvoiceWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  account_country?: InputMaybe<TsWhereStringInput>;
+  account_name?: InputMaybe<TsWhereStringInput>;
+  account_tax_ids?: InputMaybe<TsWhereStripe_InvoiceAccountTaxIdsInput>;
+  amount_due?: InputMaybe<TsWhereIntegerInput>;
+  amount_paid?: InputMaybe<TsWhereIntegerInput>;
+  amount_remaining?: InputMaybe<TsWhereIntegerInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  attempt_count?: InputMaybe<TsWhereIntegerInput>;
+  attempted?: InputMaybe<TsWhereBooleanInput>;
+  auto_advance?: InputMaybe<TsWhereBooleanInput>;
+  automatic_tax?: InputMaybe<TsWhereStripe_AutomaticTaxInput>;
+  billing_reason?: InputMaybe<TsWhereInput>;
+  collection_method?: InputMaybe<TsWhereInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  custom_fields?: InputMaybe<TsWhereStripe_InvoiceSettingCustomFieldInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  customer_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  customer_email?: InputMaybe<TsWhereStringInput>;
+  customer_name?: InputMaybe<TsWhereStringInput>;
+  customer_phone?: InputMaybe<TsWhereStringInput>;
+  customer_shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  customer_tax_exempt?: InputMaybe<TsWhereInput>;
+  customer_tax_ids?: InputMaybe<TsWhereStripe_InvoicesResourceInvoiceTaxIdInput>;
+  default_tax_rates?: InputMaybe<TsWhereStripe_TaxRateInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  discount?: InputMaybe<TsWhereStripe_DiscountInput>;
+  discounts?: InputMaybe<TsWhereStripe_InvoiceDiscountsInput>;
+  due_date?: InputMaybe<TsWhereIntegerInput>;
+  ending_balance?: InputMaybe<TsWhereIntegerInput>;
+  footer?: InputMaybe<TsWhereStringInput>;
+  hosted_invoice_url?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice_pdf?: InputMaybe<TsWhereStringInput>;
+  last_finalization_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
+  lines?: InputMaybe<TsWhereStripe_InvoiceLinesInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  next_payment_attempt?: InputMaybe<TsWhereIntegerInput>;
+  number?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  paid?: InputMaybe<TsWhereBooleanInput>;
+  paid_out_of_band?: InputMaybe<TsWhereBooleanInput>;
+  payment_settings?: InputMaybe<TsWhereStripe_InvoicesPaymentSettingsInput>;
+  period_end?: InputMaybe<TsWhereIntegerInput>;
+  period_start?: InputMaybe<TsWhereIntegerInput>;
+  post_payment_credit_notes_amount?: InputMaybe<TsWhereIntegerInput>;
+  pre_payment_credit_notes_amount?: InputMaybe<TsWhereIntegerInput>;
+  receipt_number?: InputMaybe<TsWhereStringInput>;
+  starting_balance?: InputMaybe<TsWhereIntegerInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereInput>;
+  status_transitions?: InputMaybe<TsWhereStripe_InvoicesStatusTransitionsInput>;
+  subscription_proration_date?: InputMaybe<TsWhereIntegerInput>;
+  subtotal?: InputMaybe<TsWhereIntegerInput>;
+  tax?: InputMaybe<TsWhereIntegerInput>;
+  threshold_reason?: InputMaybe<TsWhereStripe_InvoiceThresholdReasonInput>;
+  total?: InputMaybe<TsWhereIntegerInput>;
+  total_discount_amounts?: InputMaybe<TsWhereStripe_DiscountsResourceDiscountAmountInput>;
+  total_tax_amounts?: InputMaybe<TsWhereStripe_InvoiceTaxAmountInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_InvoiceTransferDataInput>;
+  webhooks_delivered_at?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_InvoiceAccountTaxIdsInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  type?: InputMaybe<TsWhereInput>;
+  verification?: InputMaybe<TsWhereStripe_TaxIdVerificationInput>;
+};
+
+export type TsWhereStripe_TaxIdVerificationInput = {
+  status?: InputMaybe<TsWhereInput>;
+  verified_address?: InputMaybe<TsWhereStringInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AutomaticTaxInput = {
+  enabled?: InputMaybe<TsWhereBooleanInput>;
+  status?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_InvoiceSettingCustomFieldInput = {
+  name?: InputMaybe<TsWhereStringInput>;
+  value?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ShippingInput = {
+  address?: InputMaybe<TsWhereStripe_AddressInput>;
+  carrier?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  phone?: InputMaybe<TsWhereStringInput>;
+  tracking_number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_InvoicesResourceInvoiceTaxIdInput = {
+  type?: InputMaybe<TsWhereInput>;
+  value?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_TaxRateInput = {
+  active?: InputMaybe<TsWhereBooleanInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  display_name?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  inclusive?: InputMaybe<TsWhereBooleanInput>;
+  jurisdiction?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  percentage?: InputMaybe<TsWhereNumberInput>;
+  state?: InputMaybe<TsWhereStringInput>;
+  tax_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_DiscountInput = {
+  checkout_session?: InputMaybe<TsWhereStringInput>;
+  coupon?: InputMaybe<TsWhereStripe_CouponInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  end?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice?: InputMaybe<TsWhereStringInput>;
+  invoice_item?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  promotion_code?: InputMaybe<TsWhereStripe_PromotionCodeWrappedStringUnionInput>;
+  start?: InputMaybe<TsWhereIntegerInput>;
+  subscription?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_CouponInput = {
+  amount_off?: InputMaybe<TsWhereIntegerInput>;
+  applies_to?: InputMaybe<TsWhereStripe_CouponAppliesToInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  duration?: InputMaybe<TsWhereInput>;
+  duration_in_months?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  max_redemptions?: InputMaybe<TsWhereIntegerInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  percent_off?: InputMaybe<TsWhereNumberInput>;
+  redeem_by?: InputMaybe<TsWhereIntegerInput>;
+  times_redeemed?: InputMaybe<TsWhereIntegerInput>;
+  valid?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_CouponAppliesToInput = {
+  products?: InputMaybe<TsWhereStripe_PaymentIntentProductsInput>;
+};
+
+export type TsWhereStripe_PaymentIntentProductsInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_PromotionCodeWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  active?: InputMaybe<TsWhereBooleanInput>;
+  code?: InputMaybe<TsWhereStringInput>;
+  coupon?: InputMaybe<TsWhereStripe_CouponInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  expires_at?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  max_redemptions?: InputMaybe<TsWhereIntegerInput>;
+  object?: InputMaybe<TsWhereInput>;
+  restrictions?: InputMaybe<TsWhereStripe_PromotionCodesResourceRestrictionsInput>;
+  times_redeemed?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_PromotionCodesResourceRestrictionsInput = {
+  first_time_transaction?: InputMaybe<TsWhereBooleanInput>;
+  minimum_amount?: InputMaybe<TsWhereIntegerInput>;
+  minimum_amount_currency?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_InvoiceDiscountsInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_ApiErrorsInput = {
+  charge?: InputMaybe<TsWhereStringInput>;
+  code?: InputMaybe<TsWhereStringInput>;
+  decline_code?: InputMaybe<TsWhereStringInput>;
+  doc_url?: InputMaybe<TsWhereStringInput>;
+  message?: InputMaybe<TsWhereStringInput>;
+  param?: InputMaybe<TsWhereStringInput>;
+  payment_intent?: InputMaybe<TsWhereStripe_PaymentIntentInput>;
+  payment_method?: InputMaybe<TsWhereStripe_PaymentMethodInput>;
+  payment_method_type?: InputMaybe<TsWhereStringInput>;
+  setup_intent?: InputMaybe<TsWhereStripe_SetupIntentInput>;
+  source?: InputMaybe<TsWhereStripe_BankAccountStripe_CardStripe_SourceUnionInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentIntentInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_capturable?: InputMaybe<TsWhereIntegerInput>;
+  amount_received?: InputMaybe<TsWhereIntegerInput>;
+  application?: InputMaybe<TsWhereStripe_ApplicationWrappedStringUnionInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  automatic_payment_methods?: InputMaybe<TsWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput>;
+  canceled_at?: InputMaybe<TsWhereIntegerInput>;
+  cancellation_reason?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  charges?: InputMaybe<TsWhereStripe_PaymentIntentChargesInput>;
+  client_secret?: InputMaybe<TsWhereStringInput>;
+  confirmation_method?: InputMaybe<TsWhereInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice?: InputMaybe<TsWhereStripe_InvoiceInput>;
+  last_payment_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  next_action?: InputMaybe<TsWhereStripe_PaymentIntentNextActionInput>;
+  object?: InputMaybe<TsWhereInput>;
+  on_behalf_of?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+  payment_method?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  payment_method_options?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodOptionsInput>;
+  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
+  processing?: InputMaybe<TsWhereStripe_PaymentIntentProcessingInput>;
+  receipt_email?: InputMaybe<TsWhereStringInput>;
+  review?: InputMaybe<TsWhereStripe_ReviewWrappedStringUnionInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_TransferDataInput>;
+  transfer_group?: InputMaybe<TsWhereStringInput>;
+  session?: InputMaybe<TsWhereStripe_CheckoutSessionInput>;
+  shipment?: InputMaybe<TsWhereShipEngine_LabelInput>;
+  _shapeId?: InputMaybe<TsWhereIdInput>;
+  _id?: InputMaybe<TsWhereIdInput>;
+};
+
+export type TsWhereStripe_InvoiceInput = {
+  account_country?: InputMaybe<TsWhereStringInput>;
+  account_name?: InputMaybe<TsWhereStringInput>;
+  account_tax_ids?: InputMaybe<TsWhereStripe_PaymentIntentAccountTaxIdsInput>;
+  amount_due?: InputMaybe<TsWhereIntegerInput>;
+  amount_paid?: InputMaybe<TsWhereIntegerInput>;
+  amount_remaining?: InputMaybe<TsWhereIntegerInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  attempt_count?: InputMaybe<TsWhereIntegerInput>;
+  attempted?: InputMaybe<TsWhereBooleanInput>;
+  auto_advance?: InputMaybe<TsWhereBooleanInput>;
+  automatic_tax?: InputMaybe<TsWhereStripe_AutomaticTaxInput>;
+  billing_reason?: InputMaybe<TsWhereInput>;
+  charge?: InputMaybe<TsWhereStripe_ChargeWrappedStringUnionInput>;
+  collection_method?: InputMaybe<TsWhereInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  custom_fields?: InputMaybe<TsWhereStripe_InvoiceSettingCustomFieldInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  customer_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  customer_email?: InputMaybe<TsWhereStringInput>;
+  customer_name?: InputMaybe<TsWhereStringInput>;
+  customer_phone?: InputMaybe<TsWhereStringInput>;
+  customer_shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  customer_tax_exempt?: InputMaybe<TsWhereInput>;
+  customer_tax_ids?: InputMaybe<TsWhereStripe_InvoicesResourceInvoiceTaxIdInput>;
+  default_payment_method?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  default_source?: InputMaybe<TsWhere0dfdf3d2da91f0e817d280b6398091a5UnionInput>;
+  default_tax_rates?: InputMaybe<TsWhereStripe_TaxRateInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  discount?: InputMaybe<TsWhereStripe_DiscountInput>;
+  discounts?: InputMaybe<TsWhereStripe_PaymentIntentDiscountsInput>;
+  due_date?: InputMaybe<TsWhereIntegerInput>;
+  ending_balance?: InputMaybe<TsWhereIntegerInput>;
+  footer?: InputMaybe<TsWhereStringInput>;
+  hosted_invoice_url?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice_pdf?: InputMaybe<TsWhereStringInput>;
+  last_finalization_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
+  lines?: InputMaybe<TsWhereStripe_PaymentIntentLinesInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  next_payment_attempt?: InputMaybe<TsWhereIntegerInput>;
+  number?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  on_behalf_of?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+  paid?: InputMaybe<TsWhereBooleanInput>;
+  paid_out_of_band?: InputMaybe<TsWhereBooleanInput>;
+  payment_intent?: InputMaybe<TsWhereStripe_PaymentIntentWrappedStringUnionInput>;
+  payment_settings?: InputMaybe<TsWhereStripe_InvoicesPaymentSettingsInput>;
+  period_end?: InputMaybe<TsWhereIntegerInput>;
+  period_start?: InputMaybe<TsWhereIntegerInput>;
+  post_payment_credit_notes_amount?: InputMaybe<TsWhereIntegerInput>;
+  pre_payment_credit_notes_amount?: InputMaybe<TsWhereIntegerInput>;
+  quote?: InputMaybe<TsWhereStripe_QuoteWrappedStringUnionInput>;
+  receipt_number?: InputMaybe<TsWhereStringInput>;
+  starting_balance?: InputMaybe<TsWhereIntegerInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereInput>;
+  status_transitions?: InputMaybe<TsWhereStripe_InvoicesStatusTransitionsInput>;
+  subscription?: InputMaybe<TsWhereStripe_SubscriptionWrappedStringUnionInput>;
+  subscription_proration_date?: InputMaybe<TsWhereIntegerInput>;
+  subtotal?: InputMaybe<TsWhereIntegerInput>;
+  tax?: InputMaybe<TsWhereIntegerInput>;
+  test_clock?: InputMaybe<TsWhereStripe_TestHelpersTestClockWrappedStringUnionInput>;
+  threshold_reason?: InputMaybe<TsWhereStripe_InvoiceThresholdReasonInput>;
+  total?: InputMaybe<TsWhereIntegerInput>;
+  total_discount_amounts?: InputMaybe<TsWhereStripe_DiscountsResourceDiscountAmountInput>;
+  total_tax_amounts?: InputMaybe<TsWhereStripe_InvoiceTaxAmountInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_InvoiceTransferDataInput>;
+  webhooks_delivered_at?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_PaymentIntentAccountTaxIdsInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  type?: InputMaybe<TsWhereInput>;
+  verification?: InputMaybe<TsWhereStripe_TaxIdVerificationInput>;
+};
+
+export type TsWhereStripe_ChargeWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_captured?: InputMaybe<TsWhereIntegerInput>;
+  amount_refunded?: InputMaybe<TsWhereIntegerInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
+  calculated_statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  captured?: InputMaybe<TsWhereBooleanInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  disputed?: InputMaybe<TsWhereBooleanInput>;
+  failure_code?: InputMaybe<TsWhereStringInput>;
+  failure_message?: InputMaybe<TsWhereStringInput>;
+  fraud_details?: InputMaybe<TsWhereStripe_ChargeFraudDetailsInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  outcome?: InputMaybe<TsWhereStripe_ChargeOutcomeInput>;
+  paid?: InputMaybe<TsWhereBooleanInput>;
+  payment_method?: InputMaybe<TsWhereStringInput>;
+  payment_method_details?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInput>;
+  receipt_email?: InputMaybe<TsWhereStringInput>;
+  receipt_number?: InputMaybe<TsWhereStringInput>;
+  receipt_url?: InputMaybe<TsWhereStringInput>;
+  refunded?: InputMaybe<TsWhereBooleanInput>;
+  refunds?: InputMaybe<TsWhereStripe_ChargeRefundsInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_ChargeTransferDataInput>;
+  transfer_group?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ChargeOutcomeInput = {
+  network_status?: InputMaybe<TsWhereStringInput>;
+  reason?: InputMaybe<TsWhereStringInput>;
+  risk_level?: InputMaybe<TsWhereStringInput>;
+  risk_score?: InputMaybe<TsWhereIntegerInput>;
+  rule?: InputMaybe<TsWhereStripe_RuleWrappedStringUnionInput>;
+  seller_message?: InputMaybe<TsWhereStringInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_RuleWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  action?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  predicate?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsInput = {
+  ach_credit_transfer?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAchCreditTransferInput>;
+  ach_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAchDebitInput>;
+  acss_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAcssDebitInput>;
+  afterpay_clearpay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAfterpayClearpayInput>;
+  alipay?: InputMaybe<TsWhereStripe_PaymentFlowsPrivatePaymentMethodsAlipayDetailsInput>;
+  au_becs_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAuBecsDebitInput>;
+  bacs_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBacsDebitInput>;
+  bancontact?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBancontactInput>;
+  boleto?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBoletoInput>;
+  card?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInput>;
+  card_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentInput>;
+  eps?: InputMaybe<TsWhereStripe_PaymentMethodDetailsEpsInput>;
+  fpx?: InputMaybe<TsWhereStripe_PaymentMethodDetailsFpxInput>;
+  giropay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsGiropayInput>;
+  grabpay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsGrabpayInput>;
+  ideal?: InputMaybe<TsWhereStripe_PaymentMethodDetailsIdealInput>;
+  interac_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInteracPresentInput>;
+  klarna?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKlarnaInput>;
+  konbini?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKonbiniInput>;
+  multibanco?: InputMaybe<TsWhereStripe_PaymentMethodDetailsMultibancoInput>;
+  oxxo?: InputMaybe<TsWhereStripe_PaymentMethodDetailsOxxoInput>;
+  p24?: InputMaybe<TsWhereStripe_PaymentMethodDetailsP24Input>;
+  paynow?: InputMaybe<TsWhereStripe_PaymentMethodDetailsPaynowInput>;
+  sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsSepaDebitInput>;
+  sofort?: InputMaybe<TsWhereStripe_PaymentMethodDetailsSofortInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+  us_bank_account?: InputMaybe<TsWhereStripe_PaymentMethodDetailsUsBankAccountInput>;
+  wechat_pay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsWechatPayInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsAchCreditTransferInput = {
+  account_number?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+  swift_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsAchDebitInput = {
+  account_holder_type?: InputMaybe<TsWhereInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsAcssDebitInput = {
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  institution_number?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  mandate?: InputMaybe<TsWhereStringInput>;
+  transit_number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsAfterpayClearpayInput = {
+  reference?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentFlowsPrivatePaymentMethodsAlipayDetailsInput = {
+  buyer_id?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  transaction_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsAuBecsDebitInput = {
+  bsb_number?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  mandate?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsBacsDebitInput = {
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  mandate?: InputMaybe<TsWhereStringInput>;
+  sort_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsBancontactInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  generated_sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  generated_sepa_debit_mandate?: InputMaybe<TsWhereStripe_MandateWrappedStringUnionInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  preferred_language?: InputMaybe<TsWhereInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  acss_debit?: InputMaybe<TsWhereStripe_PaymentMethodAcssDebitInput>;
+  au_becs_debit?: InputMaybe<TsWhereStripe_PaymentMethodAuBecsDebitInput>;
+  bacs_debit?: InputMaybe<TsWhereStripe_PaymentMethodBacsDebitInput>;
+  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
+  boleto?: InputMaybe<TsWhereStripe_PaymentMethodBoletoInput>;
+  card?: InputMaybe<TsWhereStripe_PaymentMethodCardInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  eps?: InputMaybe<TsWhereStripe_PaymentMethodEpsInput>;
+  fpx?: InputMaybe<TsWhereStripe_PaymentMethodFpxInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  ideal?: InputMaybe<TsWhereStripe_PaymentMethodIdealInput>;
+  klarna?: InputMaybe<TsWhereStripe_PaymentMethodKlarnaInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  p24?: InputMaybe<TsWhereStripe_PaymentMethodP24Input>;
+  sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodSepaDebitInput>;
+  sofort?: InputMaybe<TsWhereStripe_PaymentMethodSofortInput>;
+  type?: InputMaybe<TsWhereInput>;
+  us_bank_account?: InputMaybe<TsWhereStripe_PaymentMethodUsBankAccountInput>;
+};
+
+export type TsWhereStripe_PaymentMethodAcssDebitInput = {
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  institution_number?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  transit_number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodAuBecsDebitInput = {
+  bsb_number?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodBacsDebitInput = {
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  sort_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodBoletoInput = {
+  tax_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardInput = {
+  brand?: InputMaybe<TsWhereStringInput>;
+  checks?: InputMaybe<TsWhereStripe_PaymentMethodCardChecksInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  generated_from?: InputMaybe<TsWhereStripe_PaymentMethodCardGeneratedCardInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  networks?: InputMaybe<TsWhereStripe_NetworksInput>;
+  three_d_secure_usage?: InputMaybe<TsWhereStripe_ThreeDSecureUsageInput>;
+  wallet?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardChecksInput = {
+  address_line1_check?: InputMaybe<TsWhereStringInput>;
+  address_postal_code_check?: InputMaybe<TsWhereStringInput>;
+  cvc_check?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardGeneratedCardInput = {
+  charge?: InputMaybe<TsWhereStringInput>;
+  payment_method_details?: InputMaybe<TsWhereStripe_CardGeneratedFromPaymentMethodDetailsInput>;
+};
+
+export type TsWhereStripe_CardGeneratedFromPaymentMethodDetailsInput = {
+  card_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardPresentInput = {
+  amount_authorized?: InputMaybe<TsWhereIntegerInput>;
+  brand?: InputMaybe<TsWhereStringInput>;
+  capture_before?: InputMaybe<TsWhereIntegerInput>;
+  cardholder_name?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  emv_auth_data?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  generated_card?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  network?: InputMaybe<TsWhereStringInput>;
+  overcapture_supported?: InputMaybe<TsWhereBooleanInput>;
+  read_method?: InputMaybe<TsWhereInput>;
+  receipt?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentReceiptInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardPresentReceiptInput = {
+  account_type?: InputMaybe<TsWhereInput>;
+  application_cryptogram?: InputMaybe<TsWhereStringInput>;
+  application_preferred_name?: InputMaybe<TsWhereStringInput>;
+  authorization_code?: InputMaybe<TsWhereStringInput>;
+  authorization_response_code?: InputMaybe<TsWhereStringInput>;
+  cardholder_verification_method?: InputMaybe<TsWhereStringInput>;
+  dedicated_file_name?: InputMaybe<TsWhereStringInput>;
+  terminal_verification_results?: InputMaybe<TsWhereStringInput>;
+  transaction_status_information?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_NetworksInput = {
+  available?: InputMaybe<TsWhereStripe_PaymentMethodAvailableInput>;
+  preferred?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodAvailableInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_ThreeDSecureUsageInput = {
+  supported?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardWalletInput = {
+  dynamic_last4?: InputMaybe<TsWhereStringInput>;
+  masterpass?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletMasterpassInput>;
+  type?: InputMaybe<TsWhereInput>;
+  visa_checkout?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletVisaCheckoutInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardWalletMasterpassInput = {
+  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardWalletVisaCheckoutInput = {
+  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
+};
+
+export type TsWhereStripe_PaymentMethodEpsInput = {
+  bank?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodFpxInput = {
+  bank?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodIdealInput = {
+  bank?: InputMaybe<TsWhereInput>;
+  bic?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodKlarnaInput = {
+  dob?: InputMaybe<TsWhereStripe_PaymentFlowsPrivatePaymentMethodsKlarnaDobInput>;
+};
+
+export type TsWhereStripe_PaymentFlowsPrivatePaymentMethodsKlarnaDobInput = {
+  day?: InputMaybe<TsWhereIntegerInput>;
+  month?: InputMaybe<TsWhereIntegerInput>;
+  year?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_PaymentMethodP24Input = {
+  bank?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodSepaDebitInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  branch_code?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodSofortInput = {
+  country?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodUsBankAccountInput = {
+  account_holder_type?: InputMaybe<TsWhereInput>;
+  account_type?: InputMaybe<TsWhereInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandateWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  customer_acceptance?: InputMaybe<TsWhereStripe_CustomerAcceptanceInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  payment_method_details?: InputMaybe<TsWhereStripe_MandatePaymentMethodDetailsInput>;
+  single_use?: InputMaybe<TsWhereStripe_MandateSingleUseInput>;
+  status?: InputMaybe<TsWhereInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_CustomerAcceptanceInput = {
+  accepted_at?: InputMaybe<TsWhereIntegerInput>;
+  online?: InputMaybe<TsWhereStripe_OnlineAcceptanceInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_OnlineAcceptanceInput = {
+  ip_address?: InputMaybe<TsWhereStringInput>;
+  user_agent?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandatePaymentMethodDetailsInput = {
+  acss_debit?: InputMaybe<TsWhereStripe_MandateAcssDebitInput>;
+  au_becs_debit?: InputMaybe<TsWhereStripe_MandateAuBecsDebitInput>;
+  bacs_debit?: InputMaybe<TsWhereStripe_MandateBacsDebitInput>;
+  sepa_debit?: InputMaybe<TsWhereStripe_MandateSepaDebitInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandateAcssDebitInput = {
+  interval_description?: InputMaybe<TsWhereStringInput>;
+  payment_schedule?: InputMaybe<TsWhereInput>;
+  transaction_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_MandateAuBecsDebitInput = {
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandateBacsDebitInput = {
+  network_status?: InputMaybe<TsWhereInput>;
+  reference?: InputMaybe<TsWhereStringInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandateSepaDebitInput = {
+  reference?: InputMaybe<TsWhereStringInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandateSingleUseInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsBoletoInput = {
+  tax_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardInput = {
+  brand?: InputMaybe<TsWhereStringInput>;
+  checks?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardChecksInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  installments?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  mandate?: InputMaybe<TsWhereStringInput>;
+  network?: InputMaybe<TsWhereStringInput>;
+  three_d_secure?: InputMaybe<TsWhereStripe_ThreeDSecureDetailsInput>;
+  wallet?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardChecksInput = {
+  address_line1_check?: InputMaybe<TsWhereStringInput>;
+  address_postal_code_check?: InputMaybe<TsWhereStringInput>;
+  cvc_check?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardInstallmentsInput = {
+  plan?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput = {
+  count?: InputMaybe<TsWhereIntegerInput>;
+  interval?: InputMaybe<TsWhereInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_ThreeDSecureDetailsInput = {
+  authentication_flow?: InputMaybe<TsWhereInput>;
+  result?: InputMaybe<TsWhereInput>;
+  result_reason?: InputMaybe<TsWhereInput>;
+  version?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardWalletInput = {
+  dynamic_last4?: InputMaybe<TsWhereStringInput>;
+  masterpass?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletMasterpassInput>;
+  type?: InputMaybe<TsWhereInput>;
+  visa_checkout?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletVisaCheckoutInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardWalletMasterpassInput = {
+  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardWalletVisaCheckoutInput = {
+  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsEpsInput = {
+  bank?: InputMaybe<TsWhereInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsFpxInput = {
+  bank?: InputMaybe<TsWhereInput>;
+  transaction_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsGiropayInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsGrabpayInput = {
+  transaction_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsIdealInput = {
+  bank?: InputMaybe<TsWhereInput>;
+  bic?: InputMaybe<TsWhereInput>;
+  generated_sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  generated_sepa_debit_mandate?: InputMaybe<TsWhereStripe_MandateWrappedStringUnionInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsInteracPresentInput = {
+  brand?: InputMaybe<TsWhereStringInput>;
+  cardholder_name?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  emv_auth_data?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  generated_card?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  network?: InputMaybe<TsWhereStringInput>;
+  preferred_locales?: InputMaybe<TsWhereStripe_PaymentIntentPreferredLocalesInput>;
+  read_method?: InputMaybe<TsWhereInput>;
+  receipt?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInteracPresentReceiptInput>;
+};
+
+export type TsWhereStripe_PaymentIntentPreferredLocalesInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsInteracPresentReceiptInput = {
+  account_type?: InputMaybe<TsWhereInput>;
+  application_cryptogram?: InputMaybe<TsWhereStringInput>;
+  application_preferred_name?: InputMaybe<TsWhereStringInput>;
+  authorization_code?: InputMaybe<TsWhereStringInput>;
+  authorization_response_code?: InputMaybe<TsWhereStringInput>;
+  cardholder_verification_method?: InputMaybe<TsWhereStringInput>;
+  dedicated_file_name?: InputMaybe<TsWhereStringInput>;
+  terminal_verification_results?: InputMaybe<TsWhereStringInput>;
+  transaction_status_information?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsKlarnaInput = {
+  payment_method_category?: InputMaybe<TsWhereStringInput>;
+  preferred_locale?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsKonbiniInput = {
+  store?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKonbiniStoreInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsKonbiniStoreInput = {
+  chain?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsMultibancoInput = {
+  entity?: InputMaybe<TsWhereStringInput>;
+  reference?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsOxxoInput = {
+  number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsP24Input = {
+  bank?: InputMaybe<TsWhereInput>;
+  reference?: InputMaybe<TsWhereStringInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsPaynowInput = {
+  reference?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsSepaDebitInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  branch_code?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  mandate?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsSofortInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  generated_sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  generated_sepa_debit_mandate?: InputMaybe<TsWhereStripe_MandateWrappedStringUnionInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  preferred_language?: InputMaybe<TsWhereInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsUsBankAccountInput = {
+  account_holder_type?: InputMaybe<TsWhereInput>;
+  account_type?: InputMaybe<TsWhereInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsWechatPayInput = {
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  transaction_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ChargeRefundsInput = {
+  data?: InputMaybe<TsWhereStripe_RefundInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_RefundInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  balance_transaction?: InputMaybe<TsWhereStripe_BalanceTransactionWrappedStringUnionInput>;
+  charge?: InputMaybe<TsWhereStripe_ChargeWrappedStringUnionInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  failure_balance_transaction?: InputMaybe<TsWhereStripe_BalanceTransactionWrappedStringUnionInput>;
+  failure_reason?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  next_action?: InputMaybe<TsWhereStripe_RefundNextActionInput>;
+  object?: InputMaybe<TsWhereInput>;
+  payment_intent?: InputMaybe<TsWhereStripe_PaymentIntentWrappedStringUnionInput>;
+  reason?: InputMaybe<TsWhereInput>;
+  receipt_number?: InputMaybe<TsWhereStringInput>;
+  source_transfer_reversal?: InputMaybe<TsWhereStripe_TransferReversalWrappedStringUnionInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+  transfer_reversal?: InputMaybe<TsWhereStripe_TransferReversalWrappedStringUnionInput>;
+};
+
+export type TsWhereStripe_RefundNextActionInput = {
+  display_details?: InputMaybe<TsWhereStripe_RefundNextActionDisplayDetailsInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_RefundNextActionDisplayDetailsInput = {
+  email_sent?: InputMaybe<TsWhereStripe_EmailSentInput>;
+  expires_at?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_EmailSentInput = {
+  email_sent_at?: InputMaybe<TsWhereIntegerInput>;
+  email_sent_to?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_capturable?: InputMaybe<TsWhereIntegerInput>;
+  amount_received?: InputMaybe<TsWhereIntegerInput>;
+  application?: InputMaybe<TsWhereStripe_ApplicationWrappedStringUnionInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  automatic_payment_methods?: InputMaybe<TsWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput>;
+  canceled_at?: InputMaybe<TsWhereIntegerInput>;
+  cancellation_reason?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  charges?: InputMaybe<TsWhereStripe_PaymentIntentChargesInput>;
+  client_secret?: InputMaybe<TsWhereStringInput>;
+  confirmation_method?: InputMaybe<TsWhereInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice?: InputMaybe<TsWhereStripe_InvoiceInput>;
+  last_payment_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  next_action?: InputMaybe<TsWhereStripe_PaymentIntentNextActionInput>;
+  object?: InputMaybe<TsWhereInput>;
+  on_behalf_of?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+  payment_method?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  payment_method_options?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodOptionsInput>;
+  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
+  processing?: InputMaybe<TsWhereStripe_PaymentIntentProcessingInput>;
+  receipt_email?: InputMaybe<TsWhereStringInput>;
+  review?: InputMaybe<TsWhereStripe_ReviewWrappedStringUnionInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_TransferDataInput>;
+  transfer_group?: InputMaybe<TsWhereStringInput>;
+  session?: InputMaybe<TsWhereStripe_CheckoutSessionInput>;
+  shipment?: InputMaybe<TsWhereShipEngine_LabelInput>;
+  _shapeId?: InputMaybe<TsWhereIdInput>;
+  _id?: InputMaybe<TsWhereIdInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionInput = {
+  alipay_handle_redirect?: InputMaybe<TsWhereStripe_PaymentIntentNextActionAlipayHandleRedirectInput>;
+  boleto_display_details?: InputMaybe<TsWhereStripe_PaymentIntentNextActionBoletoInput>;
+  card_await_notification?: InputMaybe<TsWhereStripe_PaymentIntentNextActionCardAwaitNotificationInput>;
+  konbini_display_details?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniInput>;
+  oxxo_display_details?: InputMaybe<TsWhereStripe_PaymentIntentNextActionDisplayOxxoDetailsInput>;
+  paynow_display_qr_code?: InputMaybe<TsWhereStripe_PaymentIntentNextActionPaynowDisplayQrCodeInput>;
+  redirect_to_url?: InputMaybe<TsWhereStripe_PaymentIntentNextActionRedirectToUrlInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+  verify_with_microdeposits?: InputMaybe<TsWhereStripe_PaymentIntentNextActionVerifyWithMicrodepositsInput>;
+  wechat_pay_display_qr_code?: InputMaybe<TsWhereStripe_PaymentIntentNextActionWechatPayDisplayQrCodeInput>;
+  wechat_pay_redirect_to_android_app?: InputMaybe<TsWhereStripe_PaymentIntentNextActionWechatPayRedirectToAndroidAppInput>;
+  wechat_pay_redirect_to_ios_app?: InputMaybe<TsWhereStripe_PaymentIntentNextActionWechatPayRedirectToIosAppInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionAlipayHandleRedirectInput = {
+  native_data?: InputMaybe<TsWhereStringInput>;
+  native_url?: InputMaybe<TsWhereStringInput>;
+  return_url?: InputMaybe<TsWhereStringInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionBoletoInput = {
+  expires_at?: InputMaybe<TsWhereIntegerInput>;
+  hosted_voucher_url?: InputMaybe<TsWhereStringInput>;
+  number?: InputMaybe<TsWhereStringInput>;
+  pdf?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionCardAwaitNotificationInput = {
+  charge_attempt_at?: InputMaybe<TsWhereIntegerInput>;
+  customer_approval_required?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionKonbiniInput = {
+  expires_at?: InputMaybe<TsWhereIntegerInput>;
+  hosted_voucher_url?: InputMaybe<TsWhereStringInput>;
+  stores?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniStoresInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionKonbiniStoresInput = {
+  familymart?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniFamilymartInput>;
+  lawson?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniLawsonInput>;
+  ministop?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniMinistopInput>;
+  seicomart?: InputMaybe<TsWhereStripe_PaymentIntentNextActionKonbiniSeicomartInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionKonbiniFamilymartInput = {
+  confirmation_number?: InputMaybe<TsWhereStringInput>;
+  payment_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionKonbiniLawsonInput = {
+  confirmation_number?: InputMaybe<TsWhereStringInput>;
+  payment_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionKonbiniMinistopInput = {
+  confirmation_number?: InputMaybe<TsWhereStringInput>;
+  payment_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionKonbiniSeicomartInput = {
+  confirmation_number?: InputMaybe<TsWhereStringInput>;
+  payment_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionDisplayOxxoDetailsInput = {
+  expires_after?: InputMaybe<TsWhereIntegerInput>;
+  hosted_voucher_url?: InputMaybe<TsWhereStringInput>;
+  number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionPaynowDisplayQrCodeInput = {
+  data?: InputMaybe<TsWhereStringInput>;
+  image_url_png?: InputMaybe<TsWhereStringInput>;
+  image_url_svg?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionRedirectToUrlInput = {
+  return_url?: InputMaybe<TsWhereStringInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionVerifyWithMicrodepositsInput = {
+  arrival_date?: InputMaybe<TsWhereIntegerInput>;
+  hosted_verification_url?: InputMaybe<TsWhereStringInput>;
+  microdeposit_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionWechatPayDisplayQrCodeInput = {
+  data?: InputMaybe<TsWhereStringInput>;
+  image_data_url?: InputMaybe<TsWhereStringInput>;
+  image_url_png?: InputMaybe<TsWhereStringInput>;
+  image_url_svg?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionWechatPayRedirectToAndroidAppInput = {
+  app_id?: InputMaybe<TsWhereStringInput>;
+  nonce_str?: InputMaybe<TsWhereStringInput>;
+  package?: InputMaybe<TsWhereStringInput>;
+  partner_id?: InputMaybe<TsWhereStringInput>;
+  prepay_id?: InputMaybe<TsWhereStringInput>;
+  sign?: InputMaybe<TsWhereStringInput>;
+  timestamp?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentNextActionWechatPayRedirectToIosAppInput = {
+  native_url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  business_profile?: InputMaybe<TsWhereStripe_AccountBusinessProfileInput>;
+  business_type?: InputMaybe<TsWhereInput>;
+  capabilities?: InputMaybe<TsWhereStripe_AccountCapabilitiesInput>;
+  charges_enabled?: InputMaybe<TsWhereBooleanInput>;
+  company?: InputMaybe<TsWhereStripe_LegalEntityCompanyInput>;
+  controller?: InputMaybe<TsWhereStripe_AccountUnificationAccountControllerInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  default_currency?: InputMaybe<TsWhereStringInput>;
+  details_submitted?: InputMaybe<TsWhereBooleanInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  external_accounts?: InputMaybe<TsWhereStripe_AccountExternalAccountsInput>;
+  future_requirements?: InputMaybe<TsWhereStripe_AccountFutureRequirementsInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  individual?: InputMaybe<TsWhereStripe_PersonInput>;
+  object?: InputMaybe<TsWhereInput>;
+  payouts_enabled?: InputMaybe<TsWhereBooleanInput>;
+  requirements?: InputMaybe<TsWhereStripe_AccountRequirementsInput>;
+  settings?: InputMaybe<TsWhereStripe_AccountSettingsInput>;
+  tos_acceptance?: InputMaybe<TsWhereStripe_AccountTosAcceptanceInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_AccountBusinessProfileInput = {
+  mcc?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  product_description?: InputMaybe<TsWhereStringInput>;
+  support_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  support_email?: InputMaybe<TsWhereStringInput>;
+  support_phone?: InputMaybe<TsWhereStringInput>;
+  support_url?: InputMaybe<TsWhereStringInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountCapabilitiesInput = {
+  acss_debit_payments?: InputMaybe<TsWhereInput>;
+  afterpay_clearpay_payments?: InputMaybe<TsWhereInput>;
+  au_becs_debit_payments?: InputMaybe<TsWhereInput>;
+  bacs_debit_payments?: InputMaybe<TsWhereInput>;
+  bancontact_payments?: InputMaybe<TsWhereInput>;
+  bank_transfer_payments?: InputMaybe<TsWhereInput>;
+  boleto_payments?: InputMaybe<TsWhereInput>;
+  card_issuing?: InputMaybe<TsWhereInput>;
+  card_payments?: InputMaybe<TsWhereInput>;
+  cartes_bancaires_payments?: InputMaybe<TsWhereInput>;
+  eps_payments?: InputMaybe<TsWhereInput>;
+  fpx_payments?: InputMaybe<TsWhereInput>;
+  giropay_payments?: InputMaybe<TsWhereInput>;
+  grabpay_payments?: InputMaybe<TsWhereInput>;
+  ideal_payments?: InputMaybe<TsWhereInput>;
+  jcb_payments?: InputMaybe<TsWhereInput>;
+  klarna_payments?: InputMaybe<TsWhereInput>;
+  konbini_payments?: InputMaybe<TsWhereInput>;
+  legacy_payments?: InputMaybe<TsWhereInput>;
+  oxxo_payments?: InputMaybe<TsWhereInput>;
+  p24_payments?: InputMaybe<TsWhereInput>;
+  paynow_payments?: InputMaybe<TsWhereInput>;
+  sepa_debit_payments?: InputMaybe<TsWhereInput>;
+  sofort_payments?: InputMaybe<TsWhereInput>;
+  tax_reporting_us_1099_k?: InputMaybe<TsWhereInput>;
+  tax_reporting_us_1099_misc?: InputMaybe<TsWhereInput>;
+  transfers?: InputMaybe<TsWhereInput>;
+  us_bank_account_ach_payments?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_LegalEntityCompanyInput = {
+  address?: InputMaybe<TsWhereStripe_AddressInput>;
+  address_kana?: InputMaybe<TsWhereStripe_LegalEntityJapanAddressInput>;
+  address_kanji?: InputMaybe<TsWhereStripe_LegalEntityJapanAddressInput>;
+  directors_provided?: InputMaybe<TsWhereBooleanInput>;
+  executives_provided?: InputMaybe<TsWhereBooleanInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  name_kana?: InputMaybe<TsWhereStringInput>;
+  name_kanji?: InputMaybe<TsWhereStringInput>;
+  owners_provided?: InputMaybe<TsWhereBooleanInput>;
+  ownership_declaration?: InputMaybe<TsWhereStripe_LegalEntityUboDeclarationInput>;
+  phone?: InputMaybe<TsWhereStringInput>;
+  structure?: InputMaybe<TsWhereInput>;
+  tax_id_provided?: InputMaybe<TsWhereBooleanInput>;
+  tax_id_registrar?: InputMaybe<TsWhereStringInput>;
+  vat_id_provided?: InputMaybe<TsWhereBooleanInput>;
+  verification?: InputMaybe<TsWhereStripe_LegalEntityCompanyVerificationInput>;
+};
+
+export type TsWhereStripe_LegalEntityJapanAddressInput = {
+  city?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  line1?: InputMaybe<TsWhereStringInput>;
+  line2?: InputMaybe<TsWhereStringInput>;
+  postal_code?: InputMaybe<TsWhereStringInput>;
+  state?: InputMaybe<TsWhereStringInput>;
+  town?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_LegalEntityUboDeclarationInput = {
+  date?: InputMaybe<TsWhereIntegerInput>;
+  ip?: InputMaybe<TsWhereStringInput>;
+  user_agent?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_LegalEntityCompanyVerificationInput = {
+  document?: InputMaybe<TsWhereStripe_LegalEntityCompanyVerificationDocumentInput>;
+};
+
+export type TsWhereStripe_LegalEntityCompanyVerificationDocumentInput = {
+  details?: InputMaybe<TsWhereStringInput>;
+  details_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountUnificationAccountControllerInput = {
+  is_controller?: InputMaybe<TsWhereBooleanInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_AccountExternalAccountsInput = {
+  data?: InputMaybe<TsWhereStripe_AccountDataInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountDataInput = {
+  account_holder_name?: InputMaybe<TsWhereStringInput>;
+  account_holder_type?: InputMaybe<TsWhereStringInput>;
+  account_type?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  default_for_currency?: InputMaybe<TsWhereBooleanInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+  address_city?: InputMaybe<TsWhereStringInput>;
+  address_country?: InputMaybe<TsWhereStringInput>;
+  address_line1?: InputMaybe<TsWhereStringInput>;
+  address_line1_check?: InputMaybe<TsWhereStringInput>;
+  address_line2?: InputMaybe<TsWhereStringInput>;
+  address_state?: InputMaybe<TsWhereStringInput>;
+  address_zip?: InputMaybe<TsWhereStringInput>;
+  address_zip_check?: InputMaybe<TsWhereStringInput>;
+  brand?: InputMaybe<TsWhereStringInput>;
+  cvc_check?: InputMaybe<TsWhereStringInput>;
+  dynamic_last4?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  tokenization_method?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountFutureRequirementsInput = {
+  alternatives?: InputMaybe<TsWhereStripe_AccountRequirementsAlternativeInput>;
+  current_deadline?: InputMaybe<TsWhereIntegerInput>;
+  currently_due?: InputMaybe<TsWhereStripe_AccountCurrentlyDueInput>;
+  disabled_reason?: InputMaybe<TsWhereStringInput>;
+  errors?: InputMaybe<TsWhereStripe_AccountRequirementsErrorInput>;
+  eventually_due?: InputMaybe<TsWhereStripe_AccountEventuallyDueInput>;
+  past_due?: InputMaybe<TsWhereStripe_AccountPastDueInput>;
+  pending_verification?: InputMaybe<TsWhereStripe_AccountPendingVerificationInput>;
+};
+
+export type TsWhereStripe_AccountRequirementsAlternativeInput = {
+  alternative_fields_due?: InputMaybe<TsWhereStripe_AccountAlternativeFieldsDueInput>;
+  original_fields_due?: InputMaybe<TsWhereStripe_AccountOriginalFieldsDueInput>;
+};
+
+export type TsWhereStripe_AccountAlternativeFieldsDueInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_AccountOriginalFieldsDueInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_AccountCurrentlyDueInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_AccountRequirementsErrorInput = {
+  code?: InputMaybe<TsWhereInput>;
+  reason?: InputMaybe<TsWhereStringInput>;
+  requirement?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountEventuallyDueInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_AccountPastDueInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_AccountPendingVerificationInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_PersonInput = {
+  account?: InputMaybe<TsWhereStringInput>;
+  address?: InputMaybe<TsWhereStripe_AddressInput>;
+  address_kana?: InputMaybe<TsWhereStripe_LegalEntityJapanAddressInput>;
+  address_kanji?: InputMaybe<TsWhereStripe_LegalEntityJapanAddressInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  dob?: InputMaybe<TsWhereStripe_LegalEntityDobInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  first_name?: InputMaybe<TsWhereStringInput>;
+  first_name_kana?: InputMaybe<TsWhereStringInput>;
+  first_name_kanji?: InputMaybe<TsWhereStringInput>;
+  full_name_aliases?: InputMaybe<TsWhereStripe_AccountFullNameAliasesInput>;
+  future_requirements?: InputMaybe<TsWhereStripe_PersonFutureRequirementsInput>;
+  gender?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  id_number_provided?: InputMaybe<TsWhereBooleanInput>;
+  last_name?: InputMaybe<TsWhereStringInput>;
+  last_name_kana?: InputMaybe<TsWhereStringInput>;
+  last_name_kanji?: InputMaybe<TsWhereStringInput>;
+  maiden_name?: InputMaybe<TsWhereStringInput>;
+  nationality?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  phone?: InputMaybe<TsWhereStringInput>;
+  political_exposure?: InputMaybe<TsWhereInput>;
+  relationship?: InputMaybe<TsWhereStripe_PersonRelationshipInput>;
+  requirements?: InputMaybe<TsWhereStripe_PersonRequirementsInput>;
+  ssn_last_4_provided?: InputMaybe<TsWhereBooleanInput>;
+  verification?: InputMaybe<TsWhereStripe_LegalEntityPersonVerificationInput>;
+};
+
+export type TsWhereStripe_LegalEntityDobInput = {
+  day?: InputMaybe<TsWhereIntegerInput>;
+  month?: InputMaybe<TsWhereIntegerInput>;
+  year?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_AccountFullNameAliasesInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_PersonFutureRequirementsInput = {
+  alternatives?: InputMaybe<TsWhereStripe_AccountRequirementsAlternativeInput>;
+  currently_due?: InputMaybe<TsWhereStripe_AccountCurrentlyDueInput>;
+  errors?: InputMaybe<TsWhereStripe_AccountRequirementsErrorInput>;
+  eventually_due?: InputMaybe<TsWhereStripe_AccountEventuallyDueInput>;
+  past_due?: InputMaybe<TsWhereStripe_AccountPastDueInput>;
+  pending_verification?: InputMaybe<TsWhereStripe_AccountPendingVerificationInput>;
+};
+
+export type TsWhereStripe_PersonRelationshipInput = {
+  director?: InputMaybe<TsWhereBooleanInput>;
+  executive?: InputMaybe<TsWhereBooleanInput>;
+  owner?: InputMaybe<TsWhereBooleanInput>;
+  percent_ownership?: InputMaybe<TsWhereNumberInput>;
+  representative?: InputMaybe<TsWhereBooleanInput>;
+  title?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PersonRequirementsInput = {
+  alternatives?: InputMaybe<TsWhereStripe_AccountRequirementsAlternativeInput>;
+  currently_due?: InputMaybe<TsWhereStripe_AccountCurrentlyDueInput>;
+  errors?: InputMaybe<TsWhereStripe_AccountRequirementsErrorInput>;
+  eventually_due?: InputMaybe<TsWhereStripe_AccountEventuallyDueInput>;
+  past_due?: InputMaybe<TsWhereStripe_AccountPastDueInput>;
+  pending_verification?: InputMaybe<TsWhereStripe_AccountPendingVerificationInput>;
+};
+
+export type TsWhereStripe_LegalEntityPersonVerificationInput = {
+  additional_document?: InputMaybe<TsWhereStripe_LegalEntityPersonVerificationDocumentInput>;
+  details?: InputMaybe<TsWhereStringInput>;
+  details_code?: InputMaybe<TsWhereStringInput>;
+  document?: InputMaybe<TsWhereStripe_LegalEntityPersonVerificationDocumentInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_LegalEntityPersonVerificationDocumentInput = {
+  details?: InputMaybe<TsWhereStringInput>;
+  details_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountRequirementsInput = {
+  alternatives?: InputMaybe<TsWhereStripe_AccountRequirementsAlternativeInput>;
+  current_deadline?: InputMaybe<TsWhereIntegerInput>;
+  currently_due?: InputMaybe<TsWhereStripe_AccountCurrentlyDueInput>;
+  disabled_reason?: InputMaybe<TsWhereStringInput>;
+  errors?: InputMaybe<TsWhereStripe_AccountRequirementsErrorInput>;
+  eventually_due?: InputMaybe<TsWhereStripe_AccountEventuallyDueInput>;
+  past_due?: InputMaybe<TsWhereStripe_AccountPastDueInput>;
+  pending_verification?: InputMaybe<TsWhereStripe_AccountPendingVerificationInput>;
+};
+
+export type TsWhereStripe_AccountSettingsInput = {
+  bacs_debit_payments?: InputMaybe<TsWhereStripe_AccountBacsDebitPaymentsSettingsInput>;
+  branding?: InputMaybe<TsWhereStripe_AccountBrandingSettingsInput>;
+  card_issuing?: InputMaybe<TsWhereStripe_AccountCardIssuingSettingsInput>;
+  card_payments?: InputMaybe<TsWhereStripe_AccountCardPaymentsSettingsInput>;
+  dashboard?: InputMaybe<TsWhereStripe_AccountDashboardSettingsInput>;
+  payments?: InputMaybe<TsWhereStripe_AccountPaymentsSettingsInput>;
+  payouts?: InputMaybe<TsWhereStripe_AccountPayoutSettingsInput>;
+  sepa_debit_payments?: InputMaybe<TsWhereStripe_AccountSepaDebitPaymentsSettingsInput>;
+};
+
+export type TsWhereStripe_AccountBacsDebitPaymentsSettingsInput = {
+  display_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountBrandingSettingsInput = {
+  primary_color?: InputMaybe<TsWhereStringInput>;
+  secondary_color?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountCardIssuingSettingsInput = {
+  tos_acceptance?: InputMaybe<TsWhereStripe_CardIssuingAccountTermsOfServiceInput>;
+};
+
+export type TsWhereStripe_CardIssuingAccountTermsOfServiceInput = {
+  date?: InputMaybe<TsWhereIntegerInput>;
+  ip?: InputMaybe<TsWhereStringInput>;
+  user_agent?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountCardPaymentsSettingsInput = {
+  decline_on?: InputMaybe<TsWhereStripe_AccountDeclineChargeOnInput>;
+  statement_descriptor_prefix?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountDeclineChargeOnInput = {
+  avs_failure?: InputMaybe<TsWhereBooleanInput>;
+  cvc_failure?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_AccountDashboardSettingsInput = {
+  display_name?: InputMaybe<TsWhereStringInput>;
+  timezone?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountPaymentsSettingsInput = {
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor_kana?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor_kanji?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountPayoutSettingsInput = {
+  debit_negative_balances?: InputMaybe<TsWhereBooleanInput>;
+  schedule?: InputMaybe<TsWhereStripe_TransferScheduleInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_TransferScheduleInput = {
+  delay_days?: InputMaybe<TsWhereIntegerInput>;
+  interval?: InputMaybe<TsWhereStringInput>;
+  monthly_anchor?: InputMaybe<TsWhereIntegerInput>;
+  weekly_anchor?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountSepaDebitPaymentsSettingsInput = {
+  creditor_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_AccountTosAcceptanceInput = {
+  date?: InputMaybe<TsWhereIntegerInput>;
+  ip?: InputMaybe<TsWhereStringInput>;
+  service_agreement?: InputMaybe<TsWhereStringInput>;
+  user_agent?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentPaymentMethodOptionsInput = {
+  acss_debit?: InputMaybe<TsWhere4c5fc35133092d01c0a6f6273b32acefUnionInput>;
+  afterpay_clearpay?: InputMaybe<TsWhere69c699ae4c023cdd5081fd0b275d2314UnionInput>;
+  alipay?: InputMaybe<TsWhere0c15571704f92e4deef74bf2861e3048UnionInput>;
+  au_becs_debit?: InputMaybe<TsWhered0f94d051a53ade5163af84b3fd6b0f7UnionInput>;
+  bacs_debit?: InputMaybe<TsWhere55b3d4514248bce7ac082bbc0da1833aUnionInput>;
+  bancontact?: InputMaybe<TsWhereac15fe59c1b71bd6db2d201a4acee09dUnionInput>;
+  boleto?: InputMaybe<TsWhere076b30d85cca1aae72305dffd8194343UnionInput>;
+  card?: InputMaybe<TsWhere6181441ba9fb7eee556dd3a4a9d229e4UnionInput>;
+  card_present?: InputMaybe<TsWherea245e0776494a0d51fe046b0453d38afUnionInput>;
+  eps?: InputMaybe<TsWheref973d307d812f0dfb771bc8122e5c599UnionInput>;
+  fpx?: InputMaybe<TsWhereabae1b112405e8b3c0dbfa673a54aaadUnionInput>;
+  giropay?: InputMaybe<TsWhere8cc56b75820487c13c502fada2896d16UnionInput>;
+  grabpay?: InputMaybe<TsWhereeaab7727acdc782ba4b7fd55f1d34914UnionInput>;
+  ideal?: InputMaybe<TsWherebc8c021d852b37c55e33cd17b5bc5c8eUnionInput>;
+  interac_present?: InputMaybe<TsWhere0790e0b407fa40ec44faa0c0093547c0UnionInput>;
+  klarna?: InputMaybe<TsWhere431e685e94c88a23966c5e39578fd407UnionInput>;
+  konbini?: InputMaybe<TsWhere00ef7207d1f936d9dfffc7da2b87c7a0UnionInput>;
+  oxxo?: InputMaybe<TsWhere3ec3443ea1c1a903147c0d61800da976UnionInput>;
+  p24?: InputMaybe<TsWherea35be11d8b3a6f85cf29c066bd2baeecUnionInput>;
+  paynow?: InputMaybe<TsWhere3755b88328836d5c8b19acd047bf83f5UnionInput>;
+  sepa_debit?: InputMaybe<TsWhere1ef47aea767cbab0a37f27b4392256afUnionInput>;
+  sofort?: InputMaybe<TsWhere29eab390824f828a021e12d845868bf5UnionInput>;
+  us_bank_account?: InputMaybe<TsWheree8df26123b430c2df83da95f1b7d7d58UnionInput>;
+  wechat_pay?: InputMaybe<TsWheref3a2f1202624d0cdb50285826cb85a9eUnionInput>;
+};
+
+export type TsWhere4c5fc35133092d01c0a6f6273b32acefUnionInput = {
+  mandate_options?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodOptionsMandateOptionsAcssDebitInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentIntentPaymentMethodOptionsMandateOptionsAcssDebitInput = {
+  custom_mandate_url?: InputMaybe<TsWhereStringInput>;
+  interval_description?: InputMaybe<TsWhereStringInput>;
+  payment_schedule?: InputMaybe<TsWhereInput>;
+  transaction_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere69c699ae4c023cdd5081fd0b275d2314UnionInput = {
+  capture_method?: InputMaybe<TsWhereInput>;
+  reference?: InputMaybe<TsWhereStringInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere0c15571704f92e4deef74bf2861e3048UnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhered0f94d051a53ade5163af84b3fd6b0f7UnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere55b3d4514248bce7ac082bbc0da1833aUnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereac15fe59c1b71bd6db2d201a4acee09dUnionInput = {
+  preferred_language?: InputMaybe<TsWhereInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere076b30d85cca1aae72305dffd8194343UnionInput = {
+  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere6181441ba9fb7eee556dd3a4a9d229e4UnionInput = {
+  capture_method?: InputMaybe<TsWhereInput>;
+  installments?: InputMaybe<TsWhereStripe_PaymentMethodOptionsCardInstallmentsInput>;
+  mandate_options?: InputMaybe<TsWhereStripe_PaymentMethodOptionsCardMandateOptionsInput>;
+  network?: InputMaybe<TsWhereInput>;
+  request_three_d_secure?: InputMaybe<TsWhereInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodOptionsCardInstallmentsInput = {
+  available_plans?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput>;
+  enabled?: InputMaybe<TsWhereBooleanInput>;
+  plan?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput>;
+};
+
+export type TsWhereStripe_PaymentMethodOptionsCardMandateOptionsInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_type?: InputMaybe<TsWhereInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  end_date?: InputMaybe<TsWhereIntegerInput>;
+  interval?: InputMaybe<TsWhereInput>;
+  interval_count?: InputMaybe<TsWhereIntegerInput>;
+  reference?: InputMaybe<TsWhereStringInput>;
+  start_date?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWherea245e0776494a0d51fe046b0453d38afUnionInput = {
+  request_extended_authorization?: InputMaybe<TsWhereBooleanInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWheref973d307d812f0dfb771bc8122e5c599UnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereabae1b112405e8b3c0dbfa673a54aaadUnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere8cc56b75820487c13c502fada2896d16UnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereeaab7727acdc782ba4b7fd55f1d34914UnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWherebc8c021d852b37c55e33cd17b5bc5c8eUnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere0790e0b407fa40ec44faa0c0093547c0UnionInput = {
+  capture_method?: InputMaybe<TsWhereInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere431e685e94c88a23966c5e39578fd407UnionInput = {
+  capture_method?: InputMaybe<TsWhereInput>;
+  preferred_locale?: InputMaybe<TsWhereStringInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere00ef7207d1f936d9dfffc7da2b87c7a0UnionInput = {
+  confirmation_number?: InputMaybe<TsWhereStringInput>;
+  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
+  expires_at?: InputMaybe<TsWhereIntegerInput>;
+  product_description?: InputMaybe<TsWhereStringInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere3ec3443ea1c1a903147c0d61800da976UnionInput = {
+  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWherea35be11d8b3a6f85cf29c066bd2baeecUnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere3755b88328836d5c8b19acd047bf83f5UnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere1ef47aea767cbab0a37f27b4392256afUnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere29eab390824f828a021e12d845868bf5UnionInput = {
+  preferred_language?: InputMaybe<TsWhereInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWheree8df26123b430c2df83da95f1b7d7d58UnionInput = {
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWheref3a2f1202624d0cdb50285826cb85a9eUnionInput = {
+  app_id?: InputMaybe<TsWhereStringInput>;
+  client?: InputMaybe<TsWhereInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentIntentPaymentMethodTypesInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_PaymentIntentProcessingInput = {
+  card?: InputMaybe<TsWhereStripe_PaymentIntentCardProcessingInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentIntentCardProcessingInput = {
+  customer_notification?: InputMaybe<TsWhereStripe_PaymentIntentProcessingCustomerNotificationInput>;
+};
+
+export type TsWhereStripe_PaymentIntentProcessingCustomerNotificationInput = {
+  approval_requested?: InputMaybe<TsWhereBooleanInput>;
+  completes_at?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_ReviewWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  billing_zip?: InputMaybe<TsWhereStringInput>;
+  closed_reason?: InputMaybe<TsWhereInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  ip_address?: InputMaybe<TsWhereStringInput>;
+  ip_address_location?: InputMaybe<TsWhereStripe_RadarReviewResourceLocationInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  open?: InputMaybe<TsWhereBooleanInput>;
+  opened_reason?: InputMaybe<TsWhereInput>;
+  reason?: InputMaybe<TsWhereStringInput>;
+  session?: InputMaybe<TsWhereStripe_RadarReviewResourceSessionInput>;
+};
+
+export type TsWhereStripe_RadarReviewResourceLocationInput = {
+  city?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  latitude?: InputMaybe<TsWhereNumberInput>;
+  longitude?: InputMaybe<TsWhereNumberInput>;
+  region?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_RadarReviewResourceSessionInput = {
+  browser?: InputMaybe<TsWhereStringInput>;
+  device?: InputMaybe<TsWhereStringInput>;
+  platform?: InputMaybe<TsWhereStringInput>;
+  version?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_TransferDataInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  destination?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+};
+
+export type TsWhereStripe_CheckoutSessionInput = {
+  after_expiration?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionAfterExpirationInput>;
+  allow_promotion_codes?: InputMaybe<TsWhereBooleanInput>;
+  amount_subtotal?: InputMaybe<TsWhereIntegerInput>;
+  amount_total?: InputMaybe<TsWhereIntegerInput>;
+  automatic_tax?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionAutomaticTaxInput>;
+  billing_address_collection?: InputMaybe<TsWhereInput>;
+  cancel_url?: InputMaybe<TsWhereStringInput>;
+  client_reference_id?: InputMaybe<TsWhereStringInput>;
+  consent?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionConsentInput>;
+  consent_collection?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionConsentCollectionInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  customer_creation?: InputMaybe<TsWhereInput>;
+  customer_details?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionCustomerDetailsInput>;
+  customer_email?: InputMaybe<TsWhereStringInput>;
+  expires_at?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  line_items?: InputMaybe<TsWhereStripe_PaymentIntentLineItemsInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  locale?: InputMaybe<TsWhereInput>;
+  mode?: InputMaybe<TsWhereInput>;
+  object?: InputMaybe<TsWhereInput>;
+  payment_intent?: InputMaybe<TsWhereStripe_PaymentIntentWrappedStringUnionInput>;
+  payment_link?: InputMaybe<TsWhereStripe_PaymentLinkWrappedStringUnionInput>;
+  payment_method_options?: InputMaybe<TsWhereStripe_CheckoutSessionPaymentMethodOptionsInput>;
+  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
+  payment_status?: InputMaybe<TsWhereInput>;
+  phone_number_collection?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionPhoneNumberCollectionInput>;
+  recovered_from?: InputMaybe<TsWhereStringInput>;
+  setup_intent?: InputMaybe<TsWhereStripe_SetupIntentWrappedStringUnionInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  shipping_options?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionShippingOptionInput>;
+  shipping_rate?: InputMaybe<TsWhereStripe_ShippingRateWrappedStringUnionInput>;
+  status?: InputMaybe<TsWhereInput>;
+  submit_type?: InputMaybe<TsWhereInput>;
+  subscription?: InputMaybe<TsWhereStripe_SubscriptionWrappedStringUnionInput>;
+  success_url?: InputMaybe<TsWhereStringInput>;
+  tax_id_collection?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionTaxIdCollectionInput>;
+  total_details?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionTotalDetailsInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionAfterExpirationInput = {
+  recovery?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionAfterExpirationRecoveryInput>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionAfterExpirationRecoveryInput = {
+  allow_promotion_codes?: InputMaybe<TsWhereBooleanInput>;
+  enabled?: InputMaybe<TsWhereBooleanInput>;
+  expires_at?: InputMaybe<TsWhereIntegerInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionAutomaticTaxInput = {
+  enabled?: InputMaybe<TsWhereBooleanInput>;
+  status?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionConsentInput = {
+  promotions?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionConsentCollectionInput = {
+  promotions?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionCustomerDetailsInput = {
+  address?: InputMaybe<TsWhereStripe_AddressInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  phone?: InputMaybe<TsWhereStringInput>;
+  tax_exempt?: InputMaybe<TsWhereInput>;
+  tax_ids?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionTaxIdInput>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionTaxIdInput = {
+  type?: InputMaybe<TsWhereInput>;
+  value?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentLineItemsInput = {
+  data?: InputMaybe<TsWhereStripe_ItemInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ItemInput = {
+  amount_subtotal?: InputMaybe<TsWhereIntegerInput>;
+  amount_total?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  discounts?: InputMaybe<TsWhereStripe_LineItemsDiscountAmountInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  price?: InputMaybe<TsWhereStripe_PriceInput>;
+  quantity?: InputMaybe<TsWhereIntegerInput>;
+  taxes?: InputMaybe<TsWhereStripe_LineItemsTaxAmountInput>;
+};
+
+export type TsWhereStripe_LineItemsDiscountAmountInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  discount?: InputMaybe<TsWhereStripe_DiscountInput>;
 };
 
 export type TsWhereStripe_PriceInput = {
@@ -1111,6 +3255,21 @@ export type TsWhereStripe_ProductInput = {
   reviews?: InputMaybe<TsWhereReviewsIo_ListProductReviewsResponseInput>;
   _shapeId?: InputMaybe<TsWhereIdInput>;
   _id?: InputMaybe<TsWhereIdInput>;
+};
+
+export type TsWhereStripe_PackageDimensionsInput = {
+  height?: InputMaybe<TsWhereNumberInput>;
+  length?: InputMaybe<TsWhereNumberInput>;
+  weight?: InputMaybe<TsWhereNumberInput>;
+  width?: InputMaybe<TsWhereNumberInput>;
+};
+
+export type TsWhereStripe_TaxCodeWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
 };
 
 export type TsWhereReviewsIo_ListProductReviewsResponseInput = {
@@ -1168,6 +3327,7 @@ export type TsWhereReviewsIo_ProductInput = {
   name?: InputMaybe<TsWhereStringInput>;
   description?: InputMaybe<TsWhereStringInput>;
   image_url?: InputMaybe<TsWhereStringInput>;
+  link?: InputMaybe<TsWhereStringInput>;
   mpn?: InputMaybe<TsWhereStringInput>;
   gtin?: InputMaybe<TsWhereStringInput>;
   brand?: InputMaybe<TsWhereStringInput>;
@@ -1226,6 +3386,1599 @@ export type TsWhereStripe_PriceTierInput = {
 export type TsWhereStripe_TransformQuantityInput = {
   divide_by?: InputMaybe<TsWhereIntegerInput>;
   round?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_LineItemsTaxAmountInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  rate?: InputMaybe<TsWhereStripe_TaxRateInput>;
+};
+
+export type TsWhereStripe_PaymentLinkWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  active?: InputMaybe<TsWhereBooleanInput>;
+  after_completion?: InputMaybe<TsWhereStripe_PaymentLinksResourceAfterCompletionInput>;
+  allow_promotion_codes?: InputMaybe<TsWhereBooleanInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  application_fee_percent?: InputMaybe<TsWhereNumberInput>;
+  automatic_tax?: InputMaybe<TsWhereStripe_PaymentLinksResourceAutomaticTaxInput>;
+  billing_address_collection?: InputMaybe<TsWhereInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  line_items?: InputMaybe<TsWhereStripe_PaymentLinkLineItemsInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  phone_number_collection?: InputMaybe<TsWhereStripe_PaymentLinksResourcePhoneNumberCollectionInput>;
+  subscription_data?: InputMaybe<TsWhereStripe_PaymentLinksResourceSubscriptionDataInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_PaymentLinksResourceTransferDataInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentLinksResourceAfterCompletionInput = {
+  hosted_confirmation?: InputMaybe<TsWhereStripe_PaymentLinksResourceCompletionBehaviorConfirmationPageInput>;
+  redirect?: InputMaybe<TsWhereStripe_PaymentLinksResourceCompletionBehaviorRedirectInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentLinksResourceCompletionBehaviorConfirmationPageInput = {
+  custom_message?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentLinksResourceCompletionBehaviorRedirectInput = {
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentLinksResourceAutomaticTaxInput = {
+  enabled?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_PaymentLinkLineItemsInput = {
+  data?: InputMaybe<TsWhereStripe_ItemInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentLinksResourcePhoneNumberCollectionInput = {
+  enabled?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_PaymentLinksResourceSubscriptionDataInput = {
+  trial_period_days?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_PaymentLinksResourceTransferDataInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_CheckoutSessionPaymentMethodOptionsInput = {
+  acss_debit?: InputMaybe<TsWhereStripe_CheckoutAcssDebitPaymentMethodOptionsInput>;
+  boleto?: InputMaybe<TsWhereStripe_CheckoutBoletoPaymentMethodOptionsInput>;
+  konbini?: InputMaybe<TsWhereStripe_CheckoutKonbiniPaymentMethodOptionsInput>;
+  oxxo?: InputMaybe<TsWhereStripe_CheckoutOxxoPaymentMethodOptionsInput>;
+  us_bank_account?: InputMaybe<TsWhereStripe_CheckoutUsBankAccountPaymentMethodOptionsInput>;
+};
+
+export type TsWhereStripe_CheckoutAcssDebitPaymentMethodOptionsInput = {
+  currency?: InputMaybe<TsWhereInput>;
+  mandate_options?: InputMaybe<TsWhereStripe_CheckoutAcssDebitMandateOptionsInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_CheckoutAcssDebitMandateOptionsInput = {
+  custom_mandate_url?: InputMaybe<TsWhereStringInput>;
+  interval_description?: InputMaybe<TsWhereStringInput>;
+  payment_schedule?: InputMaybe<TsWhereInput>;
+  transaction_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_CheckoutBoletoPaymentMethodOptionsInput = {
+  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_CheckoutKonbiniPaymentMethodOptionsInput = {
+  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_CheckoutOxxoPaymentMethodOptionsInput = {
+  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_CheckoutUsBankAccountPaymentMethodOptionsInput = {
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionPhoneNumberCollectionInput = {
+  enabled?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_SetupIntentWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  cancellation_reason?: InputMaybe<TsWhereInput>;
+  client_secret?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  last_setup_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  next_action?: InputMaybe<TsWhereStripe_SetupIntentNextActionInput>;
+  object?: InputMaybe<TsWhereInput>;
+  payment_method_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsInput>;
+  payment_method_types?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodTypesInput>;
+  status?: InputMaybe<TsWhereInput>;
+  usage?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SetupIntentNextActionInput = {
+  redirect_to_url?: InputMaybe<TsWhereStripe_SetupIntentNextActionRedirectToUrlInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+  verify_with_microdeposits?: InputMaybe<TsWhereStripe_SetupIntentNextActionVerifyWithMicrodepositsInput>;
+};
+
+export type TsWhereStripe_SetupIntentNextActionRedirectToUrlInput = {
+  return_url?: InputMaybe<TsWhereStringInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SetupIntentNextActionVerifyWithMicrodepositsInput = {
+  arrival_date?: InputMaybe<TsWhereIntegerInput>;
+  hosted_verification_url?: InputMaybe<TsWhereStringInput>;
+  microdeposit_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_SetupIntentPaymentMethodOptionsInput = {
+  acss_debit?: InputMaybe<TsWhere6c955fa05d8df9184cc18d8841c3705dUnionInput>;
+  card?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsCardInput>;
+  sepa_debit?: InputMaybe<TsWhere256af04705b008a07ca5c137b490ba88UnionInput>;
+  us_bank_account?: InputMaybe<TsWhere5e84458a02fb07e8c3d5d9b0bb3e5d99UnionInput>;
+};
+
+export type TsWhere6c955fa05d8df9184cc18d8841c3705dUnionInput = {
+  currency?: InputMaybe<TsWhereInput>;
+  mandate_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsMandateOptionsAcssDebitInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_SetupIntentPaymentMethodOptionsMandateOptionsAcssDebitInput = {
+  custom_mandate_url?: InputMaybe<TsWhereStringInput>;
+  interval_description?: InputMaybe<TsWhereStringInput>;
+  payment_schedule?: InputMaybe<TsWhereInput>;
+  transaction_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_SetupIntentPaymentMethodOptionsCardInput = {
+  mandate_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsCardMandateOptionsInput>;
+  request_three_d_secure?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_SetupIntentPaymentMethodOptionsCardMandateOptionsInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_type?: InputMaybe<TsWhereInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  end_date?: InputMaybe<TsWhereIntegerInput>;
+  interval?: InputMaybe<TsWhereInput>;
+  interval_count?: InputMaybe<TsWhereIntegerInput>;
+  reference?: InputMaybe<TsWhereStringInput>;
+  start_date?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhere256af04705b008a07ca5c137b490ba88UnionInput = {
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere5e84458a02fb07e8c3d5d9b0bb3e5d99UnionInput = {
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_SetupIntentPaymentMethodTypesInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionShippingOptionInput = {
+  shipping_amount?: InputMaybe<TsWhereIntegerInput>;
+  shipping_rate?: InputMaybe<TsWhereStripe_ShippingRateWrappedStringUnionInput>;
+};
+
+export type TsWhereStripe_ShippingRateWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  active?: InputMaybe<TsWhereBooleanInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  delivery_estimate?: InputMaybe<TsWhereStripe_ShippingRateDeliveryEstimateInput>;
+  display_name?: InputMaybe<TsWhereStringInput>;
+  fixed_amount?: InputMaybe<TsWhereStripe_ShippingRateFixedAmountInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  tax_behavior?: InputMaybe<TsWhereInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_ShippingRateDeliveryEstimateInput = {
+  maximum?: InputMaybe<TsWhereStripe_ShippingRateDeliveryEstimateBoundInput>;
+  minimum?: InputMaybe<TsWhereStripe_ShippingRateDeliveryEstimateBoundInput>;
+};
+
+export type TsWhereStripe_ShippingRateDeliveryEstimateBoundInput = {
+  unit?: InputMaybe<TsWhereInput>;
+  value?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_ShippingRateFixedAmountInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SubscriptionWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  application_fee_percent?: InputMaybe<TsWhereNumberInput>;
+  automatic_tax?: InputMaybe<TsWhereStripe_SubscriptionAutomaticTaxInput>;
+  billing_cycle_anchor?: InputMaybe<TsWhereIntegerInput>;
+  billing_thresholds?: InputMaybe<TsWhereStripe_SubscriptionBillingThresholdsInput>;
+  cancel_at?: InputMaybe<TsWhereIntegerInput>;
+  cancel_at_period_end?: InputMaybe<TsWhereBooleanInput>;
+  canceled_at?: InputMaybe<TsWhereIntegerInput>;
+  collection_method?: InputMaybe<TsWhereInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  current_period_end?: InputMaybe<TsWhereIntegerInput>;
+  current_period_start?: InputMaybe<TsWhereIntegerInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  days_until_due?: InputMaybe<TsWhereIntegerInput>;
+  default_tax_rates?: InputMaybe<TsWhereStripe_TaxRateInput>;
+  discount?: InputMaybe<TsWhereStripe_DiscountInput>;
+  ended_at?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  items?: InputMaybe<TsWhereStripe_SubscriptionItemsInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  next_pending_invoice_item_invoice?: InputMaybe<TsWhereIntegerInput>;
+  object?: InputMaybe<TsWhereInput>;
+  pause_collection?: InputMaybe<TsWhereStripe_SubscriptionsResourcePauseCollectionInput>;
+  payment_settings?: InputMaybe<TsWhereStripe_SubscriptionsResourcePaymentSettingsInput>;
+  pending_invoice_item_interval?: InputMaybe<TsWhereStripe_SubscriptionPendingInvoiceItemIntervalInput>;
+  pending_update?: InputMaybe<TsWhereStripe_SubscriptionsResourcePendingUpdateInput>;
+  start_date?: InputMaybe<TsWhereIntegerInput>;
+  status?: InputMaybe<TsWhereInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_SubscriptionTransferDataInput>;
+  trial_end?: InputMaybe<TsWhereIntegerInput>;
+  trial_start?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_SubscriptionAutomaticTaxInput = {
+  enabled?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_SubscriptionBillingThresholdsInput = {
+  amount_gte?: InputMaybe<TsWhereIntegerInput>;
+  reset_billing_cycle_anchor?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_SubscriptionItemsInput = {
+  data?: InputMaybe<TsWhereStripe_SubscriptionItemInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SubscriptionItemInput = {
+  billing_thresholds?: InputMaybe<TsWhereStripe_SubscriptionItemBillingThresholdsInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  price?: InputMaybe<TsWhereStripe_PriceInput>;
+  quantity?: InputMaybe<TsWhereIntegerInput>;
+  subscription?: InputMaybe<TsWhereStringInput>;
+  tax_rates?: InputMaybe<TsWhereStripe_TaxRateInput>;
+};
+
+export type TsWhereStripe_SubscriptionItemBillingThresholdsInput = {
+  usage_gte?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_SubscriptionsResourcePauseCollectionInput = {
+  behavior?: InputMaybe<TsWhereInput>;
+  resumes_at?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_SubscriptionsResourcePaymentSettingsInput = {
+  payment_method_options?: InputMaybe<TsWhereStripe_SubscriptionsResourcePaymentMethodOptionsInput>;
+};
+
+export type TsWhereStripe_SubscriptionsResourcePaymentMethodOptionsInput = {
+  acss_debit?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsAcssDebitInput>;
+  bancontact?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsBancontactInput>;
+  card?: InputMaybe<TsWhereStripe_SubscriptionPaymentMethodOptionsCardInput>;
+  customer_balance?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsCustomerBalanceInput>;
+  us_bank_account?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsUsBankAccountInput>;
+};
+
+export type TsWhereStripe_InvoicePaymentMethodOptionsAcssDebitInput = {
+  mandate_options?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsAcssDebitMandateOptionsInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_InvoicePaymentMethodOptionsAcssDebitMandateOptionsInput = {
+  transaction_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_InvoicePaymentMethodOptionsBancontactInput = {
+  preferred_language?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_SubscriptionPaymentMethodOptionsCardInput = {
+  mandate_options?: InputMaybe<TsWhereStripe_InvoiceMandateOptionsCardInput>;
+  request_three_d_secure?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_InvoiceMandateOptionsCardInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_type?: InputMaybe<TsWhereInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_InvoicePaymentMethodOptionsCustomerBalanceInput = {
+  bank_transfer?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransferInput>;
+  funding_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransferInput = {
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_InvoicePaymentMethodOptionsUsBankAccountInput = {
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_SubscriptionPendingInvoiceItemIntervalInput = {
+  interval?: InputMaybe<TsWhereInput>;
+  interval_count?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_SubscriptionsResourcePendingUpdateInput = {
+  billing_cycle_anchor?: InputMaybe<TsWhereIntegerInput>;
+  expires_at?: InputMaybe<TsWhereIntegerInput>;
+  subscription_items?: InputMaybe<TsWhereStripe_SubscriptionItemInput>;
+  trial_end?: InputMaybe<TsWhereIntegerInput>;
+  trial_from_plan?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_SubscriptionTransferDataInput = {
+  amount_percent?: InputMaybe<TsWhereNumberInput>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionTaxIdCollectionInput = {
+  enabled?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionTotalDetailsInput = {
+  amount_discount?: InputMaybe<TsWhereIntegerInput>;
+  amount_shipping?: InputMaybe<TsWhereIntegerInput>;
+  amount_tax?: InputMaybe<TsWhereIntegerInput>;
+  breakdown?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionTotalDetailsResourceBreakdownInput>;
+};
+
+export type TsWhereStripe_PaymentPagesCheckoutSessionTotalDetailsResourceBreakdownInput = {
+  discounts?: InputMaybe<TsWhereStripe_LineItemsDiscountAmountInput>;
+  taxes?: InputMaybe<TsWhereStripe_LineItemsTaxAmountInput>;
+};
+
+export type TsWhereShipEngine_LabelInput = {
+  label_id?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+  shipment_id?: InputMaybe<TsWhereStringInput>;
+  ship_date?: InputMaybe<TsWhereStringInput>;
+  created_at?: InputMaybe<TsWhereStringInput>;
+  tracking_number?: InputMaybe<TsWhereStringInput>;
+  batch_id?: InputMaybe<TsWhereStringInput>;
+  carrier_id?: InputMaybe<TsWhereStringInput>;
+  charge_event?: InputMaybe<TsWhereStringInput>;
+  service_code?: InputMaybe<TsWhereStringInput>;
+  package_code?: InputMaybe<TsWhereStringInput>;
+  voided_at?: InputMaybe<TsWhereStringInput>;
+  label_format?: InputMaybe<TsWhereStringInput>;
+  display_scheme?: InputMaybe<TsWhereStringInput>;
+  label_layout?: InputMaybe<TsWhereStringInput>;
+  label_image_id?: InputMaybe<TsWhereStringInput>;
+  carrier_code?: InputMaybe<TsWhereStringInput>;
+  tracking_status?: InputMaybe<TsWhereStringInput>;
+  label_download?: InputMaybe<TsWhereShipEngine_LabelDownloadInput>;
+  trackable?: InputMaybe<TsWhereBooleanInput>;
+  packages?: InputMaybe<TsWhereShipEngine_PackageInput>;
+};
+
+export type TsWhereShipEngine_LabelDownloadInput = {
+  href?: InputMaybe<TsWhereStringInput>;
+  pdf?: InputMaybe<TsWhereStringInput>;
+  png?: InputMaybe<TsWhereStringInput>;
+  zpl?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereShipEngine_PackageInput = {
+  package_id?: InputMaybe<TsWhereIntegerInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  package_code?: InputMaybe<TsWhereStringInput>;
+  tracking_number?: InputMaybe<TsWhereStringInput>;
+  label_download?: InputMaybe<TsWhereShipEngine_LabelDownloadInput>;
+  weight?: InputMaybe<TsWhereShipEngine_WeightInput>;
+  dimensions?: InputMaybe<TsWhereShipEngine_DimensionsInput>;
+};
+
+export type TsWhereShipEngine_WeightInput = {
+  value?: InputMaybe<TsWhereNumberInput>;
+  unit?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereShipEngine_DimensionsInput = {
+  length?: InputMaybe<TsWhereNumberInput>;
+  width?: InputMaybe<TsWhereNumberInput>;
+  height?: InputMaybe<TsWhereNumberInput>;
+  unit?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_TransferReversalWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_ChargeTransferDataInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  destination?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+};
+
+export type TsWhere0dfdf3d2da91f0e817d280b6398091a5UnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  payment_amount?: InputMaybe<TsWhereIntegerInput>;
+  payment_currency?: InputMaybe<TsWhereStringInput>;
+  reusable?: InputMaybe<TsWhereBooleanInput>;
+  used?: InputMaybe<TsWhereBooleanInput>;
+  username?: InputMaybe<TsWhereStringInput>;
+  account_holder_name?: InputMaybe<TsWhereStringInput>;
+  account_holder_type?: InputMaybe<TsWhereStringInput>;
+  account_type?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  default_for_currency?: InputMaybe<TsWhereBooleanInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+  active?: InputMaybe<TsWhereBooleanInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_received?: InputMaybe<TsWhereIntegerInput>;
+  bitcoin_amount?: InputMaybe<TsWhereIntegerInput>;
+  bitcoin_amount_received?: InputMaybe<TsWhereIntegerInput>;
+  bitcoin_uri?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  filled?: InputMaybe<TsWhereBooleanInput>;
+  inbound_address?: InputMaybe<TsWhereStringInput>;
+  payment?: InputMaybe<TsWhereStringInput>;
+  refund_address?: InputMaybe<TsWhereStringInput>;
+  transactions?: InputMaybe<TsWhereStripe_BitcoinReceiverTransactionsInput>;
+  uncaptured_funds?: InputMaybe<TsWhereBooleanInput>;
+  used_for_payment?: InputMaybe<TsWhereBooleanInput>;
+  address_city?: InputMaybe<TsWhereStringInput>;
+  address_country?: InputMaybe<TsWhereStringInput>;
+  address_line1?: InputMaybe<TsWhereStringInput>;
+  address_line1_check?: InputMaybe<TsWhereStringInput>;
+  address_line2?: InputMaybe<TsWhereStringInput>;
+  address_state?: InputMaybe<TsWhereStringInput>;
+  address_zip?: InputMaybe<TsWhereStringInput>;
+  address_zip_check?: InputMaybe<TsWhereStringInput>;
+  brand?: InputMaybe<TsWhereStringInput>;
+  cvc_check?: InputMaybe<TsWhereStringInput>;
+  dynamic_last4?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  tokenization_method?: InputMaybe<TsWhereStringInput>;
+  ach_credit_transfer?: InputMaybe<TsWhereStripe_SourceTypeAchCreditTransferInput>;
+  ach_debit?: InputMaybe<TsWhereStripe_SourceTypeAchDebitInput>;
+  acss_debit?: InputMaybe<TsWhereStripe_SourceTypeAcssDebitInput>;
+  alipay?: InputMaybe<TsWhereStripe_SourceTypeAlipayInput>;
+  au_becs_debit?: InputMaybe<TsWhereStripe_SourceTypeAuBecsDebitInput>;
+  bancontact?: InputMaybe<TsWhereStripe_SourceTypeBancontactInput>;
+  card?: InputMaybe<TsWhereStripe_SourceTypeCardInput>;
+  card_present?: InputMaybe<TsWhereStripe_SourceTypeCardPresentInput>;
+  client_secret?: InputMaybe<TsWhereStringInput>;
+  code_verification?: InputMaybe<TsWhereStripe_SourceCodeVerificationFlowInput>;
+  eps?: InputMaybe<TsWhereStripe_SourceTypeEpsInput>;
+  flow?: InputMaybe<TsWhereStringInput>;
+  giropay?: InputMaybe<TsWhereStripe_SourceTypeGiropayInput>;
+  ideal?: InputMaybe<TsWhereStripe_SourceTypeIdealInput>;
+  klarna?: InputMaybe<TsWhereStripe_SourceTypeKlarnaInput>;
+  multibanco?: InputMaybe<TsWhereStripe_SourceTypeMultibancoInput>;
+  owner?: InputMaybe<TsWhereStripe_SourceOwnerInput>;
+  p24?: InputMaybe<TsWhereStripe_SourceTypeP24Input>;
+  receiver?: InputMaybe<TsWhereStripe_SourceReceiverFlowInput>;
+  redirect?: InputMaybe<TsWhereStripe_SourceRedirectFlowInput>;
+  sepa_debit?: InputMaybe<TsWhereStripe_SourceTypeSepaDebitInput>;
+  sofort?: InputMaybe<TsWhereStripe_SourceTypeSofortInput>;
+  source_order?: InputMaybe<TsWhereStripe_SourceOrderInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  three_d_secure?: InputMaybe<TsWhereStripe_SourceTypeThreeDSecureInput>;
+  type?: InputMaybe<TsWhereInput>;
+  usage?: InputMaybe<TsWhereStringInput>;
+  wechat?: InputMaybe<TsWhereStripe_SourceTypeWechatInput>;
+};
+
+export type TsWhereStripe_BitcoinReceiverTransactionsInput = {
+  data?: InputMaybe<TsWhereStripe_BitcoinTransactionInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_BitcoinTransactionInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  bitcoin_amount?: InputMaybe<TsWhereIntegerInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  receiver?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeAchCreditTransferInput = {
+  account_number?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  refund_account_holder_name?: InputMaybe<TsWhereStringInput>;
+  refund_account_holder_type?: InputMaybe<TsWhereStringInput>;
+  refund_routing_number?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+  swift_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeAchDebitInput = {
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeAcssDebitInput = {
+  bank_address_city?: InputMaybe<TsWhereStringInput>;
+  bank_address_line_1?: InputMaybe<TsWhereStringInput>;
+  bank_address_line_2?: InputMaybe<TsWhereStringInput>;
+  bank_address_postal_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  category?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeAlipayInput = {
+  data_string?: InputMaybe<TsWhereStringInput>;
+  native_url?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeAuBecsDebitInput = {
+  bsb_number?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeBancontactInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  preferred_language?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeCardInput = {
+  address_line1_check?: InputMaybe<TsWhereStringInput>;
+  address_zip_check?: InputMaybe<TsWhereStringInput>;
+  brand?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  cvc_check?: InputMaybe<TsWhereStringInput>;
+  dynamic_last4?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  three_d_secure?: InputMaybe<TsWhereStringInput>;
+  tokenization_method?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeCardPresentInput = {
+  application_cryptogram?: InputMaybe<TsWhereStringInput>;
+  application_preferred_name?: InputMaybe<TsWhereStringInput>;
+  authorization_code?: InputMaybe<TsWhereStringInput>;
+  authorization_response_code?: InputMaybe<TsWhereStringInput>;
+  brand?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  cvm_type?: InputMaybe<TsWhereStringInput>;
+  data_type?: InputMaybe<TsWhereStringInput>;
+  dedicated_file_name?: InputMaybe<TsWhereStringInput>;
+  emv_auth_data?: InputMaybe<TsWhereStringInput>;
+  evidence_customer_signature?: InputMaybe<TsWhereStringInput>;
+  evidence_transaction_certificate?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  pos_device_id?: InputMaybe<TsWhereStringInput>;
+  pos_entry_mode?: InputMaybe<TsWhereStringInput>;
+  read_method?: InputMaybe<TsWhereStringInput>;
+  reader?: InputMaybe<TsWhereStringInput>;
+  terminal_verification_results?: InputMaybe<TsWhereStringInput>;
+  transaction_status_information?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceCodeVerificationFlowInput = {
+  attempts_remaining?: InputMaybe<TsWhereIntegerInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeEpsInput = {
+  reference?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeGiropayInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeIdealInput = {
+  bank?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeKlarnaInput = {
+  background_image_url?: InputMaybe<TsWhereStringInput>;
+  client_token?: InputMaybe<TsWhereStringInput>;
+  first_name?: InputMaybe<TsWhereStringInput>;
+  last_name?: InputMaybe<TsWhereStringInput>;
+  locale?: InputMaybe<TsWhereStringInput>;
+  logo_url?: InputMaybe<TsWhereStringInput>;
+  page_title?: InputMaybe<TsWhereStringInput>;
+  pay_later_asset_urls_descriptive?: InputMaybe<TsWhereStringInput>;
+  pay_later_asset_urls_standard?: InputMaybe<TsWhereStringInput>;
+  pay_later_name?: InputMaybe<TsWhereStringInput>;
+  pay_later_redirect_url?: InputMaybe<TsWhereStringInput>;
+  pay_now_asset_urls_descriptive?: InputMaybe<TsWhereStringInput>;
+  pay_now_asset_urls_standard?: InputMaybe<TsWhereStringInput>;
+  pay_now_name?: InputMaybe<TsWhereStringInput>;
+  pay_now_redirect_url?: InputMaybe<TsWhereStringInput>;
+  pay_over_time_asset_urls_descriptive?: InputMaybe<TsWhereStringInput>;
+  pay_over_time_asset_urls_standard?: InputMaybe<TsWhereStringInput>;
+  pay_over_time_name?: InputMaybe<TsWhereStringInput>;
+  pay_over_time_redirect_url?: InputMaybe<TsWhereStringInput>;
+  payment_method_categories?: InputMaybe<TsWhereStringInput>;
+  purchase_country?: InputMaybe<TsWhereStringInput>;
+  purchase_type?: InputMaybe<TsWhereStringInput>;
+  redirect_url?: InputMaybe<TsWhereStringInput>;
+  shipping_delay?: InputMaybe<TsWhereIntegerInput>;
+  shipping_first_name?: InputMaybe<TsWhereStringInput>;
+  shipping_last_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeMultibancoInput = {
+  entity?: InputMaybe<TsWhereStringInput>;
+  reference?: InputMaybe<TsWhereStringInput>;
+  refund_account_holder_address_city?: InputMaybe<TsWhereStringInput>;
+  refund_account_holder_address_country?: InputMaybe<TsWhereStringInput>;
+  refund_account_holder_address_line1?: InputMaybe<TsWhereStringInput>;
+  refund_account_holder_address_line2?: InputMaybe<TsWhereStringInput>;
+  refund_account_holder_address_postal_code?: InputMaybe<TsWhereStringInput>;
+  refund_account_holder_address_state?: InputMaybe<TsWhereStringInput>;
+  refund_account_holder_name?: InputMaybe<TsWhereStringInput>;
+  refund_iban?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceOwnerInput = {
+  address?: InputMaybe<TsWhereStripe_AddressInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  phone?: InputMaybe<TsWhereStringInput>;
+  verified_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  verified_email?: InputMaybe<TsWhereStringInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+  verified_phone?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeP24Input = {
+  reference?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceReceiverFlowInput = {
+  address?: InputMaybe<TsWhereStringInput>;
+  amount_charged?: InputMaybe<TsWhereIntegerInput>;
+  amount_received?: InputMaybe<TsWhereIntegerInput>;
+  amount_returned?: InputMaybe<TsWhereIntegerInput>;
+  refund_attributes_method?: InputMaybe<TsWhereStringInput>;
+  refund_attributes_status?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceRedirectFlowInput = {
+  failure_reason?: InputMaybe<TsWhereStringInput>;
+  return_url?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeSepaDebitInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  branch_code?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  mandate_reference?: InputMaybe<TsWhereStringInput>;
+  mandate_url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeSofortInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  preferred_language?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceOrderInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  items?: InputMaybe<TsWhereStripe_SourceOrderItemInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+};
+
+export type TsWhereStripe_SourceOrderItemInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  parent?: InputMaybe<TsWhereStringInput>;
+  quantity?: InputMaybe<TsWhereIntegerInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeThreeDSecureInput = {
+  address_line1_check?: InputMaybe<TsWhereStringInput>;
+  address_zip_check?: InputMaybe<TsWhereStringInput>;
+  authenticated?: InputMaybe<TsWhereBooleanInput>;
+  brand?: InputMaybe<TsWhereStringInput>;
+  card?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  cvc_check?: InputMaybe<TsWhereStringInput>;
+  dynamic_last4?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  three_d_secure?: InputMaybe<TsWhereStringInput>;
+  tokenization_method?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SourceTypeWechatInput = {
+  prepay_id?: InputMaybe<TsWhereStringInput>;
+  qr_code_url?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentDiscountsInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_PaymentIntentLinesInput = {
+  data?: InputMaybe<TsWhereStripe_LineItemInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_LineItemInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  discount_amounts?: InputMaybe<TsWhereStripe_DiscountsResourceDiscountAmountInput>;
+  discountable?: InputMaybe<TsWhereBooleanInput>;
+  discounts?: InputMaybe<TsWhereStripe_PaymentIntentDiscountsInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice_item?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  period?: InputMaybe<TsWhereStripe_InvoiceLineItemPeriodInput>;
+  price?: InputMaybe<TsWhereStripe_PriceInput>;
+  proration?: InputMaybe<TsWhereBooleanInput>;
+  proration_details?: InputMaybe<TsWhereStripe_InvoicesLineItemsProrationDetailsInput>;
+  quantity?: InputMaybe<TsWhereIntegerInput>;
+  subscription?: InputMaybe<TsWhereStringInput>;
+  subscription_item?: InputMaybe<TsWhereStringInput>;
+  tax_amounts?: InputMaybe<TsWhereStripe_InvoiceTaxAmountInput>;
+  tax_rates?: InputMaybe<TsWhereStripe_TaxRateInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_DiscountsResourceDiscountAmountInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  discount?: InputMaybe<TsWhereStripe_DeletedDiscountStripe_DiscountWrappedStringUnionInput>;
+};
+
+export type TsWhereStripe_DeletedDiscountStripe_DiscountWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  checkout_session?: InputMaybe<TsWhereStringInput>;
+  coupon?: InputMaybe<TsWhereStripe_CouponInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  end?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice?: InputMaybe<TsWhereStringInput>;
+  invoice_item?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  start?: InputMaybe<TsWhereIntegerInput>;
+  subscription?: InputMaybe<TsWhereStringInput>;
+  deleted?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_InvoiceLineItemPeriodInput = {
+  end?: InputMaybe<TsWhereIntegerInput>;
+  start?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_InvoicesLineItemsProrationDetailsInput = {
+  credited_items?: InputMaybe<TsWhereStripe_InvoicesLineItemsCreditedItemsInput>;
+};
+
+export type TsWhereStripe_InvoicesLineItemsCreditedItemsInput = {
+  invoice?: InputMaybe<TsWhereStringInput>;
+  invoice_line_items?: InputMaybe<TsWhereStripe_PaymentIntentInvoiceLineItemsInput>;
+};
+
+export type TsWhereStripe_PaymentIntentInvoiceLineItemsInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_InvoiceTaxAmountInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  inclusive?: InputMaybe<TsWhereBooleanInput>;
+  tax_rate?: InputMaybe<TsWhereStripe_TaxRateWrappedStringUnionInput>;
+};
+
+export type TsWhereStripe_TaxRateWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  active?: InputMaybe<TsWhereBooleanInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  display_name?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  inclusive?: InputMaybe<TsWhereBooleanInput>;
+  jurisdiction?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  percentage?: InputMaybe<TsWhereNumberInput>;
+  state?: InputMaybe<TsWhereStringInput>;
+  tax_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_InvoicesPaymentSettingsInput = {
+  payment_method_options?: InputMaybe<TsWhereStripe_InvoicesPaymentMethodOptionsInput>;
+  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
+};
+
+export type TsWhereStripe_InvoicesPaymentMethodOptionsInput = {
+  acss_debit?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsAcssDebitInput>;
+  bancontact?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsBancontactInput>;
+  card?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsCardInput>;
+  customer_balance?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsCustomerBalanceInput>;
+  us_bank_account?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsUsBankAccountInput>;
+};
+
+export type TsWhereStripe_InvoicePaymentMethodOptionsCardInput = {
+  request_three_d_secure?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_QuoteWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  amount_subtotal?: InputMaybe<TsWhereIntegerInput>;
+  amount_total?: InputMaybe<TsWhereIntegerInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  application_fee_percent?: InputMaybe<TsWhereNumberInput>;
+  automatic_tax?: InputMaybe<TsWhereStripe_QuotesResourceAutomaticTaxInput>;
+  collection_method?: InputMaybe<TsWhereInput>;
+  computed?: InputMaybe<TsWhereStripe_QuotesResourceComputedInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  default_tax_rates?: InputMaybe<TsWhereStripe_QuoteDefaultTaxRatesInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  discounts?: InputMaybe<TsWhereStripe_QuoteDiscountsInput>;
+  expires_at?: InputMaybe<TsWhereIntegerInput>;
+  footer?: InputMaybe<TsWhereStringInput>;
+  from_quote?: InputMaybe<TsWhereStripe_QuotesResourceFromQuoteInput>;
+  header?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice_settings?: InputMaybe<TsWhereStripe_InvoiceSettingQuoteSettingInput>;
+  line_items?: InputMaybe<TsWhereStripe_QuoteLineItemsInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  number?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  status?: InputMaybe<TsWhereInput>;
+  status_transitions?: InputMaybe<TsWhereStripe_QuotesResourceStatusTransitionsInput>;
+  subscription_data?: InputMaybe<TsWhereStripe_QuotesResourceSubscriptionDataInput>;
+  total_details?: InputMaybe<TsWhereStripe_QuotesResourceTotalDetailsInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_QuotesResourceTransferDataInput>;
+};
+
+export type TsWhereStripe_QuotesResourceAutomaticTaxInput = {
+  enabled?: InputMaybe<TsWhereBooleanInput>;
+  status?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_QuotesResourceComputedInput = {
+  recurring?: InputMaybe<TsWhereStripe_QuotesResourceRecurringInput>;
+  upfront?: InputMaybe<TsWhereStripe_QuotesResourceUpfrontInput>;
+};
+
+export type TsWhereStripe_QuotesResourceRecurringInput = {
+  amount_subtotal?: InputMaybe<TsWhereIntegerInput>;
+  amount_total?: InputMaybe<TsWhereIntegerInput>;
+  interval?: InputMaybe<TsWhereInput>;
+  interval_count?: InputMaybe<TsWhereIntegerInput>;
+  total_details?: InputMaybe<TsWhereStripe_QuotesResourceTotalDetailsInput>;
+};
+
+export type TsWhereStripe_QuotesResourceTotalDetailsInput = {
+  amount_discount?: InputMaybe<TsWhereIntegerInput>;
+  amount_shipping?: InputMaybe<TsWhereIntegerInput>;
+  amount_tax?: InputMaybe<TsWhereIntegerInput>;
+  breakdown?: InputMaybe<TsWhereStripe_QuotesResourceTotalDetailsResourceBreakdownInput>;
+};
+
+export type TsWhereStripe_QuotesResourceTotalDetailsResourceBreakdownInput = {
+  discounts?: InputMaybe<TsWhereStripe_LineItemsDiscountAmountInput>;
+  taxes?: InputMaybe<TsWhereStripe_LineItemsTaxAmountInput>;
+};
+
+export type TsWhereStripe_QuotesResourceUpfrontInput = {
+  amount_subtotal?: InputMaybe<TsWhereIntegerInput>;
+  amount_total?: InputMaybe<TsWhereIntegerInput>;
+  line_items?: InputMaybe<TsWhereStripe_QuoteLineItemsInput>;
+  total_details?: InputMaybe<TsWhereStripe_QuotesResourceTotalDetailsInput>;
+};
+
+export type TsWhereStripe_QuoteLineItemsInput = {
+  data?: InputMaybe<TsWhereStripe_ItemInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_QuoteDefaultTaxRatesInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  active?: InputMaybe<TsWhereBooleanInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  display_name?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  inclusive?: InputMaybe<TsWhereBooleanInput>;
+  jurisdiction?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  percentage?: InputMaybe<TsWhereNumberInput>;
+  state?: InputMaybe<TsWhereStringInput>;
+  tax_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_QuoteDiscountsInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  checkout_session?: InputMaybe<TsWhereStringInput>;
+  coupon?: InputMaybe<TsWhereStripe_CouponInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  end?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice?: InputMaybe<TsWhereStringInput>;
+  invoice_item?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  start?: InputMaybe<TsWhereIntegerInput>;
+  subscription?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_QuotesResourceFromQuoteInput = {
+  is_revision?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_InvoiceSettingQuoteSettingInput = {
+  days_until_due?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_QuotesResourceStatusTransitionsInput = {
+  accepted_at?: InputMaybe<TsWhereIntegerInput>;
+  canceled_at?: InputMaybe<TsWhereIntegerInput>;
+  finalized_at?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_QuotesResourceSubscriptionDataInput = {
+  effective_date?: InputMaybe<TsWhereIntegerInput>;
+  trial_period_days?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_QuotesResourceTransferDataInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_percent?: InputMaybe<TsWhereNumberInput>;
+};
+
+export type TsWhereStripe_InvoicesStatusTransitionsInput = {
+  finalized_at?: InputMaybe<TsWhereIntegerInput>;
+  marked_uncollectible_at?: InputMaybe<TsWhereIntegerInput>;
+  paid_at?: InputMaybe<TsWhereIntegerInput>;
+  voided_at?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_TestHelpersTestClockWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  deletes_after?: InputMaybe<TsWhereIntegerInput>;
+  frozen_time?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  status?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_InvoiceThresholdReasonInput = {
+  amount_gte?: InputMaybe<TsWhereIntegerInput>;
+  item_reasons?: InputMaybe<TsWhereStripe_InvoiceItemThresholdReasonInput>;
+};
+
+export type TsWhereStripe_InvoiceItemThresholdReasonInput = {
+  line_item_ids?: InputMaybe<TsWhereStripe_PaymentIntentLineItemIdsInput>;
+  usage_gte?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_PaymentIntentLineItemIdsInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_InvoiceTransferDataInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  destination?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+};
+
+export type TsWhereStripe_PaymentMethodInput = {
+  acss_debit?: InputMaybe<TsWhereStripe_PaymentMethodAcssDebitInput>;
+  au_becs_debit?: InputMaybe<TsWhereStripe_PaymentMethodAuBecsDebitInput>;
+  bacs_debit?: InputMaybe<TsWhereStripe_PaymentMethodBacsDebitInput>;
+  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
+  boleto?: InputMaybe<TsWhereStripe_PaymentMethodBoletoInput>;
+  card?: InputMaybe<TsWhereStripe_PaymentMethodCardInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  customer?: InputMaybe<TsWhereStripe_CustomerWrappedStringUnionInput>;
+  eps?: InputMaybe<TsWhereStripe_PaymentMethodEpsInput>;
+  fpx?: InputMaybe<TsWhereStripe_PaymentMethodFpxInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  ideal?: InputMaybe<TsWhereStripe_PaymentMethodIdealInput>;
+  klarna?: InputMaybe<TsWhereStripe_PaymentMethodKlarnaInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  p24?: InputMaybe<TsWhereStripe_PaymentMethodP24Input>;
+  sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodSepaDebitInput>;
+  sofort?: InputMaybe<TsWhereStripe_PaymentMethodSofortInput>;
+  type?: InputMaybe<TsWhereInput>;
+  us_bank_account?: InputMaybe<TsWhereStripe_PaymentMethodUsBankAccountInput>;
+};
+
+export type TsWhereStripe_CustomerWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  address?: InputMaybe<TsWhereStripe_AddressInput>;
+  balance?: InputMaybe<TsWhereIntegerInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  delinquent?: InputMaybe<TsWhereBooleanInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  discount?: InputMaybe<TsWhereStripe_DiscountInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice_prefix?: InputMaybe<TsWhereStringInput>;
+  invoice_settings?: InputMaybe<TsWhereStripe_InvoiceSettingCustomerSettingInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  next_invoice_sequence?: InputMaybe<TsWhereIntegerInput>;
+  object?: InputMaybe<TsWhereInput>;
+  phone?: InputMaybe<TsWhereStringInput>;
+  preferred_locales?: InputMaybe<TsWhereStripe_CustomerPreferredLocalesInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  sources?: InputMaybe<TsWhereStripe_CustomerSourcesInput>;
+  subscriptions?: InputMaybe<TsWhereStripe_CustomerSubscriptionsInput>;
+  tax?: InputMaybe<TsWhereStripe_CustomerTaxInput>;
+  tax_exempt?: InputMaybe<TsWhereInput>;
+  tax_ids?: InputMaybe<TsWhereStripe_CustomerTaxIdsInput>;
+};
+
+export type TsWhereStripe_InvoiceSettingCustomerSettingInput = {
+  custom_fields?: InputMaybe<TsWhereStripe_InvoiceSettingCustomFieldInput>;
+  footer?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_CustomerPreferredLocalesInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_CustomerSourcesInput = {
+  data?: InputMaybe<TsWhereStripe_CustomerDataInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_CustomerDataInput = {
+  created?: InputMaybe<TsWhereIntegerInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  payment_amount?: InputMaybe<TsWhereIntegerInput>;
+  payment_currency?: InputMaybe<TsWhereStringInput>;
+  reusable?: InputMaybe<TsWhereBooleanInput>;
+  used?: InputMaybe<TsWhereBooleanInput>;
+  username?: InputMaybe<TsWhereStringInput>;
+  account_holder_name?: InputMaybe<TsWhereStringInput>;
+  account_holder_type?: InputMaybe<TsWhereStringInput>;
+  account_type?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  default_for_currency?: InputMaybe<TsWhereBooleanInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+  active?: InputMaybe<TsWhereBooleanInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_received?: InputMaybe<TsWhereIntegerInput>;
+  bitcoin_amount?: InputMaybe<TsWhereIntegerInput>;
+  bitcoin_amount_received?: InputMaybe<TsWhereIntegerInput>;
+  bitcoin_uri?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  filled?: InputMaybe<TsWhereBooleanInput>;
+  inbound_address?: InputMaybe<TsWhereStringInput>;
+  payment?: InputMaybe<TsWhereStringInput>;
+  refund_address?: InputMaybe<TsWhereStringInput>;
+  transactions?: InputMaybe<TsWhereStripe_BitcoinReceiverTransactionsInput>;
+  uncaptured_funds?: InputMaybe<TsWhereBooleanInput>;
+  used_for_payment?: InputMaybe<TsWhereBooleanInput>;
+  address_city?: InputMaybe<TsWhereStringInput>;
+  address_country?: InputMaybe<TsWhereStringInput>;
+  address_line1?: InputMaybe<TsWhereStringInput>;
+  address_line1_check?: InputMaybe<TsWhereStringInput>;
+  address_line2?: InputMaybe<TsWhereStringInput>;
+  address_state?: InputMaybe<TsWhereStringInput>;
+  address_zip?: InputMaybe<TsWhereStringInput>;
+  address_zip_check?: InputMaybe<TsWhereStringInput>;
+  brand?: InputMaybe<TsWhereStringInput>;
+  cvc_check?: InputMaybe<TsWhereStringInput>;
+  dynamic_last4?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  tokenization_method?: InputMaybe<TsWhereStringInput>;
+  ach_credit_transfer?: InputMaybe<TsWhereStripe_SourceTypeAchCreditTransferInput>;
+  ach_debit?: InputMaybe<TsWhereStripe_SourceTypeAchDebitInput>;
+  acss_debit?: InputMaybe<TsWhereStripe_SourceTypeAcssDebitInput>;
+  alipay?: InputMaybe<TsWhereStripe_SourceTypeAlipayInput>;
+  au_becs_debit?: InputMaybe<TsWhereStripe_SourceTypeAuBecsDebitInput>;
+  bancontact?: InputMaybe<TsWhereStripe_SourceTypeBancontactInput>;
+  card?: InputMaybe<TsWhereStripe_SourceTypeCardInput>;
+  card_present?: InputMaybe<TsWhereStripe_SourceTypeCardPresentInput>;
+  client_secret?: InputMaybe<TsWhereStringInput>;
+  code_verification?: InputMaybe<TsWhereStripe_SourceCodeVerificationFlowInput>;
+  eps?: InputMaybe<TsWhereStripe_SourceTypeEpsInput>;
+  flow?: InputMaybe<TsWhereStringInput>;
+  giropay?: InputMaybe<TsWhereStripe_SourceTypeGiropayInput>;
+  ideal?: InputMaybe<TsWhereStripe_SourceTypeIdealInput>;
+  klarna?: InputMaybe<TsWhereStripe_SourceTypeKlarnaInput>;
+  multibanco?: InputMaybe<TsWhereStripe_SourceTypeMultibancoInput>;
+  owner?: InputMaybe<TsWhereStripe_SourceOwnerInput>;
+  p24?: InputMaybe<TsWhereStripe_SourceTypeP24Input>;
+  receiver?: InputMaybe<TsWhereStripe_SourceReceiverFlowInput>;
+  redirect?: InputMaybe<TsWhereStripe_SourceRedirectFlowInput>;
+  sepa_debit?: InputMaybe<TsWhereStripe_SourceTypeSepaDebitInput>;
+  sofort?: InputMaybe<TsWhereStripe_SourceTypeSofortInput>;
+  source_order?: InputMaybe<TsWhereStripe_SourceOrderInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  three_d_secure?: InputMaybe<TsWhereStripe_SourceTypeThreeDSecureInput>;
+  type?: InputMaybe<TsWhereInput>;
+  usage?: InputMaybe<TsWhereStringInput>;
+  wechat?: InputMaybe<TsWhereStripe_SourceTypeWechatInput>;
+};
+
+export type TsWhereStripe_CustomerSubscriptionsInput = {
+  data?: InputMaybe<TsWhereStripe_SubscriptionInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SubscriptionInput = {
+  application_fee_percent?: InputMaybe<TsWhereNumberInput>;
+  automatic_tax?: InputMaybe<TsWhereStripe_SubscriptionAutomaticTaxInput>;
+  billing_cycle_anchor?: InputMaybe<TsWhereIntegerInput>;
+  billing_thresholds?: InputMaybe<TsWhereStripe_SubscriptionBillingThresholdsInput>;
+  cancel_at?: InputMaybe<TsWhereIntegerInput>;
+  cancel_at_period_end?: InputMaybe<TsWhereBooleanInput>;
+  canceled_at?: InputMaybe<TsWhereIntegerInput>;
+  collection_method?: InputMaybe<TsWhereInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  current_period_end?: InputMaybe<TsWhereIntegerInput>;
+  current_period_start?: InputMaybe<TsWhereIntegerInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  days_until_due?: InputMaybe<TsWhereIntegerInput>;
+  default_tax_rates?: InputMaybe<TsWhereStripe_TaxRateInput>;
+  discount?: InputMaybe<TsWhereStripe_DiscountInput>;
+  ended_at?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  items?: InputMaybe<TsWhereStripe_CustomerItemsInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  next_pending_invoice_item_invoice?: InputMaybe<TsWhereIntegerInput>;
+  object?: InputMaybe<TsWhereInput>;
+  pause_collection?: InputMaybe<TsWhereStripe_SubscriptionsResourcePauseCollectionInput>;
+  payment_settings?: InputMaybe<TsWhereStripe_SubscriptionsResourcePaymentSettingsInput>;
+  pending_invoice_item_interval?: InputMaybe<TsWhereStripe_SubscriptionPendingInvoiceItemIntervalInput>;
+  pending_update?: InputMaybe<TsWhereStripe_SubscriptionsResourcePendingUpdateInput>;
+  start_date?: InputMaybe<TsWhereIntegerInput>;
+  status?: InputMaybe<TsWhereInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_SubscriptionTransferDataInput>;
+  trial_end?: InputMaybe<TsWhereIntegerInput>;
+  trial_start?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_CustomerItemsInput = {
+  data?: InputMaybe<TsWhereStripe_SubscriptionItemInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_CustomerTaxInput = {
+  automatic_tax?: InputMaybe<TsWhereInput>;
+  ip_address?: InputMaybe<TsWhereStringInput>;
+  location?: InputMaybe<TsWhereStripe_CustomerTaxLocationInput>;
+};
+
+export type TsWhereStripe_CustomerTaxLocationInput = {
+  country?: InputMaybe<TsWhereStringInput>;
+  source?: InputMaybe<TsWhereInput>;
+  state?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_CustomerTaxIdsInput = {
+  data?: InputMaybe<TsWhereStripe_TaxIdInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_TaxIdInput = {
+  country?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  type?: InputMaybe<TsWhereInput>;
+  value?: InputMaybe<TsWhereStringInput>;
+  verification?: InputMaybe<TsWhereStripe_TaxIdVerificationInput>;
+};
+
+export type TsWhereStripe_SetupIntentInput = {
+  application?: InputMaybe<TsWhereStripe_ApplicationWrappedStringUnionInput>;
+  cancellation_reason?: InputMaybe<TsWhereInput>;
+  client_secret?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  last_setup_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
+  latest_attempt?: InputMaybe<TsWhereStripe_SetupAttemptWrappedStringUnionInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  mandate?: InputMaybe<TsWhereStripe_MandateWrappedStringUnionInput>;
+  next_action?: InputMaybe<TsWhereStripe_SetupIntentNextActionInput>;
+  object?: InputMaybe<TsWhereInput>;
+  on_behalf_of?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+  payment_method?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  payment_method_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsInput>;
+  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
+  single_use_mandate?: InputMaybe<TsWhereStripe_MandateWrappedStringUnionInput>;
+  status?: InputMaybe<TsWhereInput>;
+  usage?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SetupAttemptWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  payment_method_details?: InputMaybe<TsWhereStripe_SetupAttemptPaymentMethodDetailsInput>;
+  setup_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+  usage?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SetupAttemptPaymentMethodDetailsInput = {
+  bancontact?: InputMaybe<TsWhereStripe_SetupAttemptPaymentMethodDetailsBancontactInput>;
+  card?: InputMaybe<TsWhereStripe_SetupAttemptPaymentMethodDetailsCardInput>;
+  ideal?: InputMaybe<TsWhereStripe_SetupAttemptPaymentMethodDetailsIdealInput>;
+  sofort?: InputMaybe<TsWhereStripe_SetupAttemptPaymentMethodDetailsSofortInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SetupAttemptPaymentMethodDetailsBancontactInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  preferred_language?: InputMaybe<TsWhereInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SetupAttemptPaymentMethodDetailsCardInput = {
+  three_d_secure?: InputMaybe<TsWhereStripe_ThreeDSecureDetailsInput>;
+};
+
+export type TsWhereStripe_SetupAttemptPaymentMethodDetailsIdealInput = {
+  bank?: InputMaybe<TsWhereInput>;
+  bic?: InputMaybe<TsWhereInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SetupAttemptPaymentMethodDetailsSofortInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  preferred_language?: InputMaybe<TsWhereInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_BankAccountStripe_CardStripe_SourceUnionInput = {
+  account_holder_name?: InputMaybe<TsWhereStringInput>;
+  account_holder_type?: InputMaybe<TsWhereStringInput>;
+  account_type?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  default_for_currency?: InputMaybe<TsWhereBooleanInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+  address_city?: InputMaybe<TsWhereStringInput>;
+  address_country?: InputMaybe<TsWhereStringInput>;
+  address_line1?: InputMaybe<TsWhereStringInput>;
+  address_line1_check?: InputMaybe<TsWhereStringInput>;
+  address_line2?: InputMaybe<TsWhereStringInput>;
+  address_state?: InputMaybe<TsWhereStringInput>;
+  address_zip?: InputMaybe<TsWhereStringInput>;
+  address_zip_check?: InputMaybe<TsWhereStringInput>;
+  brand?: InputMaybe<TsWhereStringInput>;
+  cvc_check?: InputMaybe<TsWhereStringInput>;
+  dynamic_last4?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  tokenization_method?: InputMaybe<TsWhereStringInput>;
+  ach_credit_transfer?: InputMaybe<TsWhereStripe_SourceTypeAchCreditTransferInput>;
+  ach_debit?: InputMaybe<TsWhereStripe_SourceTypeAchDebitInput>;
+  acss_debit?: InputMaybe<TsWhereStripe_SourceTypeAcssDebitInput>;
+  alipay?: InputMaybe<TsWhereStripe_SourceTypeAlipayInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  au_becs_debit?: InputMaybe<TsWhereStripe_SourceTypeAuBecsDebitInput>;
+  bancontact?: InputMaybe<TsWhereStripe_SourceTypeBancontactInput>;
+  card?: InputMaybe<TsWhereStripe_SourceTypeCardInput>;
+  card_present?: InputMaybe<TsWhereStripe_SourceTypeCardPresentInput>;
+  client_secret?: InputMaybe<TsWhereStringInput>;
+  code_verification?: InputMaybe<TsWhereStripe_SourceCodeVerificationFlowInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  eps?: InputMaybe<TsWhereStripe_SourceTypeEpsInput>;
+  flow?: InputMaybe<TsWhereStringInput>;
+  giropay?: InputMaybe<TsWhereStripe_SourceTypeGiropayInput>;
+  ideal?: InputMaybe<TsWhereStripe_SourceTypeIdealInput>;
+  klarna?: InputMaybe<TsWhereStripe_SourceTypeKlarnaInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  multibanco?: InputMaybe<TsWhereStripe_SourceTypeMultibancoInput>;
+  owner?: InputMaybe<TsWhereStripe_SourceOwnerInput>;
+  p24?: InputMaybe<TsWhereStripe_SourceTypeP24Input>;
+  receiver?: InputMaybe<TsWhereStripe_SourceReceiverFlowInput>;
+  redirect?: InputMaybe<TsWhereStripe_SourceRedirectFlowInput>;
+  sepa_debit?: InputMaybe<TsWhereStripe_SourceTypeSepaDebitInput>;
+  sofort?: InputMaybe<TsWhereStripe_SourceTypeSofortInput>;
+  source_order?: InputMaybe<TsWhereStripe_SourceOrderInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  three_d_secure?: InputMaybe<TsWhereStripe_SourceTypeThreeDSecureInput>;
+  type?: InputMaybe<TsWhereInput>;
+  usage?: InputMaybe<TsWhereStringInput>;
+  wechat?: InputMaybe<TsWhereStripe_SourceTypeWechatInput>;
+};
+
+export type TsWhereStripe_InvoiceLinesInput = {
+  data?: InputMaybe<TsWhereStripe_LineItemInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_OrderWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_returned?: InputMaybe<TsWhereIntegerInput>;
+  application?: InputMaybe<TsWhereStringInput>;
+  application_fee?: InputMaybe<TsWhereIntegerInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  external_coupon_code?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  items?: InputMaybe<TsWhereStripe_OrderItemInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  returns?: InputMaybe<TsWhereStripe_OrderReturnsInput>;
+  selected_shipping_method?: InputMaybe<TsWhereStringInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  shipping_methods?: InputMaybe<TsWhereStripe_ShippingMethodInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+  status_transitions?: InputMaybe<TsWhereStripe_StatusTransitionsInput>;
+  updated?: InputMaybe<TsWhereIntegerInput>;
+  upstream_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_OrderItemInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  quantity?: InputMaybe<TsWhereIntegerInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_OrderReturnsInput = {
+  data?: InputMaybe<TsWhereStripe_OrderReturnInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_OrderReturnInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  items?: InputMaybe<TsWhereStripe_OrderItemInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_ShippingMethodInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  delivery_estimate?: InputMaybe<TsWhereStripe_DeliveryEstimateInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_DeliveryEstimateInput = {
+  date?: InputMaybe<TsWhereStringInput>;
+  earliest?: InputMaybe<TsWhereStringInput>;
+  latest?: InputMaybe<TsWhereStringInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_StatusTransitionsInput = {
+  canceled?: InputMaybe<TsWhereIntegerInput>;
+  fulfiled?: InputMaybe<TsWhereIntegerInput>;
+  paid?: InputMaybe<TsWhereIntegerInput>;
+  returned?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_PaymentIntentRefundsInput = {
+  data?: InputMaybe<TsWhereStripe_RefundInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_TransferWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_reversed?: InputMaybe<TsWhereIntegerInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  reversals?: InputMaybe<TsWhereStripe_TransferReversalsInput>;
+  reversed?: InputMaybe<TsWhereBooleanInput>;
+  source_type?: InputMaybe<TsWhereStringInput>;
+  transfer_group?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_TransferReversalsInput = {
+  data?: InputMaybe<TsWhereStripe_TransferReversalInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_TransferReversalInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
 };
 
 export type TsWhereAssetRelationshipInput = {
@@ -1363,7 +5116,7 @@ export type Stripe_AlipayAccount = {
   __typename?: 'Stripe_AlipayAccount';
   /** Time at which the object was created. Measured in seconds since the Unix epoch. */
   created?: Maybe<Scalars['Int']>;
-  customer?: Maybe<Stripe_AlipayAccountCustomerProperty>;
+  customer?: Maybe<Scalars['String']>;
   /** Uniquely identifies the account and will be the same across all Alipay account objects that are linked to the same Alipay account. */
   fingerprint?: Maybe<Scalars['String']>;
   /** Unique identifier for the object. */
@@ -1386,20 +5139,6 @@ export type Stripe_AlipayAccount = {
   username?: Maybe<Scalars['String']>;
 };
 
-export type Stripe_AlipayAccountCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
-
-export type Stripe_DeletedCustomer = {
-  __typename?: 'Stripe_DeletedCustomer';
-  /** Unique identifier for the object. */
-  id?: Maybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_DeletedCustomerObjectProperty>;
-};
-
-export enum Stripe_DeletedCustomerObjectProperty {
-  Customer = 'customer'
-}
-
 export enum Stripe_AlipayAccountObjectProperty {
   AlipayAccount = 'alipay_account'
 }
@@ -1421,7 +5160,7 @@ export type Stripe_BankAccount = {
   country?: Maybe<Scalars['String']>;
   /** Three-letter [ISO code for the currency](https://stripe.com/docs/payouts) paid out to the bank account. */
   currency?: Maybe<Scalars['String']>;
-  customer?: Maybe<Stripe_BankAccountCustomerProperty>;
+  customer?: Maybe<Scalars['String']>;
   /** Whether this bank account is the default external account for its currency. */
   default_for_currency?: Maybe<Scalars['Boolean']>;
   /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
@@ -1986,7 +5725,7 @@ export type Stripe_Card = {
   country?: Maybe<Scalars['String']>;
   /** Three-letter [ISO code for currency](https://stripe.com/docs/payouts). Only applicable on accounts (not customers or recipients). The card can be used as a transfer destination for funds in this currency. */
   currency?: Maybe<Scalars['String']>;
-  customer?: Maybe<Stripe_CardCustomerProperty>;
+  customer?: Maybe<Scalars['String']>;
   /** If a CVC was provided, results of the check: `pass`, `fail`, `unavailable`, or `unchecked`. A result of unchecked indicates that CVC was provided but hasn't been checked yet. Checks are typically performed when attaching a card to a Customer object, or when creating a charge. For more details, see [Check if a card is valid without a charge](https://support.stripe.com/questions/check-if-a-card-is-valid-without-a-charge). */
   cvc_check?: Maybe<Scalars['String']>;
   /** Whether this card is the default external account for its currency. */
@@ -2028,8 +5767,6 @@ export enum Stripe_CardAvailablePayoutMethodsProperty {
   Instant = 'instant',
   Standard = 'standard'
 }
-
-export type Stripe_CardCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
 
 export enum Stripe_CardObjectProperty {
   Card = 'card'
@@ -2476,8 +6213,6 @@ export enum Stripe_BankAccountAvailablePayoutMethodsProperty {
   Instant = 'instant',
   Standard = 'standard'
 }
-
-export type Stripe_BankAccountCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
 
 export enum Stripe_BankAccountObjectProperty {
   BankAccount = 'bank_account'
@@ -2981,7 +6716,7 @@ export type Stripe_Discount = {
   /** The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode. Will not be present for subscription mode. */
   checkout_session?: Maybe<Scalars['String']>;
   coupon?: Maybe<Stripe_Coupon>;
-  customer?: Maybe<Stripe_DiscountCustomerProperty>;
+  customer?: Maybe<Scalars['String']>;
   /** If the coupon has a duration of `repeating`, the date that this discount will end. If the coupon has a duration of `once` or `forever`, this attribute will be null. */
   end?: Maybe<Scalars['Int']>;
   /** The ID of the discount object. Discounts cannot be fetched by ID. Use `expand[]=discounts` in API calls to expand discount IDs in an array. */
@@ -3050,8 +6785,6 @@ export enum Stripe_CouponObjectProperty {
   Coupon = 'coupon'
 }
 
-export type Stripe_DiscountCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
-
 export enum Stripe_DiscountObjectProperty {
   Discount = 'discount'
 }
@@ -3086,6 +6819,18 @@ export type Stripe_PromotionCode = {
 };
 
 export type Stripe_PromotionCodeCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
+
+export type Stripe_DeletedCustomer = {
+  __typename?: 'Stripe_DeletedCustomer';
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_DeletedCustomerObjectProperty>;
+};
+
+export enum Stripe_DeletedCustomerObjectProperty {
+  Customer = 'customer'
+}
 
 export enum Stripe_PromotionCodeObjectProperty {
   PromotionCode = 'promotion_code'
@@ -3818,7 +7563,7 @@ export type Stripe_ApiErrors = {
   type?: Maybe<Stripe_ApiErrorsTypeProperty>;
 };
 
-export type Stripe_PaymentIntent = {
+export type Stripe_PaymentIntent = TsSearchable & {
   __typename?: 'Stripe_PaymentIntent';
   /** Amount intended to be collected by this PaymentIntent. A positive integer representing how much to charge in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal) (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency). The minimum amount is $0.50 US or [equivalent in charge currency](https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts). The amount value supports up to eight digits (e.g., a value of 99999999 for a USD charge of $999,999.99). */
   amount?: Maybe<Scalars['Int']>;
@@ -3856,7 +7601,7 @@ export type Stripe_PaymentIntent = {
   description?: Maybe<Scalars['String']>;
   /** Unique identifier for the object. */
   id?: Maybe<Scalars['String']>;
-  invoice?: Maybe<Stripe_PaymentIntentInvoiceProperty>;
+  invoice?: Maybe<Stripe_Invoice>;
   last_payment_error?: Maybe<Stripe_ApiErrors>;
   /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
   livemode?: Maybe<Scalars['Boolean']>;
@@ -3896,6 +7641,9 @@ export type Stripe_PaymentIntent = {
   session?: Maybe<Stripe_CheckoutSession>;
   /** The ShipEngine label associated with this payment. */
   shipment?: Maybe<ShipEngine_Label>;
+  _shapeId?: Maybe<Scalars['String']>;
+  _id?: Maybe<Scalars['ID']>;
+  searchSummary?: Maybe<Scalars['String']>;
 };
 
 export type Stripe_PaymentIntentApplicationProperty = WrappedString | Stripe_Application;
@@ -3956,7 +7704,7 @@ export type Stripe_Charge = {
   created?: Maybe<Scalars['Int']>;
   /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
   currency?: Maybe<Scalars['String']>;
-  customer?: Maybe<Stripe_ChargeCustomerProperty>;
+  customer?: Maybe<Scalars['String']>;
   /** An arbitrary string attached to the object. Often useful for displaying to users. */
   description?: Maybe<Scalars['String']>;
   /** Whether the charge has been disputed. */
@@ -7292,8 +11040,6 @@ export enum Stripe_ApplicationFeeRefundsObjectProperty {
 
 export type Stripe_ChargeBalanceTransactionProperty = WrappedString | Stripe_BalanceTransaction;
 
-export type Stripe_ChargeCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
-
 export type Stripe_ChargeFailureBalanceTransactionProperty = WrappedString | Stripe_BalanceTransaction;
 
 export type Stripe_ChargeFraudDetails = {
@@ -7348,7 +11094,7 @@ export type Stripe_Invoice = {
   customer_name?: Maybe<Scalars['String']>;
   /** The customer's phone number. Until the invoice is finalized, this field will equal `customer.phone`. Once the invoice is finalized, this field will no longer be updated. */
   customer_phone?: Maybe<Scalars['String']>;
-  customer_shipping?: Maybe<Scalars['JSONObject']>;
+  customer_shipping?: Maybe<Stripe_Shipping>;
   /** The customer's tax exempt status. Until the invoice is finalized, this field will equal `customer.tax_exempt`. Once the invoice is finalized, this field will no longer be updated. */
   customer_tax_exempt?: Maybe<Stripe_InvoiceCustomerTaxExemptProperty>;
   /** The customer's tax IDs. Until the invoice is finalized, this field will contain the same tax IDs as `customer.tax_ids`. Once the invoice is finalized, this field will no longer be updated. */
@@ -7360,8 +11106,7 @@ export type Stripe_Invoice = {
   /** An arbitrary string attached to the object. Often useful for displaying to users. Referenced as 'memo' in the Dashboard. */
   description?: Maybe<Scalars['String']>;
   discount?: Maybe<Stripe_Discount>;
-  /** The discounts applied to the invoice. Line item discounts are applied before invoice discounts. Use `expand[]=discounts` to expand each discount. */
-  discounts?: Maybe<Array<Maybe<Stripe_InvoiceDiscountsProperty>>>;
+  discounts?: Maybe<Array<Maybe<Scalars['String']>>>;
   /** The date on which payment for this invoice is due. This value will be `null` for invoices where `collection_method=charge_automatically`. */
   due_date?: Maybe<Scalars['Int']>;
   /** Ending customer balance after the invoice is finalized. Invoices are finalized approximately an hour after successful webhook delivery or when payment collection is attempted for the invoice. If the invoice has not been finalized yet, this will be null. */
@@ -7673,37 +11418,6 @@ export enum Stripe_TaxRateTaxTypeProperty {
   Vat = 'vat'
 }
 
-export type Stripe_InvoiceDiscountsProperty = WrappedString | Stripe_Discount | Stripe_DeletedDiscount;
-
-export type Stripe_DeletedDiscount = {
-  __typename?: 'Stripe_DeletedDiscount';
-  /** The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode. Will not be present for subscription mode. */
-  checkout_session?: Maybe<Scalars['String']>;
-  coupon?: Maybe<Stripe_Coupon>;
-  customer?: Maybe<Stripe_DeletedDiscountCustomerProperty>;
-  /** The ID of the discount object. Discounts cannot be fetched by ID. Use `expand[]=discounts` in API calls to expand discount IDs in an array. */
-  id?: Maybe<Scalars['String']>;
-  /** The invoice that the discount's coupon was applied to, if it was applied directly to a particular invoice. */
-  invoice?: Maybe<Scalars['String']>;
-  /** The invoice item `id` (or invoice line item `id` for invoice line items of type='subscription') that the discount's coupon was applied to, if it was applied directly to a particular invoice item or invoice line item. */
-  invoice_item?: Maybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_DeletedDiscountObjectProperty>;
-  promotion_code?: Maybe<Stripe_DeletedDiscountPromotionCodeProperty>;
-  /** Date that the coupon was applied. */
-  start?: Maybe<Scalars['Int']>;
-  /** The subscription that this coupon is applied to, if it is applied to a particular subscription. */
-  subscription?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_DeletedDiscountCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
-
-export enum Stripe_DeletedDiscountObjectProperty {
-  Discount = 'discount'
-}
-
-export type Stripe_DeletedDiscountPromotionCodeProperty = WrappedString | Stripe_PromotionCode;
-
 /** The individual line items that make up the invoice. `lines` is sorted as follows: invoice items in reverse chronological order, followed by the subscription, if any. */
 export type Stripe_InvoiceLinesProperty = {
   __typename?: 'Stripe_InvoiceLinesProperty';
@@ -7768,6 +11482,33 @@ export type Stripe_DiscountsResourceDiscountAmount = {
 };
 
 export type Stripe_DiscountsResourceDiscountAmountDiscountProperty = WrappedString | Stripe_Discount | Stripe_DeletedDiscount;
+
+export type Stripe_DeletedDiscount = {
+  __typename?: 'Stripe_DeletedDiscount';
+  /** The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode. Will not be present for subscription mode. */
+  checkout_session?: Maybe<Scalars['String']>;
+  coupon?: Maybe<Stripe_Coupon>;
+  customer?: Maybe<Scalars['String']>;
+  /** The ID of the discount object. Discounts cannot be fetched by ID. Use `expand[]=discounts` in API calls to expand discount IDs in an array. */
+  id?: Maybe<Scalars['String']>;
+  /** The invoice that the discount's coupon was applied to, if it was applied directly to a particular invoice. */
+  invoice?: Maybe<Scalars['String']>;
+  /** The invoice item `id` (or invoice line item `id` for invoice line items of type='subscription') that the discount's coupon was applied to, if it was applied directly to a particular invoice item or invoice line item. */
+  invoice_item?: Maybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_DeletedDiscountObjectProperty>;
+  promotion_code?: Maybe<Stripe_DeletedDiscountPromotionCodeProperty>;
+  /** Date that the coupon was applied. */
+  start?: Maybe<Scalars['Int']>;
+  /** The subscription that this coupon is applied to, if it is applied to a particular subscription. */
+  subscription?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_DeletedDiscountObjectProperty {
+  Discount = 'discount'
+}
+
+export type Stripe_DeletedDiscountPromotionCodeProperty = WrappedString | Stripe_PromotionCode;
 
 export type Stripe_LineItemDiscountsProperty = WrappedString | Stripe_Discount;
 
@@ -7965,7 +11706,7 @@ export type Stripe_Quote = {
   created?: Maybe<Scalars['Int']>;
   /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
   currency?: Maybe<Scalars['String']>;
-  customer?: Maybe<Stripe_QuoteCustomerProperty>;
+  customer?: Maybe<Scalars['String']>;
   /** The tax rates applied to this quote. */
   default_tax_rates?: Maybe<Array<Maybe<Stripe_QuoteDefaultTaxRatesProperty>>>;
   /** A description that will be displayed on the quote PDF. */
@@ -8137,8 +11878,6 @@ export enum Stripe_ItemObjectProperty {
 export enum Stripe_QuotesResourceUpfrontLineItemsObjectProperty {
   List = 'list'
 }
-
-export type Stripe_QuoteCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
 
 export type Stripe_QuoteDefaultTaxRatesProperty = WrappedString | Stripe_TaxRate;
 
@@ -9092,7 +12831,7 @@ export type Stripe_Order = {
   created?: Maybe<Scalars['Int']>;
   /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
   currency?: Maybe<Scalars['String']>;
-  customer?: Maybe<Stripe_OrderCustomerProperty>;
+  customer?: Maybe<Scalars['String']>;
   /** The email address of the customer placing the order. */
   email?: Maybe<Scalars['String']>;
   /** External coupon code to load for this order. */
@@ -9124,8 +12863,6 @@ export type Stripe_Order = {
 };
 
 export type Stripe_OrderChargeProperty = WrappedString | Stripe_Charge;
-
-export type Stripe_OrderCustomerProperty = WrappedString | Stripe_Customer | Stripe_DeletedCustomer;
 
 export type Stripe_OrderItem = {
   __typename?: 'Stripe_OrderItem';
@@ -10145,8 +13882,6 @@ export enum Stripe_PaymentIntentConfirmationMethodProperty {
   Automatic = 'automatic',
   Manual = 'manual'
 }
-
-export type Stripe_PaymentIntentInvoiceProperty = WrappedString | Stripe_Invoice;
 
 export type Stripe_PaymentIntentNextAction = {
   __typename?: 'Stripe_PaymentIntentNextAction';
@@ -12836,6 +16571,21 @@ export enum Stripe_ListProductsResponseObjectProperty {
   List = 'list'
 }
 
+export type Stripe_ListPaymentIntentsResponse = {
+  __typename?: 'Stripe_ListPaymentIntentsResponse';
+  data?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more?: Maybe<Scalars['Boolean']>;
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object?: Maybe<Stripe_ListPaymentIntentsResponseObjectProperty>;
+  /** The URL where this list can be accessed. */
+  url?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_ListPaymentIntentsResponseObjectProperty {
+  List = 'list'
+}
+
 /** Asset search results */
 export type AssetSearchResults = {
   __typename?: 'AssetSearchResults';
@@ -12888,7 +16638,13 @@ export type WithContext = {
   /** Get the signed in user's subscriptions from Stripe */
   getMySubscriptions?: Maybe<Array<Maybe<Stripe_Subscription>>>;
   /** Get the signed-in user's payments from Stripe */
+  getMyPayments_UNINDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** Get the signed-in user's payments from Stripe */
+  getMyPayments_INDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** Get the signed-in user's payments from Stripe */
   getMyPayments?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** Get the signed-in user's payments from Stripe */
+  getMyPaymentsIndexed?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
   /** Get a profile by ID */
   getProfile?: Maybe<Profile>;
   /** Returns a list of profiles in natural order. */
@@ -12900,6 +16656,8 @@ export type WithContext = {
   /** Get a loyalty card from Voucherify */
   getMyLoyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
   getMyNewsletterSubscriptions?: Maybe<Array<Maybe<ProfileNewsletterStatus>>>;
+  /** <p>Returns a list of PaymentIntents.</p> */
+  listPaymentIntents?: Maybe<Stripe_ListPaymentIntentsResponse>;
   searchAssetIndex?: Maybe<AssetSearchResults>;
   searchTsStaticSiteIndex?: Maybe<TsStaticSiteSearchResults>;
   searchProfileIndex?: Maybe<ProfileSearchResults>;
@@ -13023,12 +16781,42 @@ export type WithContextGetMySubscriptionsArgs = {
 
 
 /** This query allow you to pass context to your queries */
+export type WithContextGetMyPayments_UnindexedArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Float']>;
+  created?: InputMaybe<Scalars['JSON']>;
+  startingAfter?: InputMaybe<Scalars['String']>;
+  endingBefore?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetMyPayments_IndexedArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Float']>;
+  created?: InputMaybe<Scalars['JSON']>;
+  startingAfter?: InputMaybe<Scalars['String']>;
+  endingBefore?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
 export type WithContextGetMyPaymentsArgs = {
   expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   limit?: InputMaybe<Scalars['Float']>;
   created?: InputMaybe<Scalars['JSON']>;
   startingAfter?: InputMaybe<Scalars['String']>;
   endingBefore?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetMyPaymentsIndexedArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Float']>;
+  created?: InputMaybe<Scalars['JSON']>;
+  starting_after?: InputMaybe<Scalars['String']>;
+  ending_before?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -13072,6 +16860,17 @@ export type WithContextStripe_ListProductsArgs = {
 export type WithContextStripe_GetProductArgs = {
   expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   id: Scalars['String'];
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextListPaymentIntentsArgs = {
+  created?: InputMaybe<Scalars['JSON']>;
+  customer?: InputMaybe<Scalars['String']>;
+  ending_before?: InputMaybe<Scalars['String']>;
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  starting_after?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -13751,7 +17550,7 @@ export type Stripe_InvoiceInput = {
   customer_name?: InputMaybe<Scalars['String']>;
   /** The customer's phone number. Until the invoice is finalized, this field will equal `customer.phone`. Once the invoice is finalized, this field will no longer be updated. */
   customer_phone?: InputMaybe<Scalars['String']>;
-  customer_shipping?: InputMaybe<Scalars['JSONObject']>;
+  customer_shipping?: InputMaybe<Stripe_ShippingInput>;
   /** The customer's tax exempt status. Until the invoice is finalized, this field will equal `customer.tax_exempt`. Once the invoice is finalized, this field will no longer be updated. */
   customer_tax_exempt?: InputMaybe<UpdateProfileResultCustomerTaxExempt>;
   /** The customer's tax IDs. Until the invoice is finalized, this field will contain the same tax IDs as `customer.tax_ids`. Once the invoice is finalized, this field will no longer be updated. */
@@ -13763,8 +17562,7 @@ export type Stripe_InvoiceInput = {
   /** An arbitrary string attached to the object. Often useful for displaying to users. Referenced as 'memo' in the Dashboard. */
   description?: InputMaybe<Scalars['String']>;
   discount?: InputMaybe<Stripe_DiscountInput>;
-  /** The discounts applied to the invoice. Line item discounts are applied before invoice discounts. Use `expand[]=discounts` to expand each discount. */
-  discounts?: InputMaybe<Array<InputMaybe<DeletedDiscountDiscountWrappedStringInputUnion>>>;
+  discounts?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   /** The date on which payment for this invoice is due. This value will be `null` for invoices where `collection_method=charge_automatically`. */
   due_date?: InputMaybe<Scalars['Int']>;
   /** Ending customer balance after the invoice is finalized. Invoices are finalized approximately an hour after successful webhook delivery or when payment collection is attempted for the invoice. If the invoice has not been finalized yet, this will be null. */
@@ -13947,7 +17745,7 @@ export type AlipayAccountBankAccountBitcoinReceiverCardSourceWrappedStringInputU
 export type Stripe_AlipayAccountInput = {
   /** Time at which the object was created. Measured in seconds since the Unix epoch. */
   created?: InputMaybe<Scalars['Int']>;
-  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
+  customer?: InputMaybe<Scalars['String']>;
   /** Uniquely identifies the account and will be the same across all Alipay account objects that are linked to the same Alipay account. */
   fingerprint?: InputMaybe<Scalars['String']>;
   /** Unique identifier for the object. */
@@ -13970,25 +17768,6 @@ export type Stripe_AlipayAccountInput = {
   username?: InputMaybe<Scalars['String']>;
 };
 
-export type CustomerDeletedCustomerWrappedStringInputUnion = {
-  wrappedString?: InputMaybe<WrappedStringInput>;
-  customer?: InputMaybe<Stripe_CustomerInput>;
-  deletedCustomer?: InputMaybe<Stripe_DeletedCustomerInput>;
-};
-
-export type Stripe_DeletedCustomerInput = {
-  /** Always true for a deleted object */
-  deleted?: InputMaybe<UpdateProfileResultDeleted>;
-  /** Unique identifier for the object. */
-  id?: InputMaybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: InputMaybe<UpdateProfileResultObject>;
-};
-
-export enum UpdateProfileResultDeleted {
-  BooleanTrue = 'booleanTrue'
-}
-
 export enum UpdateProfileResultObject {
   Invoice = 'invoice'
 }
@@ -14009,7 +17788,7 @@ export type Stripe_BankAccountInput = {
   country?: InputMaybe<Scalars['String']>;
   /** Three-letter [ISO code for the currency](https://stripe.com/docs/payouts) paid out to the bank account. */
   currency?: InputMaybe<Scalars['String']>;
-  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
+  customer?: InputMaybe<Scalars['String']>;
   /** Whether this bank account is the default external account for its currency. */
   default_for_currency?: InputMaybe<Scalars['Boolean']>;
   /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
@@ -14597,7 +18376,7 @@ export type Stripe_CardInput = {
   country?: InputMaybe<Scalars['String']>;
   /** Three-letter [ISO code for currency](https://stripe.com/docs/payouts). Only applicable on accounts (not customers or recipients). The card can be used as a transfer destination for funds in this currency. */
   currency?: InputMaybe<Scalars['String']>;
-  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
+  customer?: InputMaybe<Scalars['String']>;
   /** If a CVC was provided, results of the check: `pass`, `fail`, `unavailable`, or `unchecked`. A result of unchecked indicates that CVC was provided but hasn't been checked yet. Checks are typically performed when attaching a card to a Customer object, or when creating a charge. For more details, see [Check if a card is valid without a charge](https://support.stripe.com/questions/check-if-a-card-is-valid-without-a-charge). */
   cvc_check?: InputMaybe<Scalars['String']>;
   /** Whether this card is the default external account for its currency. */
@@ -15448,7 +19227,7 @@ export type Stripe_DiscountInput = {
   /** The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode. Will not be present for subscription mode. */
   checkout_session?: InputMaybe<Scalars['String']>;
   coupon?: InputMaybe<Stripe_CouponInput>;
-  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
+  customer?: InputMaybe<Scalars['String']>;
   /** If the coupon has a duration of `repeating`, the date that this discount will end. If the coupon has a duration of `once` or `forever`, this attribute will be null. */
   end?: InputMaybe<Scalars['Int']>;
   /** The ID of the discount object. Discounts cannot be fetched by ID. Use `expand[]=discounts` in API calls to expand discount IDs in an array. */
@@ -15541,6 +19320,25 @@ export type Stripe_PromotionCodeInput = {
   /** Number of times this promotion code has been used. */
   times_redeemed?: InputMaybe<Scalars['Int']>;
 };
+
+export type CustomerDeletedCustomerWrappedStringInputUnion = {
+  wrappedString?: InputMaybe<WrappedStringInput>;
+  customer?: InputMaybe<Stripe_CustomerInput>;
+  deletedCustomer?: InputMaybe<Stripe_DeletedCustomerInput>;
+};
+
+export type Stripe_DeletedCustomerInput = {
+  /** Always true for a deleted object */
+  deleted?: InputMaybe<UpdateProfileResultDeleted>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+};
+
+export enum UpdateProfileResultDeleted {
+  BooleanTrue = 'booleanTrue'
+}
 
 export type Stripe_PromotionCodesResourceRestrictionsInput = {
   /** A Boolean indicating if the Promotion Code should only be redeemed for Customers without any successful payments or invoices */
@@ -16225,7 +20023,7 @@ export type Stripe_PaymentIntentInput = {
   description?: InputMaybe<Scalars['String']>;
   /** Unique identifier for the object. */
   id?: InputMaybe<Scalars['String']>;
-  invoice?: InputMaybe<InvoiceWrappedStringInputUnion>;
+  invoice?: InputMaybe<Stripe_InvoiceInput>;
   last_payment_error?: InputMaybe<Stripe_ApiErrorsInput>;
   /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
   livemode?: InputMaybe<Scalars['Boolean']>;
@@ -16261,6 +20059,8 @@ export type Stripe_PaymentIntentInput = {
   transfer_data?: InputMaybe<Stripe_TransferDataInput>;
   /** A string that identifies the resulting payment as part of a group. See the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts) for details. */
   transfer_group?: InputMaybe<Scalars['String']>;
+  _shapeId?: InputMaybe<Scalars['String']>;
+  _id?: InputMaybe<Scalars['ID']>;
 };
 
 export type Stripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput = {
@@ -16316,7 +20116,7 @@ export type Stripe_ChargeInput = {
   created?: InputMaybe<Scalars['Int']>;
   /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
   currency?: InputMaybe<Scalars['String']>;
-  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
+  customer?: InputMaybe<Scalars['String']>;
   /** An arbitrary string attached to the object. Often useful for displaying to users. */
   description?: InputMaybe<Scalars['String']>;
   /** Whether the charge has been disputed. */
@@ -18462,7 +22262,7 @@ export type Stripe_OrderInput = {
   created?: InputMaybe<Scalars['Int']>;
   /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
   currency?: InputMaybe<Scalars['String']>;
-  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
+  customer?: InputMaybe<Scalars['String']>;
   /** The email address of the customer placing the order. */
   email?: InputMaybe<Scalars['String']>;
   /** External coupon code to load for this order. */
@@ -21081,34 +24881,6 @@ export type Stripe_InvoicesResourceInvoiceTaxIdInput = {
   value?: InputMaybe<Scalars['String']>;
 };
 
-export type DeletedDiscountDiscountWrappedStringInputUnion = {
-  wrappedString?: InputMaybe<WrappedStringInput>;
-  discount?: InputMaybe<Stripe_DiscountInput>;
-  deletedDiscount?: InputMaybe<Stripe_DeletedDiscountInput>;
-};
-
-export type Stripe_DeletedDiscountInput = {
-  /** The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode. Will not be present for subscription mode. */
-  checkout_session?: InputMaybe<Scalars['String']>;
-  coupon?: InputMaybe<Stripe_CouponInput>;
-  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
-  /** Always true for a deleted object */
-  deleted?: InputMaybe<UpdateProfileResultDeleted>;
-  /** The ID of the discount object. Discounts cannot be fetched by ID. Use `expand[]=discounts` in API calls to expand discount IDs in an array. */
-  id?: InputMaybe<Scalars['String']>;
-  /** The invoice that the discount's coupon was applied to, if it was applied directly to a particular invoice. */
-  invoice?: InputMaybe<Scalars['String']>;
-  /** The invoice item `id` (or invoice line item `id` for invoice line items of type='subscription') that the discount's coupon was applied to, if it was applied directly to a particular invoice item or invoice line item. */
-  invoice_item?: InputMaybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: InputMaybe<UpdateProfileResultObject>;
-  promotion_code?: InputMaybe<PromotionCodeWrappedStringInputUnion>;
-  /** Date that the coupon was applied. */
-  start?: InputMaybe<Scalars['Int']>;
-  /** The subscription that this coupon is applied to, if it is applied to a particular subscription. */
-  subscription?: InputMaybe<Scalars['String']>;
-};
-
 /** The individual line items that make up the invoice. `lines` is sorted as follows: invoice items in reverse chronological order, followed by the subscription, if any. */
 export type UpdateProfileResultOrdersLinesPropertyInput = {
   /** Details about each object. */
@@ -21167,6 +24939,34 @@ export type Stripe_DiscountsResourceDiscountAmountInput = {
   /** The amount, in %s, of the discount. */
   amount?: InputMaybe<Scalars['Int']>;
   discount?: InputMaybe<DeletedDiscountDiscountWrappedStringInputUnion>;
+};
+
+export type DeletedDiscountDiscountWrappedStringInputUnion = {
+  wrappedString?: InputMaybe<WrappedStringInput>;
+  discount?: InputMaybe<Stripe_DiscountInput>;
+  deletedDiscount?: InputMaybe<Stripe_DeletedDiscountInput>;
+};
+
+export type Stripe_DeletedDiscountInput = {
+  /** The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode. Will not be present for subscription mode. */
+  checkout_session?: InputMaybe<Scalars['String']>;
+  coupon?: InputMaybe<Stripe_CouponInput>;
+  customer?: InputMaybe<Scalars['String']>;
+  /** Always true for a deleted object */
+  deleted?: InputMaybe<UpdateProfileResultDeleted>;
+  /** The ID of the discount object. Discounts cannot be fetched by ID. Use `expand[]=discounts` in API calls to expand discount IDs in an array. */
+  id?: InputMaybe<Scalars['String']>;
+  /** The invoice that the discount's coupon was applied to, if it was applied directly to a particular invoice. */
+  invoice?: InputMaybe<Scalars['String']>;
+  /** The invoice item `id` (or invoice line item `id` for invoice line items of type='subscription') that the discount's coupon was applied to, if it was applied directly to a particular invoice item or invoice line item. */
+  invoice_item?: InputMaybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+  promotion_code?: InputMaybe<PromotionCodeWrappedStringInputUnion>;
+  /** Date that the coupon was applied. */
+  start?: InputMaybe<Scalars['Int']>;
+  /** The subscription that this coupon is applied to, if it is applied to a particular subscription. */
+  subscription?: InputMaybe<Scalars['String']>;
 };
 
 export type DiscountWrappedStringInputUnion = {
@@ -21247,7 +25047,7 @@ export type Stripe_QuoteInput = {
   created?: InputMaybe<Scalars['Int']>;
   /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
   currency?: InputMaybe<Scalars['String']>;
-  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
+  customer?: InputMaybe<Scalars['String']>;
   /** The tax rates applied to this quote. */
   default_tax_rates?: InputMaybe<Array<InputMaybe<TaxRateWrappedStringInputUnion>>>;
   /** A description that will be displayed on the quote PDF. */
