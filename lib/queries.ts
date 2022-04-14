@@ -1,5 +1,5 @@
-import type { ReviewsIo_ListProductReviewsResponse, Stripe_Product, Mutation } from './takeshape/types';
 import { gql } from '@apollo/client';
+import type { Mutation, ReviewsIo_ListProductReviewsResponse, Stripe_Product } from './takeshape/types';
 
 export interface StripeProducts {
   products: {
@@ -259,7 +259,7 @@ export const DeleteMySubscription = gql`
 
 export const GetMyPayments = gql`
   query GetMyPaymentsQuery {
-    payments: getMyPayments(limit: 5, expand: ["data.invoice"]) {
+    payments: getMyPaymentsIndexed(limit: 5) {
       id
       amount
       currency
