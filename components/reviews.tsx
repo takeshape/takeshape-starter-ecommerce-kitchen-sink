@@ -1,8 +1,8 @@
-import StarRatings from 'react-star-ratings';
-import { Box, Divider, Flex, Text } from '@theme-ui/components';
 import { getColor } from '@theme-ui/color';
+import { Box, Divider, Flex, Text } from '@theme-ui/components';
 import { useThemeUI } from '@theme-ui/core';
-import { ReviewsIo_ProductReview, ReviewsIo_ListProductReviewsResponseStatsProperty } from 'lib/takeshape/types';
+import { ReviewsIo_ListProductReviewsResponseStatsProperty, ReviewsIo_ProductReview } from 'lib/takeshape/types';
+import StarRatings from 'react-star-ratings';
 
 export const Review: React.FC<ReviewsIo_ProductReview> = (props) => {
   const { title, review, rating, timeago, date_created } = props;
@@ -54,7 +54,7 @@ export const ReviewList: React.FC<ReviewListProps> = (props) => {
             {stats.count} {stats.count > 1 ? 'reviews' : 'review'}
           </Text>
           <StarRatings
-            rating={parseFloat(stats.average)}
+            rating={stats.average}
             numberOfStars={5}
             starDimension="20px"
             starSpacing="2px"

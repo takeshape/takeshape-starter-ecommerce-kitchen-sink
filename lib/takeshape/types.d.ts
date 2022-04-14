@@ -709,6 +709,8 @@ export type ReviewsIo_Product = {
   description?: Maybe<Scalars['String']>;
   /** Product image URL */
   image_url?: Maybe<Scalars['String']>;
+  /** Product link URL */
+  link?: Maybe<Scalars['String']>;
   /** Product MPN */
   mpn?: Maybe<Scalars['String']>;
   /** Product GTIN */
@@ -1168,6 +1170,7 @@ export type TsWhereReviewsIo_ProductInput = {
   name?: InputMaybe<TsWhereStringInput>;
   description?: InputMaybe<TsWhereStringInput>;
   image_url?: InputMaybe<TsWhereStringInput>;
+  link?: InputMaybe<TsWhereStringInput>;
   mpn?: InputMaybe<TsWhereStringInput>;
   gtin?: InputMaybe<TsWhereStringInput>;
   brand?: InputMaybe<TsWhereStringInput>;
