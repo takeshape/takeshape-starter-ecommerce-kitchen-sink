@@ -1,5 +1,5 @@
-import type { ReviewsIo_ListProductReviewsResponse, Stripe_Product, Mutation } from './takeshape/types';
 import { gql } from '@apollo/client';
+import type { Mutation, ReviewsIo_ListProductReviewsResponse, Stripe_Product } from './takeshape/types';
 
 export interface StripeProducts {
   products: {
@@ -31,7 +31,7 @@ export const GetStripeProducts = gql`
 
 export const SearchStripeProducts = gql`
   query SearchStripeProductsQuery($query: String!) {
-    products: search(terms: $query) {
+    products: search(terms: $query, where: { active: { eq: true } }) {
       results {
         __typename
         ... on Stripe_Product {
