@@ -1388,15 +1388,14 @@ export type TsWhereStripe_TaxRateInput = {
   country?: InputMaybe<TsWhereStringInput>;
   created?: InputMaybe<TsWhereIntegerInput>;
   description?: InputMaybe<TsWhereStringInput>;
-  display_name?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  inclusive?: InputMaybe<TsWhereBooleanInput>;
-  jurisdiction?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  percentage?: InputMaybe<TsWhereNumberInput>;
-  state?: InputMaybe<TsWhereStringInput>;
-  tax_type?: InputMaybe<TsWhereInput>;
+  image_url?: InputMaybe<TsWhereStringInput>;
+  link?: InputMaybe<TsWhereStringInput>;
+  mpn?: InputMaybe<TsWhereStringInput>;
+  gtin?: InputMaybe<TsWhereStringInput>;
+  brand?: InputMaybe<TsWhereStringInput>;
+  category?: InputMaybe<TsWhereStringInput>;
+  custom?: InputMaybe<TsWhereStringInput>;
+  pageUrl?: InputMaybe<TsWhereStringInput>;
 };
 
 export type TsWhereStripe_DiscountInput = {
