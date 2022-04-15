@@ -1,5 +1,12 @@
 import { gql } from '@apollo/client';
-import type { Mutation, ReviewsIo_ListProductReviewsResponse, Stripe_Product } from './takeshape/types';
+import type {
+  Mutation,
+  ReviewsIo_ListProductReviewsResponse,
+  Stripe_PaymentIntentPaginatedList,
+  Stripe_Product,
+  Stripe_Subscription,
+  Voucherify_LoyaltyCard
+} from './takeshape/types';
 
 export interface StripeProducts {
   products: {
@@ -125,26 +132,6 @@ export const GetMyProfile = gql`
   }
 `;
 
-export const GetMyLoyaltyCard = gql`
-  query GetMyLoyaltyCard {
-    getMyLoyaltyCard {
-      id
-      code
-      campaign
-      loyalty_card {
-        points
-        balance
-      }
-      assets {
-        qr {
-          id
-          url
-        }
-      }
-    }
-  }
-`;
-
 export type UpsertMyProfileResponse = {
   profile: Mutation['upsertMyProfile'];
 };
@@ -219,8 +206,63 @@ export const CreateMyCheckoutSession = gql`
   }
 `;
 
-export const GetMySubscriptions = gql`
-  query GetMySubscriptionsQuery {
+export const DeleteMySubscription = gql`
+  mutation DeleteMySubscription($subscriptionId: String!) {
+    subscription: deleteMySubscription(subscriptionId: $subscriptionId) {
+      id
+      status
+    }
+  }
+`;
+
+export interface GetMyPurchasesDataResponse {
+  payments?: Stripe_PaymentIntentPaginatedList;
+  subscriptions?: Stripe_Subscription[];
+  loyaltyCard?: Voucherify_LoyaltyCard;
+}
+
+export const GetMyPurchasesData = gql`
+  query GetMyPurchasesDataQuery {
+    payments: getMyPaymentsIndexed(size: 5, sort: { field: "created", order: "desc" }) {
+      items {
+        id
+        amount
+        currency
+        created
+        invoiceItems {
+          object
+          id
+          amount
+          currency
+          quantity
+          price {
+            product {
+              id
+              name
+              images
+            }
+          }
+        }
+        sessionItems {
+          object
+          id
+          amount_total
+          currency
+          quantity
+          price {
+            product {
+              id
+              name
+              images
+            }
+          }
+        }
+        shipment {
+          tracking_number
+          tracking_status
+        }
+      }
+    }
     subscriptions: getMySubscriptions(
       expand: ["data.items", "data.plan.product", "data.latest_invoice.payment_intent"]
     ) {
@@ -245,70 +287,19 @@ export const GetMySubscriptions = gql`
         }
       }
     }
-  }
-`;
-
-export const DeleteMySubscription = gql`
-  mutation DeleteMySubscription($subscriptionId: String!) {
-    subscription: deleteMySubscription(subscriptionId: $subscriptionId) {
+    loyaltyCard: getMyLoyaltyCard {
       id
-      status
-    }
-  }
-`;
-
-export const GetMyPayments = gql`
-  query GetMyPaymentsQuery {
-    payments: getMyPayments(limit: 5, expand: ["data.invoice"]) {
-      id
-      amount
-      currency
-      created
-      invoice {
-        ... on Stripe_Invoice {
-          object
+      code
+      campaign
+      loyalty_card {
+        points
+        balance
+      }
+      assets {
+        qr {
           id
-          lines {
-            data {
-              id
-              amount
-              currency
-              quantity
-              price {
-                product {
-                  id
-                  description
-                  name
-                  images
-                }
-              }
-            }
-          }
+          url
         }
-      }
-      session {
-        object
-        id
-        line_items {
-          data {
-            id
-            amount_total
-            currency
-            quantity
-            price {
-              product {
-                id
-                description
-                name
-                images
-              }
-            }
-          }
-        }
-      }
-      shipment {
-        tracking_number
-        tracking_status
       }
     }
   }

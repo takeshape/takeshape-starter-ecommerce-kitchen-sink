@@ -1,14 +1,14 @@
-import { Grid, Box, Card, Heading, Paragraph, Text, Alert, Flex } from '@theme-ui/components';
 import { useMutation } from '@apollo/client';
-import { formatPrice } from 'lib/utils/text';
-import { DeleteMySubscription, GetMySubscriptions } from 'lib/queries';
+import { Alert, Box, Card, Flex, Heading, Paragraph, Text } from '@theme-ui/components';
 import { locale } from 'lib/config';
+import { DeleteMySubscription, GetMyPurchasesData } from 'lib/queries';
+import { formatPrice } from 'lib/utils/text';
 import { SubmitButton } from './buttons';
 import { ProductImage } from './product';
 
 export const SubscriptionItemCard = ({ subscription, subscriptionItem }) => {
   const [setCancelPayload, { error: cancelError, loading: cancelLoading }] = useMutation(DeleteMySubscription, {
-    refetchQueries: [GetMySubscriptions],
+    refetchQueries: [GetMyPurchasesData],
     awaitRefetchQueries: true
   });
 

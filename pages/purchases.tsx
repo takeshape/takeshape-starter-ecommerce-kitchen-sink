@@ -1,26 +1,44 @@
-import type { NextPage } from 'next';
-import type { Voucherify_LoyaltyCard } from 'lib/takeshape/types';
-import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { Heading, Divider, Alert, Spinner, Container, Flex, Box } from '@theme-ui/components';
-import { Page, Section } from 'components/layout';
-import { SubscriptionList } from 'components/subscriptions';
-import { PaymentList } from 'components/payments';
 import { useQuery } from '@apollo/client';
-import { GetMySubscriptions, GetMyPayments, GetMyLoyaltyCard } from 'lib/queries';
-import { useProfile } from 'lib/takeshape';
+import { withAuthenticationRequired } from '@auth0/auth0-react';
+import { Alert, Box, Container, Divider, Flex, Heading, Spinner } from '@theme-ui/components';
+import { Page, Section } from 'components/layout';
 import LoyaltyCard from 'components/loyalty-card';
+import { PaymentList } from 'components/payments';
+import { SubscriptionList } from 'components/subscriptions';
+import type { GetMyPurchasesDataResponse } from 'lib/queries';
+import { GetMyPurchasesData } from 'lib/queries';
+import { useProfile } from 'lib/takeshape';
+import type { NextPage } from 'next';
 
 const PurchasesPage: NextPage = () => {
   const { isProfileReady } = useProfile();
   const skip = !isProfileReady;
-  const { data: subscriptionsData, error: subscriptionsError } = useQuery(GetMySubscriptions, { skip });
-  const { data: paymentsData, error: paymentsError } = useQuery(GetMyPayments, { skip });
-  const { data: loyaltyData, error: loyaltyCardError } = useQuery<{ getMyLoyaltyCard: Voucherify_LoyaltyCard }>(
-    GetMyLoyaltyCard,
-    {
-      skip
-    }
-  );
+
+  const { data: purchasesData, error } = useQuery<GetMyPurchasesDataResponse>(GetMyPurchasesData, {
+    skip,
+    pollInterval: 15000
+  });
+
+  if ((!purchasesData && !error) || error) {
+    return (
+      <Page>
+        <Heading as="h1" variant="styles.pageTitle">
+          Purchases
+        </Heading>
+        <Box variant="layout.loading">
+          {!purchasesData && !error ? <Spinner /> : null}
+          {error ? (
+            <>
+              <Alert>Error loading purchases</Alert>
+              <pre style={{ color: 'red' }}>{JSON.stringify(error, null, 2)}</pre>
+            </>
+          ) : null}
+        </Box>
+      </Page>
+    );
+  }
+
+  const { payments, subscriptions, loyaltyCard } = purchasesData;
 
   return (
     <Page>
@@ -30,30 +48,16 @@ const PurchasesPage: NextPage = () => {
       <Flex sx={{ gap: '2rem' }}>
         <Box sx={{ flex: '0 1 24rem' }}>
           <Section>
-            {loyaltyData ? <LoyaltyCard {...loyaltyData.getMyLoyaltyCard} /> : <Spinner />}
-            {loyaltyCardError && (
-              <>
-                <Alert>Error loading loyalty card</Alert>
-                <pre style={{ color: 'red' }}>{JSON.stringify(loyaltyCardError, null, 2)}</pre>
-              </>
-            )}
+            {!loyaltyCard && !error ? <Spinner /> : null}
+            {loyaltyCard ? <LoyaltyCard {...loyaltyCard} /> : null}
           </Section>
           <Section>
             <Heading variant="smallHeading" id="payments">
               Past Purchases
             </Heading>
             <Divider />
-
-            {!paymentsData && <Spinner />}
-
-            {paymentsData && <PaymentList payments={paymentsData.payments} />}
-
-            {paymentsError && (
-              <>
-                <Alert>Error loading payments</Alert>
-                <pre style={{ color: 'red' }}>{JSON.stringify(paymentsError, null, 2)}</pre>
-              </>
-            )}
+            {!payments && !error ? <Spinner /> : null}
+            {payments && <PaymentList payments={payments.items} />}
           </Section>
         </Box>
         <Box sx={{ flex: '1 1 32rem' }}>
@@ -62,17 +66,8 @@ const PurchasesPage: NextPage = () => {
               Active Subscriptions
             </Heading>
             <Divider />
-
-            {!subscriptionsData && <Spinner />}
-
-            {subscriptionsData && <SubscriptionList subscriptions={subscriptionsData.subscriptions} />}
-
-            {subscriptionsError && (
-              <>
-                <Alert>Error loading subscriptions</Alert>
-                <pre style={{ color: 'red' }}>{JSON.stringify(subscriptionsError, null, 2)}</pre>
-              </>
-            )}
+            {!subscriptions && !error ? <Spinner /> : null}
+            {subscriptions && <SubscriptionList subscriptions={subscriptions} />}
           </Section>
         </Box>
       </Flex>

@@ -1,16 +1,8 @@
-import type {
-  Stripe_PaymentIntent,
-  Stripe_Invoice,
-  Stripe_Item,
-  Stripe_LineItem,
-  Stripe_CheckoutSession
-} from 'lib/takeshape/types';
-import NextLink from 'next/link';
-import { Badge, Flex, Box, Card, IconButton, Paragraph, Link, Heading, Text, Grid } from '@theme-ui/components';
-import { formatPrice } from 'lib/utils/text';
+import { Badge, Box, Card, Flex, Grid, Heading, Link, Paragraph } from '@theme-ui/components';
 import { format } from 'date-fns';
-import startCase from 'lodash/startCase';
-import { BsCheckCircleFill, BsReceipt } from 'react-icons/bs';
+import type { Stripe_Invoiceitem, Stripe_Item, Stripe_PaymentIntent } from 'lib/takeshape/types';
+import { formatPrice } from 'lib/utils/text';
+import NextLink from 'next/link';
 import { ProductImage } from './product';
 
 export interface OrderStatusProps {
@@ -106,17 +98,13 @@ const ProductList = ({ lineItems }: ProductListProps) => {
   );
 };
 
-function isStripeInvoice(maybe: unknown): maybe is Stripe_Invoice {
-  return (maybe as Stripe_Invoice).object === 'invoice';
+function isStripeInvoice(maybe: unknown): maybe is Stripe_Invoiceitem {
+  return (maybe as Stripe_Invoiceitem[])?.[0]?.object === 'invoiceitem';
 }
 
-function isStripeCheckoutSession(maybe: unknown): maybe is Stripe_CheckoutSession {
-  return (maybe as Stripe_CheckoutSession).object === 'checkoutDOTsession';
-}
-
-function getLineItems(invoiceOrSession: Stripe_Invoice | Stripe_CheckoutSession): ProductLineItemProps[] | undefined {
+function getLineItems(invoiceOrSession: Stripe_Invoiceitem[] | Stripe_Item[]): ProductLineItemProps[] | undefined {
   if (isStripeInvoice(invoiceOrSession)) {
-    return invoiceOrSession.lines?.data?.map((line) => ({
+    return invoiceOrSession?.map((line) => ({
       id: line.price.product.id,
       name: line.price.product.name,
       description: line.price.product.description,
@@ -127,7 +115,7 @@ function getLineItems(invoiceOrSession: Stripe_Invoice | Stripe_CheckoutSession)
     }));
   }
 
-  return invoiceOrSession.line_items?.data?.map((line) => ({
+  return invoiceOrSession?.map((line) => ({
     id: line.price.product.id,
     name: line.price.product.name,
     description: line.price.product.description,
@@ -139,14 +127,13 @@ function getLineItems(invoiceOrSession: Stripe_Invoice | Stripe_CheckoutSession)
 }
 
 export const PaymentItemCard = ({
-  payment: { created, invoice, currency, amount, session, shipment }
+  payment: { created, invoiceItems, currency, amount, sessionItems, shipment }
 }: {
   payment: Stripe_PaymentIntent;
 }) => {
-  invoice = invoice as Stripe_Invoice;
   // Only subscriptions will have `session`, and one-off purchases will only have `session`.
   // We get the same data from both, so we collapse here, preferring the `invoice`.
-  const lineItems = getLineItems(invoice ?? session);
+  const lineItems = getLineItems(invoiceItems.length ? invoiceItems : sessionItems);
 
   return (
     <Card sx={{ width: '100%' }}>
@@ -154,16 +141,6 @@ export const PaymentItemCard = ({
         <Paragraph variant="smallHeading" sx={{ lineHeight: '2' }}>
           {format(created * 1000, 'PP')}
         </Paragraph>
-        <Box sx={{ textAlign: 'right' }}>
-          {invoice?.invoice_pdf ? (
-            <Link title="Download Receipt" target="_blank" rel="noreferrer" href={invoice?.invoice_pdf}>
-              <IconButton color="text">
-                <BsReceipt size={16} />
-              </IconButton>
-            </Link>
-          ) : null}
-          {invoice?.paid ? <BsCheckCircleFill title="Paid" color="green" size={16} /> : null}
-        </Box>
       </Flex>
       <Box>{lineItems && <ProductList lineItems={lineItems} />}</Box>
       <Flex sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
