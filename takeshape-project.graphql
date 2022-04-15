@@ -126,13 +126,61 @@ type Query {
   getMyPayments_UNINDEXED(expand: [String], limit: Float, created: JSON, startingAfter: String, endingBefore: String): [Stripe_PaymentIntent]
 
   """Get the signed-in user's payments from Stripe"""
-  getMyPayments_INDEXED(expand: [String], limit: Float, created: JSON, startingAfter: String, endingBefore: String): [Stripe_PaymentIntent]
+  getMyPayments_INDEXED(
+    terms: String
+
+    """The offset from the first result you want to fetch."""
+    from: Int
+
+    """The maximum number of items to return."""
+    size: Int
+
+    """An elasticsearch style filter. Overrides onlyEnabled."""
+    filter: JSONObject
+
+    """An list of fields to sort by."""
+    sort: [TSSearchSortInput]
+    locale: String
+    enableLocaleFallback: Boolean = true
+
+    """Filter out content that is not enabled. Defaults to true."""
+    onlyEnabled: Boolean = true
+
+    """
+    The where clause uses the boolean AND, OR, and NOT parameters to construct complex filters based on the values of your fields. It applies an implicit AND to all the top-level keys. To avoid this, use a single OR or NOT key as the only top-level key.
+    """
+    where: TSWhereStripePaymentIntentInput
+  ): Stripe_PaymentIntentPaginatedList
 
   """Get the signed-in user's payments from Stripe"""
   getMyPayments(expand: [String], limit: Float, created: JSON, startingAfter: String, endingBefore: String): [Stripe_PaymentIntent]
 
   """Get the signed-in user's payments from Stripe"""
-  getMyPaymentsIndexed(expand: [String], limit: Float, created: JSON, starting_after: String, ending_before: String): [Stripe_PaymentIntent]
+  getMyPaymentsIndexed(
+    terms: String
+
+    """The offset from the first result you want to fetch."""
+    from: Int
+
+    """The maximum number of items to return."""
+    size: Int
+
+    """An elasticsearch style filter. Overrides onlyEnabled."""
+    filter: JSONObject
+
+    """An list of fields to sort by."""
+    sort: [TSSearchSortInput]
+    locale: String
+    enableLocaleFallback: Boolean = true
+
+    """Filter out content that is not enabled. Defaults to true."""
+    onlyEnabled: Boolean = true
+
+    """
+    The where clause uses the boolean AND, OR, and NOT parameters to construct complex filters based on the values of your fields. It applies an implicit AND to all the top-level keys. To avoid this, use a single OR or NOT key as the only top-level key.
+    """
+    where: TSWhereStripePaymentIntentInput
+  ): Stripe_PaymentIntentPaginatedList
 
   """Get a profile by ID"""
   getProfile(_id: ID!, locale: String, enableLocaleFallback: Boolean = true): Profile
@@ -17740,6 +17788,58 @@ type ProfileNewsletterStatus {
   subscribed: Boolean
 }
 
+type Stripe_PaymentIntentPaginatedList {
+  items: [Stripe_PaymentIntent!]!
+  total: Int!
+}
+
+input TSWhereStripePaymentIntentInput {
+  amount: TSWhereIntegerInput
+  amount_capturable: TSWhereIntegerInput
+  amount_received: TSWhereIntegerInput
+  application: TSWhereStripe_ApplicationWrappedStringUnionInput
+  application_fee_amount: TSWhereIntegerInput
+  automatic_payment_methods: TSWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput
+  canceled_at: TSWhereIntegerInput
+  cancellation_reason: TSWhereInput
+  capture_method: TSWhereInput
+  charges: TSWhereStripe_PaymentIntentChargesInput
+  client_secret: TSWhereStringInput
+  confirmation_method: TSWhereInput
+  created: TSWhereIntegerInput
+  currency: TSWhereStringInput
+  customer: TSWhereStringInput
+  description: TSWhereStringInput
+  id: TSWhereStringInput
+  invoice: TSWhereStripe_InvoiceWrappedStringUnionInput
+  last_payment_error: TSWhereStripe_ApiErrorsInput
+  livemode: TSWhereBooleanInput
+  next_action: TSWhereStripe_PaymentIntentNextActionInput
+  object: TSWhereInput
+  on_behalf_of: TSWhereStripe_AccountWrappedStringUnionInput
+  payment_method: TSWhereStripe_PaymentMethodWrappedStringUnionInput
+  payment_method_options: TSWhereStripe_PaymentIntentPaymentMethodOptionsInput
+  payment_method_types: TSWhereStripe_PaymentIntentPaymentMethodTypesInput
+  processing: TSWhereStripe_PaymentIntentProcessingInput
+  receipt_email: TSWhereStringInput
+  review: TSWhereStripe_ReviewWrappedStringUnionInput
+  setup_future_usage: TSWhereInput
+  shipping: TSWhereStripe_ShippingInput
+  statement_descriptor: TSWhereStringInput
+  statement_descriptor_suffix: TSWhereStringInput
+  status: TSWhereInput
+  transfer_data: TSWhereStripe_TransferDataInput
+  transfer_group: TSWhereStringInput
+  invoiceItems: TSWhereStripe_InvoiceitemInput
+  sessionItems: TSWhereStripe_ItemInput
+  shipment: TSWhereShipEngine_LabelInput
+  _shapeId: TSWhereIDInput
+  _id: TSWhereIDInput
+  AND: [TSWhereStripePaymentIntentInput]
+  OR: [TSWhereStripePaymentIntentInput]
+  NOT: TSWhereStripePaymentIntentInput
+}
+
 type ProfilePaginatedList {
   items: [Profile!]!
   total: Int!
@@ -17984,13 +18084,61 @@ type WithContext {
   getMyPayments_UNINDEXED(expand: [String], limit: Float, created: JSON, startingAfter: String, endingBefore: String): [Stripe_PaymentIntent]
 
   """Get the signed-in user's payments from Stripe"""
-  getMyPayments_INDEXED(expand: [String], limit: Float, created: JSON, startingAfter: String, endingBefore: String): [Stripe_PaymentIntent]
+  getMyPayments_INDEXED(
+    terms: String
+
+    """The offset from the first result you want to fetch."""
+    from: Int
+
+    """The maximum number of items to return."""
+    size: Int
+
+    """An elasticsearch style filter. Overrides onlyEnabled."""
+    filter: JSONObject
+
+    """An list of fields to sort by."""
+    sort: [TSSearchSortInput]
+    locale: String
+    enableLocaleFallback: Boolean = true
+
+    """Filter out content that is not enabled. Defaults to true."""
+    onlyEnabled: Boolean = true
+
+    """
+    The where clause uses the boolean AND, OR, and NOT parameters to construct complex filters based on the values of your fields. It applies an implicit AND to all the top-level keys. To avoid this, use a single OR or NOT key as the only top-level key.
+    """
+    where: TSWhereStripePaymentIntentInput
+  ): Stripe_PaymentIntentPaginatedList
 
   """Get the signed-in user's payments from Stripe"""
   getMyPayments(expand: [String], limit: Float, created: JSON, startingAfter: String, endingBefore: String): [Stripe_PaymentIntent]
 
   """Get the signed-in user's payments from Stripe"""
-  getMyPaymentsIndexed(expand: [String], limit: Float, created: JSON, starting_after: String, ending_before: String): [Stripe_PaymentIntent]
+  getMyPaymentsIndexed(
+    terms: String
+
+    """The offset from the first result you want to fetch."""
+    from: Int
+
+    """The maximum number of items to return."""
+    size: Int
+
+    """An elasticsearch style filter. Overrides onlyEnabled."""
+    filter: JSONObject
+
+    """An list of fields to sort by."""
+    sort: [TSSearchSortInput]
+    locale: String
+    enableLocaleFallback: Boolean = true
+
+    """Filter out content that is not enabled. Defaults to true."""
+    onlyEnabled: Boolean = true
+
+    """
+    The where clause uses the boolean AND, OR, and NOT parameters to construct complex filters based on the values of your fields. It applies an implicit AND to all the top-level keys. To avoid this, use a single OR or NOT key as the only top-level key.
+    """
+    where: TSWhereStripePaymentIntentInput
+  ): Stripe_PaymentIntentPaginatedList
 
   """Get a profile by ID"""
   getProfile(_id: ID!, locale: String, enableLocaleFallback: Boolean = true): Profile

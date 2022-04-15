@@ -42,11 +42,11 @@ export type Query = {
   /** Get the signed-in user's payments from Stripe */
   getMyPayments_UNINDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
   /** Get the signed-in user's payments from Stripe */
-  getMyPayments_INDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  getMyPayments_INDEXED?: Maybe<Stripe_PaymentIntentPaginatedList>;
   /** Get the signed-in user's payments from Stripe */
   getMyPayments?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
   /** Get the signed-in user's payments from Stripe */
-  getMyPaymentsIndexed?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  getMyPaymentsIndexed?: Maybe<Stripe_PaymentIntentPaginatedList>;
   /** Get a profile by ID */
   getProfile?: Maybe<Profile>;
   /** Returns a list of profiles in natural order. */
@@ -197,11 +197,15 @@ export type QueryGetMyPayments_UnindexedArgs = {
 
 /** Root of the Schema */
 export type QueryGetMyPayments_IndexedArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  startingAfter?: InputMaybe<Scalars['String']>;
-  endingBefore?: InputMaybe<Scalars['String']>;
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
+  where?: InputMaybe<TsWhereStripePaymentIntentInput>;
 };
 
 
@@ -217,11 +221,15 @@ export type QueryGetMyPaymentsArgs = {
 
 /** Root of the Schema */
 export type QueryGetMyPaymentsIndexedArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-  ending_before?: InputMaybe<Scalars['String']>;
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
+  where?: InputMaybe<TsWhereStripePaymentIntentInput>;
 };
 
 
@@ -14834,6 +14842,59 @@ export type ProfileNewsletterStatus = {
   subscribed?: Maybe<Scalars['Boolean']>;
 };
 
+export type Stripe_PaymentIntentPaginatedList = {
+  __typename?: 'Stripe_PaymentIntentPaginatedList';
+  items: Array<Stripe_PaymentIntent>;
+  total: Scalars['Int'];
+};
+
+export type TsWhereStripePaymentIntentInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_capturable?: InputMaybe<TsWhereIntegerInput>;
+  amount_received?: InputMaybe<TsWhereIntegerInput>;
+  application?: InputMaybe<TsWhereStripe_ApplicationWrappedStringUnionInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  automatic_payment_methods?: InputMaybe<TsWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput>;
+  canceled_at?: InputMaybe<TsWhereIntegerInput>;
+  cancellation_reason?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  charges?: InputMaybe<TsWhereStripe_PaymentIntentChargesInput>;
+  client_secret?: InputMaybe<TsWhereStringInput>;
+  confirmation_method?: InputMaybe<TsWhereInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice?: InputMaybe<TsWhereStripe_InvoiceWrappedStringUnionInput>;
+  last_payment_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  next_action?: InputMaybe<TsWhereStripe_PaymentIntentNextActionInput>;
+  object?: InputMaybe<TsWhereInput>;
+  on_behalf_of?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+  payment_method?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  payment_method_options?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodOptionsInput>;
+  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
+  processing?: InputMaybe<TsWhereStripe_PaymentIntentProcessingInput>;
+  receipt_email?: InputMaybe<TsWhereStringInput>;
+  review?: InputMaybe<TsWhereStripe_ReviewWrappedStringUnionInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_TransferDataInput>;
+  transfer_group?: InputMaybe<TsWhereStringInput>;
+  invoiceItems?: InputMaybe<TsWhereStripe_InvoiceitemInput>;
+  sessionItems?: InputMaybe<TsWhereStripe_ItemInput>;
+  shipment?: InputMaybe<TsWhereShipEngine_LabelInput>;
+  _shapeId?: InputMaybe<TsWhereIdInput>;
+  _id?: InputMaybe<TsWhereIdInput>;
+  AND?: InputMaybe<Array<InputMaybe<TsWhereStripePaymentIntentInput>>>;
+  OR?: InputMaybe<Array<InputMaybe<TsWhereStripePaymentIntentInput>>>;
+  NOT?: InputMaybe<TsWhereStripePaymentIntentInput>;
+};
+
 export type ProfilePaginatedList = {
   __typename?: 'ProfilePaginatedList';
   items: Array<Profile>;
@@ -14963,11 +15024,11 @@ export type WithContext = {
   /** Get the signed-in user's payments from Stripe */
   getMyPayments_UNINDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
   /** Get the signed-in user's payments from Stripe */
-  getMyPayments_INDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  getMyPayments_INDEXED?: Maybe<Stripe_PaymentIntentPaginatedList>;
   /** Get the signed-in user's payments from Stripe */
   getMyPayments?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
   /** Get the signed-in user's payments from Stripe */
-  getMyPaymentsIndexed?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  getMyPaymentsIndexed?: Maybe<Stripe_PaymentIntentPaginatedList>;
   /** Get a profile by ID */
   getProfile?: Maybe<Profile>;
   /** Returns a list of profiles in natural order. */
@@ -15117,11 +15178,15 @@ export type WithContextGetMyPayments_UnindexedArgs = {
 
 /** This query allow you to pass context to your queries */
 export type WithContextGetMyPayments_IndexedArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  startingAfter?: InputMaybe<Scalars['String']>;
-  endingBefore?: InputMaybe<Scalars['String']>;
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
+  where?: InputMaybe<TsWhereStripePaymentIntentInput>;
 };
 
 
@@ -15137,11 +15202,15 @@ export type WithContextGetMyPaymentsArgs = {
 
 /** This query allow you to pass context to your queries */
 export type WithContextGetMyPaymentsIndexedArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-  ending_before?: InputMaybe<Scalars['String']>;
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
+  where?: InputMaybe<TsWhereStripePaymentIntentInput>;
 };
 
 
