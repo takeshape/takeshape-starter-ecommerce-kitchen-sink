@@ -13,12 +13,16 @@ import type { NextPage } from 'next';
 const PurchasesPage: NextPage = () => {
   const { isProfileReady } = useProfile();
   const skip = !isProfileReady;
-  const { data: subscriptionsData, error: subscriptionsError } = useQuery(GetMySubscriptions, { skip });
-  const { data: paymentsData, error: paymentsError } = useQuery(GetMyPayments, { skip });
+  const { data: subscriptionsData, error: subscriptionsError } = useQuery(GetMySubscriptions, {
+    skip,
+    pollInterval: 15000
+  });
+  const { data: paymentsData, error: paymentsError } = useQuery(GetMyPayments, { skip, pollInterval: 15000 });
   const { data: loyaltyData, error: loyaltyCardError } = useQuery<{ getMyLoyaltyCard: Voucherify_LoyaltyCard }>(
     GetMyLoyaltyCard,
     {
-      skip
+      skip,
+      pollInterval: 15000
     }
   );
 
