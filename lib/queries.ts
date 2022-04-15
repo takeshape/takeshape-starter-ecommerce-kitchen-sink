@@ -264,45 +264,31 @@ export const GetMyPayments = gql`
       amount
       currency
       created
-      invoice {
-        ... on Stripe_Invoice {
-          object
-          id
-          lines {
-            data {
-              id
-              amount
-              currency
-              quantity
-              price {
-                product {
-                  id
-                  description
-                  name
-                  images
-                }
-              }
-            }
+      invoiceItems {
+        object
+        id
+        amount
+        currency
+        quantity
+        price {
+          product {
+            id
+            name
+            images
           }
         }
       }
-      session {
+      sessionItems {
         object
         id
-        line_items {
-          data {
+        amount_total
+        currency
+        quantity
+        price {
+          product {
             id
-            amount_total
-            currency
-            quantity
-            price {
-              product {
-                id
-                description
-                name
-                images
-              }
-            }
+            name
+            images
           }
         }
       }

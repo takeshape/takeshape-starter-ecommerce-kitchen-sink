@@ -166,7 +166,39 @@
             "cursorArg": "starting_after",
             "pageSizeArg": "limit"
           },
-          "objectDepthLimit": 2
+          "objectDepthLimit": 4,
+          "ignoreFields": [
+            "application",
+            "application_fee_amount",
+            "automatic_payment_methods",
+            "canceled_at",
+            "cancellation_reason",
+            "capture_method",
+            "charges",
+            "last_payment_error",
+            "livemode",
+            "next_action",
+            "transfer_data",
+            "statement_descriptor_suffix",
+            "statement_descriptor",
+            "amount_captured",
+            "amount_received",
+            "discounts",
+            "failure_balance_transaction",
+            "shipping_options",
+            "setup_intent",
+            "payment_link",
+            "review",
+            "payment_method_options",
+            "payment_method",
+            "on_behalf_of",
+            "quote",
+            "latest_invoice",
+            "invoice",
+            "schedule",
+            "subscription",
+            "payment_intent"
+          ]
         }
       },
       "triggers": [
@@ -625,7 +657,23 @@
           "ops": [
             {
               "path": "$",
-              "mapping": "$resolvers.payments.items"
+              "mapping": [
+                [
+                  "get",
+                  {
+                    "path": "$finalResolver.items"
+                  }
+                ],
+                [
+                  "filter",
+                  {
+                    "predicate": [
+                      "status",
+                      "succeeded"
+                    ]
+                  }
+                ]
+              ]
             }
           ]
         }
@@ -956,7 +1004,7 @@
         }
       }
     },
-    "listPaymentIntents": {
+    "Stripe_listPaymentIntents": {
       "shape": "Stripe_ListPaymentIntentsResponse",
       "resolver": {
         "name": "rest:get",
@@ -978,13 +1026,6 @@
             },
             {
               "path": "expand",
-              "value": [
-                "data.invoice"
-              ]
-            },
-            {
-              "path": "expand",
-              "op": "concat",
               "mapping": "$args.expand"
             },
             {
@@ -1020,34 +1061,6 @@
               }
             }
           }
-        },
-        "results": {
-          "ops": [
-            {
-              "path": "$",
-              "mapping": "$finalResolver"
-            },
-            {
-              "path": "data",
-              "mapping": [
-                [
-                  "get",
-                  {
-                    "path": "$finalResolver.data"
-                  }
-                ],
-                [
-                  "filter",
-                  {
-                    "predicate": [
-                      "status",
-                      "succeeded"
-                    ]
-                  }
-                ]
-              ]
-            }
-          ]
         }
       },
       "description": "<p>Returns a list of PaymentIntents.</p>",
@@ -2293,6 +2306,9 @@
             "properties": {
               "customer": {
                 "type": "string"
+              },
+              "object": {
+                "type": "string"
               }
             }
           }
@@ -2340,13 +2356,49 @@
               "customer": {
                 "type": "string"
               },
-              "invoice": {
-                "@ref": "stripe:Invoice"
+              "invoiceItems": {
+                "type": "array",
+                "items": {
+                  "@ref": "stripe:Invoiceitem"
+                },
+                "@resolver": {
+                  "compose": [
+                    {
+                      "if": "!isEmpty($source.invoice)",
+                      "name": "rest:get",
+                      "service": "stripe",
+                      "path": "v1/invoiceitems",
+                      "searchParams": {
+                        "ops": [
+                          {
+                            "path": "invoice",
+                            "mapping": "$source.invoice"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "results": {
+                    "ops": [
+                      {
+                        "path": "$",
+                        "value": []
+                      },
+                      {
+                        "path": "$",
+                        "mapping": "$finalResolver.data"
+                      }
+                    ]
+                  }
+                }
               },
-              "session": {
+              "sessionItems": {
                 "description": "The Stripe checkout session associated with this payment.",
-                "title": "Stripe Checkout Session",
-                "@ref": "stripe:CheckoutSession",
+                "title": "Stripe Checkout Session Line Items",
+                "type": "array",
+                "items": {
+                  "@ref": "stripe:Item"
+                },
                 "@resolver": {
                   "name": "rest:get",
                   "service": "stripe",
@@ -2384,7 +2436,11 @@
                     "ops": [
                       {
                         "path": "$",
-                        "mapping": "$finalResolver.data[0]"
+                        "value": []
+                      },
+                      {
+                        "path": "$",
+                        "mapping": "$finalResolver.data[0].line_items.data"
                       }
                     ]
                   }
@@ -2683,6 +2739,26 @@
         ]
       }
     },
+    "Stripe_Invoiceitem": {
+      "id": "Stripe_Invoiceitem",
+      "name": "Stripe_Invoiceitem",
+      "title": "Stripe_Invoiceitem",
+      "schema": {
+        "extends": [
+          {
+            "@ref": "stripe:Invoiceitem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "customer": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    },
     "Stripe_Price": {
       "id": "Stripe_Price",
       "name": "Stripe_Price",
@@ -2718,47 +2794,6 @@
                     ],
                     "serialize": {
                       "template": "/v1/products/{product}"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-    "Stripe_InvoiceLinesProperty": {
-      "id": "Stripe_InvoiceLinesProperty",
-      "name": "Stripe_InvoiceLinesProperty",
-      "title": "Stripe_InvoiceLinesProperty",
-      "schema": {
-        "extends": [
-          {
-            "@ref": "stripe:InvoiceLinesProperty"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "price": {
-                "description": "The Stripe price associated with this line item.",
-                "title": "Stripe Price",
-                "@ref": "stripe:Price",
-                "@resolver": {
-                  "name": "rest:get",
-                  "service": "stripe",
-                  "options": {
-                    "ignoreErrors": true,
-                    "ttl": 3600
-                  },
-                  "path": {
-                    "ops": [
-                      {
-                        "path": "price",
-                        "mapping": "$source.price"
-                      }
-                    ],
-                    "serialize": {
-                      "template": "/v1/prices/{price}"
                     }
                   }
                 }

@@ -58,8 +58,10 @@ export type Query = {
   /** Get a loyalty card from Voucherify */
   getMyLoyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
   getMyNewsletterSubscriptions?: Maybe<Array<Maybe<ProfileNewsletterStatus>>>;
+  /** <p>When retrieving an invoice, you’ll get a <strong>lines</strong> property containing the total count of line items and the first handful of those items. There is also a URL where you can retrieve the full (paginated) list of line items.</p> */
+  Stripe_listInvoiceLines?: Maybe<Stripe_ListInvoiceLinesResponse>;
   /** <p>Returns a list of PaymentIntents.</p> */
-  listPaymentIntents?: Maybe<Stripe_ListPaymentIntentsResponse>;
+  Stripe_listPaymentIntents?: Maybe<Stripe_ListPaymentIntentsResponse>;
   searchAssetIndex?: Maybe<AssetSearchResults>;
   searchTsStaticSiteIndex?: Maybe<TsStaticSiteSearchResults>;
   searchProfileIndex?: Maybe<ProfileSearchResults>;
@@ -267,7 +269,17 @@ export type QueryStripe_GetProductArgs = {
 
 
 /** Root of the Schema */
-export type QueryListPaymentIntentsArgs = {
+export type QueryStripe_ListInvoiceLinesArgs = {
+  ending_before?: InputMaybe<Scalars['String']>;
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  invoice: Scalars['String'];
+  limit?: InputMaybe<Scalars['Int']>;
+  starting_after?: InputMaybe<Scalars['String']>;
+};
+
+
+/** Root of the Schema */
+export type QueryStripe_ListPaymentIntentsArgs = {
   created?: InputMaybe<Scalars['JSON']>;
   customer?: InputMaybe<Scalars['String']>;
   ending_before?: InputMaybe<Scalars['String']>;
@@ -1097,7 +1109,7 @@ export type TsWhereInput = {
   currency?: InputMaybe<TsWhereStringInput>;
   customer?: InputMaybe<TsWhereStringInput>;
   id?: InputMaybe<TsWhereStringInput>;
-  invoice?: InputMaybe<TsWhereStripe_InvoiceInput>;
+  invoice?: InputMaybe<TsWhereStripe_InvoiceWrappedStringUnionInput>;
   last_payment_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
   livemode?: InputMaybe<TsWhereBooleanInput>;
   next_action?: InputMaybe<TsWhereStripe_PaymentIntentNextActionInput>;
@@ -1116,7 +1128,8 @@ export type TsWhereInput = {
   status?: InputMaybe<TsWhereInput>;
   transfer_data?: InputMaybe<TsWhereStripe_TransferDataInput>;
   transfer_group?: InputMaybe<TsWhereStringInput>;
-  session?: InputMaybe<TsWhereStripe_CheckoutSessionInput>;
+  invoiceItems?: InputMaybe<TsWhereStripe_InvoiceitemInput>;
+  sessionItems?: InputMaybe<TsWhereStripe_ItemInput>;
   shipment?: InputMaybe<TsWhereShipEngine_LabelInput>;
   active?: InputMaybe<TsWhereBooleanInput>;
   images?: InputMaybe<TsWhereStripe_ProductImagesInput>;
@@ -1408,7 +1421,6 @@ export type TsWhereStripe_DiscountInput = {
   invoice?: InputMaybe<TsWhereStringInput>;
   invoice_item?: InputMaybe<TsWhereStringInput>;
   object?: InputMaybe<TsWhereInput>;
-  promotion_code?: InputMaybe<TsWhereStripe_PromotionCodeWrappedStringUnionInput>;
   start?: InputMaybe<TsWhereIntegerInput>;
   subscription?: InputMaybe<TsWhereStringInput>;
 };
@@ -1432,10 +1444,10 @@ export type TsWhereStripe_CouponInput = {
 };
 
 export type TsWhereStripe_CouponAppliesToInput = {
-  products?: InputMaybe<TsWhereStripe_PaymentIntentProductsInput>;
+  products?: InputMaybe<TsWhereStripe_InvoiceProductsInput>;
 };
 
-export type TsWhereStripe_PaymentIntentProductsInput = {
+export type TsWhereStripe_InvoiceProductsInput = {
   /** Exact match */
   eq?: InputMaybe<Scalars['String']>;
   /** Array of possible exact match values. */
@@ -1444,27 +1456,6 @@ export type TsWhereStripe_PaymentIntentProductsInput = {
   match?: InputMaybe<Scalars['String']>;
   /** Regular expression string matching. Use of * wildcards could degrade performance. */
   regexp?: InputMaybe<Scalars['String']>;
-};
-
-export type TsWhereStripe_PromotionCodeWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  active?: InputMaybe<TsWhereBooleanInput>;
-  code?: InputMaybe<TsWhereStringInput>;
-  coupon?: InputMaybe<TsWhereStripe_CouponInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  expires_at?: InputMaybe<TsWhereIntegerInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  max_redemptions?: InputMaybe<TsWhereIntegerInput>;
-  object?: InputMaybe<TsWhereInput>;
-  restrictions?: InputMaybe<TsWhereStripe_PromotionCodesResourceRestrictionsInput>;
-  times_redeemed?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_PromotionCodesResourceRestrictionsInput = {
-  first_time_transaction?: InputMaybe<TsWhereBooleanInput>;
-  minimum_amount?: InputMaybe<TsWhereIntegerInput>;
-  minimum_amount_currency?: InputMaybe<TsWhereStringInput>;
 };
 
 export type TsWhereStripe_InvoiceDiscountsInput = {
@@ -1511,7 +1502,7 @@ export type TsWhereStripe_PaymentIntentInput = {
   customer?: InputMaybe<TsWhereStringInput>;
   description?: InputMaybe<TsWhereStringInput>;
   id?: InputMaybe<TsWhereStringInput>;
-  invoice?: InputMaybe<TsWhereStripe_InvoiceInput>;
+  invoice?: InputMaybe<TsWhereStripe_InvoiceWrappedStringUnionInput>;
   last_payment_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
   livemode?: InputMaybe<TsWhereBooleanInput>;
   next_action?: InputMaybe<TsWhereStripe_PaymentIntentNextActionInput>;
@@ -1530,777 +1521,8 @@ export type TsWhereStripe_PaymentIntentInput = {
   status?: InputMaybe<TsWhereInput>;
   transfer_data?: InputMaybe<TsWhereStripe_TransferDataInput>;
   transfer_group?: InputMaybe<TsWhereStringInput>;
-  session?: InputMaybe<TsWhereStripe_CheckoutSessionInput>;
-  shipment?: InputMaybe<TsWhereShipEngine_LabelInput>;
-  _shapeId?: InputMaybe<TsWhereIdInput>;
-  _id?: InputMaybe<TsWhereIdInput>;
-};
-
-export type TsWhereStripe_InvoiceInput = {
-  account_country?: InputMaybe<TsWhereStringInput>;
-  account_name?: InputMaybe<TsWhereStringInput>;
-  account_tax_ids?: InputMaybe<TsWhereStripe_PaymentIntentAccountTaxIdsInput>;
-  amount_due?: InputMaybe<TsWhereIntegerInput>;
-  amount_paid?: InputMaybe<TsWhereIntegerInput>;
-  amount_remaining?: InputMaybe<TsWhereIntegerInput>;
-  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
-  attempt_count?: InputMaybe<TsWhereIntegerInput>;
-  attempted?: InputMaybe<TsWhereBooleanInput>;
-  auto_advance?: InputMaybe<TsWhereBooleanInput>;
-  automatic_tax?: InputMaybe<TsWhereStripe_AutomaticTaxInput>;
-  billing_reason?: InputMaybe<TsWhereInput>;
-  charge?: InputMaybe<TsWhereStripe_ChargeWrappedStringUnionInput>;
-  collection_method?: InputMaybe<TsWhereInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  custom_fields?: InputMaybe<TsWhereStripe_InvoiceSettingCustomFieldInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  customer_address?: InputMaybe<TsWhereStripe_AddressInput>;
-  customer_email?: InputMaybe<TsWhereStringInput>;
-  customer_name?: InputMaybe<TsWhereStringInput>;
-  customer_phone?: InputMaybe<TsWhereStringInput>;
-  customer_shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
-  customer_tax_exempt?: InputMaybe<TsWhereInput>;
-  customer_tax_ids?: InputMaybe<TsWhereStripe_InvoicesResourceInvoiceTaxIdInput>;
-  default_payment_method?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
-  default_source?: InputMaybe<TsWhere0dfdf3d2da91f0e817d280b6398091a5UnionInput>;
-  default_tax_rates?: InputMaybe<TsWhereStripe_TaxRateInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  discount?: InputMaybe<TsWhereStripe_DiscountInput>;
-  discounts?: InputMaybe<TsWhereStripe_PaymentIntentDiscountsInput>;
-  due_date?: InputMaybe<TsWhereIntegerInput>;
-  ending_balance?: InputMaybe<TsWhereIntegerInput>;
-  footer?: InputMaybe<TsWhereStringInput>;
-  hosted_invoice_url?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  invoice_pdf?: InputMaybe<TsWhereStringInput>;
-  last_finalization_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
-  lines?: InputMaybe<TsWhereStripe_PaymentIntentLinesInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  next_payment_attempt?: InputMaybe<TsWhereIntegerInput>;
-  number?: InputMaybe<TsWhereStringInput>;
-  object?: InputMaybe<TsWhereInput>;
-  on_behalf_of?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
-  paid?: InputMaybe<TsWhereBooleanInput>;
-  paid_out_of_band?: InputMaybe<TsWhereBooleanInput>;
-  payment_intent?: InputMaybe<TsWhereStripe_PaymentIntentWrappedStringUnionInput>;
-  payment_settings?: InputMaybe<TsWhereStripe_InvoicesPaymentSettingsInput>;
-  period_end?: InputMaybe<TsWhereIntegerInput>;
-  period_start?: InputMaybe<TsWhereIntegerInput>;
-  post_payment_credit_notes_amount?: InputMaybe<TsWhereIntegerInput>;
-  pre_payment_credit_notes_amount?: InputMaybe<TsWhereIntegerInput>;
-  quote?: InputMaybe<TsWhereStripe_QuoteWrappedStringUnionInput>;
-  receipt_number?: InputMaybe<TsWhereStringInput>;
-  starting_balance?: InputMaybe<TsWhereIntegerInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-  status?: InputMaybe<TsWhereInput>;
-  status_transitions?: InputMaybe<TsWhereStripe_InvoicesStatusTransitionsInput>;
-  subscription?: InputMaybe<TsWhereStripe_SubscriptionWrappedStringUnionInput>;
-  subscription_proration_date?: InputMaybe<TsWhereIntegerInput>;
-  subtotal?: InputMaybe<TsWhereIntegerInput>;
-  tax?: InputMaybe<TsWhereIntegerInput>;
-  test_clock?: InputMaybe<TsWhereStripe_TestHelpersTestClockWrappedStringUnionInput>;
-  threshold_reason?: InputMaybe<TsWhereStripe_InvoiceThresholdReasonInput>;
-  total?: InputMaybe<TsWhereIntegerInput>;
-  total_discount_amounts?: InputMaybe<TsWhereStripe_DiscountsResourceDiscountAmountInput>;
-  total_tax_amounts?: InputMaybe<TsWhereStripe_InvoiceTaxAmountInput>;
-  transfer_data?: InputMaybe<TsWhereStripe_InvoiceTransferDataInput>;
-  webhooks_delivered_at?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_PaymentIntentAccountTaxIdsInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  type?: InputMaybe<TsWhereInput>;
-  verification?: InputMaybe<TsWhereStripe_TaxIdVerificationInput>;
-};
-
-export type TsWhereStripe_ChargeWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  amount_captured?: InputMaybe<TsWhereIntegerInput>;
-  amount_refunded?: InputMaybe<TsWhereIntegerInput>;
-  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
-  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
-  calculated_statement_descriptor?: InputMaybe<TsWhereStringInput>;
-  captured?: InputMaybe<TsWhereBooleanInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  disputed?: InputMaybe<TsWhereBooleanInput>;
-  failure_code?: InputMaybe<TsWhereStringInput>;
-  failure_message?: InputMaybe<TsWhereStringInput>;
-  fraud_details?: InputMaybe<TsWhereStripe_ChargeFraudDetailsInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  outcome?: InputMaybe<TsWhereStripe_ChargeOutcomeInput>;
-  paid?: InputMaybe<TsWhereBooleanInput>;
-  payment_method?: InputMaybe<TsWhereStringInput>;
-  payment_method_details?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInput>;
-  receipt_email?: InputMaybe<TsWhereStringInput>;
-  receipt_number?: InputMaybe<TsWhereStringInput>;
-  receipt_url?: InputMaybe<TsWhereStringInput>;
-  refunded?: InputMaybe<TsWhereBooleanInput>;
-  refunds?: InputMaybe<TsWhereStripe_ChargeRefundsInput>;
-  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
-  status?: InputMaybe<TsWhereInput>;
-  transfer_data?: InputMaybe<TsWhereStripe_ChargeTransferDataInput>;
-  transfer_group?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_ChargeOutcomeInput = {
-  network_status?: InputMaybe<TsWhereStringInput>;
-  reason?: InputMaybe<TsWhereStringInput>;
-  risk_level?: InputMaybe<TsWhereStringInput>;
-  risk_score?: InputMaybe<TsWhereIntegerInput>;
-  rule?: InputMaybe<TsWhereStripe_RuleWrappedStringUnionInput>;
-  seller_message?: InputMaybe<TsWhereStringInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_RuleWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  action?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  predicate?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsInput = {
-  ach_credit_transfer?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAchCreditTransferInput>;
-  ach_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAchDebitInput>;
-  acss_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAcssDebitInput>;
-  afterpay_clearpay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAfterpayClearpayInput>;
-  alipay?: InputMaybe<TsWhereStripe_PaymentFlowsPrivatePaymentMethodsAlipayDetailsInput>;
-  au_becs_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAuBecsDebitInput>;
-  bacs_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBacsDebitInput>;
-  bancontact?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBancontactInput>;
-  boleto?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBoletoInput>;
-  card?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInput>;
-  card_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentInput>;
-  eps?: InputMaybe<TsWhereStripe_PaymentMethodDetailsEpsInput>;
-  fpx?: InputMaybe<TsWhereStripe_PaymentMethodDetailsFpxInput>;
-  giropay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsGiropayInput>;
-  grabpay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsGrabpayInput>;
-  ideal?: InputMaybe<TsWhereStripe_PaymentMethodDetailsIdealInput>;
-  interac_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInteracPresentInput>;
-  klarna?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKlarnaInput>;
-  konbini?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKonbiniInput>;
-  multibanco?: InputMaybe<TsWhereStripe_PaymentMethodDetailsMultibancoInput>;
-  oxxo?: InputMaybe<TsWhereStripe_PaymentMethodDetailsOxxoInput>;
-  p24?: InputMaybe<TsWhereStripe_PaymentMethodDetailsP24Input>;
-  paynow?: InputMaybe<TsWhereStripe_PaymentMethodDetailsPaynowInput>;
-  sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsSepaDebitInput>;
-  sofort?: InputMaybe<TsWhereStripe_PaymentMethodDetailsSofortInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-  us_bank_account?: InputMaybe<TsWhereStripe_PaymentMethodDetailsUsBankAccountInput>;
-  wechat_pay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsWechatPayInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsAchCreditTransferInput = {
-  account_number?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-  swift_code?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsAchDebitInput = {
-  account_holder_type?: InputMaybe<TsWhereInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsAcssDebitInput = {
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  institution_number?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  mandate?: InputMaybe<TsWhereStringInput>;
-  transit_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsAfterpayClearpayInput = {
-  reference?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentFlowsPrivatePaymentMethodsAlipayDetailsInput = {
-  buyer_id?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  transaction_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsAuBecsDebitInput = {
-  bsb_number?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  mandate?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsBacsDebitInput = {
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  mandate?: InputMaybe<TsWhereStringInput>;
-  sort_code?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsBancontactInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  bic?: InputMaybe<TsWhereStringInput>;
-  generated_sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
-  generated_sepa_debit_mandate?: InputMaybe<TsWhereStripe_MandateWrappedStringUnionInput>;
-  iban_last4?: InputMaybe<TsWhereStringInput>;
-  preferred_language?: InputMaybe<TsWhereInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  acss_debit?: InputMaybe<TsWhereStripe_PaymentMethodAcssDebitInput>;
-  au_becs_debit?: InputMaybe<TsWhereStripe_PaymentMethodAuBecsDebitInput>;
-  bacs_debit?: InputMaybe<TsWhereStripe_PaymentMethodBacsDebitInput>;
-  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
-  boleto?: InputMaybe<TsWhereStripe_PaymentMethodBoletoInput>;
-  card?: InputMaybe<TsWhereStripe_PaymentMethodCardInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  eps?: InputMaybe<TsWhereStripe_PaymentMethodEpsInput>;
-  fpx?: InputMaybe<TsWhereStripe_PaymentMethodFpxInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  ideal?: InputMaybe<TsWhereStripe_PaymentMethodIdealInput>;
-  klarna?: InputMaybe<TsWhereStripe_PaymentMethodKlarnaInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  p24?: InputMaybe<TsWhereStripe_PaymentMethodP24Input>;
-  sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodSepaDebitInput>;
-  sofort?: InputMaybe<TsWhereStripe_PaymentMethodSofortInput>;
-  type?: InputMaybe<TsWhereInput>;
-  us_bank_account?: InputMaybe<TsWhereStripe_PaymentMethodUsBankAccountInput>;
-};
-
-export type TsWhereStripe_PaymentMethodAcssDebitInput = {
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  institution_number?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  transit_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodAuBecsDebitInput = {
-  bsb_number?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodBacsDebitInput = {
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  sort_code?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodBoletoInput = {
-  tax_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardInput = {
-  brand?: InputMaybe<TsWhereStringInput>;
-  checks?: InputMaybe<TsWhereStripe_PaymentMethodCardChecksInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  generated_from?: InputMaybe<TsWhereStripe_PaymentMethodCardGeneratedCardInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  networks?: InputMaybe<TsWhereStripe_NetworksInput>;
-  three_d_secure_usage?: InputMaybe<TsWhereStripe_ThreeDSecureUsageInput>;
-  wallet?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardChecksInput = {
-  address_line1_check?: InputMaybe<TsWhereStringInput>;
-  address_postal_code_check?: InputMaybe<TsWhereStringInput>;
-  cvc_check?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardGeneratedCardInput = {
-  charge?: InputMaybe<TsWhereStringInput>;
-  payment_method_details?: InputMaybe<TsWhereStripe_CardGeneratedFromPaymentMethodDetailsInput>;
-};
-
-export type TsWhereStripe_CardGeneratedFromPaymentMethodDetailsInput = {
-  card_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardPresentInput = {
-  amount_authorized?: InputMaybe<TsWhereIntegerInput>;
-  brand?: InputMaybe<TsWhereStringInput>;
-  capture_before?: InputMaybe<TsWhereIntegerInput>;
-  cardholder_name?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  emv_auth_data?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  generated_card?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  network?: InputMaybe<TsWhereStringInput>;
-  overcapture_supported?: InputMaybe<TsWhereBooleanInput>;
-  read_method?: InputMaybe<TsWhereInput>;
-  receipt?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentReceiptInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardPresentReceiptInput = {
-  account_type?: InputMaybe<TsWhereInput>;
-  application_cryptogram?: InputMaybe<TsWhereStringInput>;
-  application_preferred_name?: InputMaybe<TsWhereStringInput>;
-  authorization_code?: InputMaybe<TsWhereStringInput>;
-  authorization_response_code?: InputMaybe<TsWhereStringInput>;
-  cardholder_verification_method?: InputMaybe<TsWhereStringInput>;
-  dedicated_file_name?: InputMaybe<TsWhereStringInput>;
-  terminal_verification_results?: InputMaybe<TsWhereStringInput>;
-  transaction_status_information?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_NetworksInput = {
-  available?: InputMaybe<TsWhereStripe_PaymentMethodAvailableInput>;
-  preferred?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodAvailableInput = {
-  /** Exact match */
-  eq?: InputMaybe<Scalars['String']>;
-  /** Array of possible exact match values. */
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Full text searching with fuzzy matching. */
-  match?: InputMaybe<Scalars['String']>;
-  /** Regular expression string matching. Use of * wildcards could degrade performance. */
-  regexp?: InputMaybe<Scalars['String']>;
-};
-
-export type TsWhereStripe_ThreeDSecureUsageInput = {
-  supported?: InputMaybe<TsWhereBooleanInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardWalletInput = {
-  dynamic_last4?: InputMaybe<TsWhereStringInput>;
-  masterpass?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletMasterpassInput>;
-  type?: InputMaybe<TsWhereInput>;
-  visa_checkout?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletVisaCheckoutInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardWalletMasterpassInput = {
-  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
-};
-
-export type TsWhereStripe_PaymentMethodCardWalletVisaCheckoutInput = {
-  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
-};
-
-export type TsWhereStripe_PaymentMethodEpsInput = {
-  bank?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodFpxInput = {
-  bank?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodIdealInput = {
-  bank?: InputMaybe<TsWhereInput>;
-  bic?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodKlarnaInput = {
-  dob?: InputMaybe<TsWhereStripe_PaymentFlowsPrivatePaymentMethodsKlarnaDobInput>;
-};
-
-export type TsWhereStripe_PaymentFlowsPrivatePaymentMethodsKlarnaDobInput = {
-  day?: InputMaybe<TsWhereIntegerInput>;
-  month?: InputMaybe<TsWhereIntegerInput>;
-  year?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_PaymentMethodP24Input = {
-  bank?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodSepaDebitInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  branch_code?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodSofortInput = {
-  country?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodUsBankAccountInput = {
-  account_holder_type?: InputMaybe<TsWhereInput>;
-  account_type?: InputMaybe<TsWhereInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_MandateWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  customer_acceptance?: InputMaybe<TsWhereStripe_CustomerAcceptanceInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  payment_method_details?: InputMaybe<TsWhereStripe_MandatePaymentMethodDetailsInput>;
-  single_use?: InputMaybe<TsWhereStripe_MandateSingleUseInput>;
-  status?: InputMaybe<TsWhereInput>;
-  type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_CustomerAcceptanceInput = {
-  accepted_at?: InputMaybe<TsWhereIntegerInput>;
-  online?: InputMaybe<TsWhereStripe_OnlineAcceptanceInput>;
-  type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_OnlineAcceptanceInput = {
-  ip_address?: InputMaybe<TsWhereStringInput>;
-  user_agent?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_MandatePaymentMethodDetailsInput = {
-  acss_debit?: InputMaybe<TsWhereStripe_MandateAcssDebitInput>;
-  au_becs_debit?: InputMaybe<TsWhereStripe_MandateAuBecsDebitInput>;
-  bacs_debit?: InputMaybe<TsWhereStripe_MandateBacsDebitInput>;
-  sepa_debit?: InputMaybe<TsWhereStripe_MandateSepaDebitInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_MandateAcssDebitInput = {
-  interval_description?: InputMaybe<TsWhereStringInput>;
-  payment_schedule?: InputMaybe<TsWhereInput>;
-  transaction_type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_MandateAuBecsDebitInput = {
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_MandateBacsDebitInput = {
-  network_status?: InputMaybe<TsWhereInput>;
-  reference?: InputMaybe<TsWhereStringInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_MandateSepaDebitInput = {
-  reference?: InputMaybe<TsWhereStringInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_MandateSingleUseInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsBoletoInput = {
-  tax_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardInput = {
-  brand?: InputMaybe<TsWhereStringInput>;
-  checks?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardChecksInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  installments?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  mandate?: InputMaybe<TsWhereStringInput>;
-  network?: InputMaybe<TsWhereStringInput>;
-  three_d_secure?: InputMaybe<TsWhereStripe_ThreeDSecureDetailsInput>;
-  wallet?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardChecksInput = {
-  address_line1_check?: InputMaybe<TsWhereStringInput>;
-  address_postal_code_check?: InputMaybe<TsWhereStringInput>;
-  cvc_check?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardInstallmentsInput = {
-  plan?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput = {
-  count?: InputMaybe<TsWhereIntegerInput>;
-  interval?: InputMaybe<TsWhereInput>;
-  type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_ThreeDSecureDetailsInput = {
-  authentication_flow?: InputMaybe<TsWhereInput>;
-  result?: InputMaybe<TsWhereInput>;
-  result_reason?: InputMaybe<TsWhereInput>;
-  version?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardWalletInput = {
-  dynamic_last4?: InputMaybe<TsWhereStringInput>;
-  masterpass?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletMasterpassInput>;
-  type?: InputMaybe<TsWhereInput>;
-  visa_checkout?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletVisaCheckoutInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardWalletMasterpassInput = {
-  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsCardWalletVisaCheckoutInput = {
-  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsEpsInput = {
-  bank?: InputMaybe<TsWhereInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsFpxInput = {
-  bank?: InputMaybe<TsWhereInput>;
-  transaction_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsGiropayInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  bic?: InputMaybe<TsWhereStringInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsGrabpayInput = {
-  transaction_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsIdealInput = {
-  bank?: InputMaybe<TsWhereInput>;
-  bic?: InputMaybe<TsWhereInput>;
-  generated_sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
-  generated_sepa_debit_mandate?: InputMaybe<TsWhereStripe_MandateWrappedStringUnionInput>;
-  iban_last4?: InputMaybe<TsWhereStringInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsInteracPresentInput = {
-  brand?: InputMaybe<TsWhereStringInput>;
-  cardholder_name?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  emv_auth_data?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  generated_card?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  network?: InputMaybe<TsWhereStringInput>;
-  preferred_locales?: InputMaybe<TsWhereStripe_PaymentIntentPreferredLocalesInput>;
-  read_method?: InputMaybe<TsWhereInput>;
-  receipt?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInteracPresentReceiptInput>;
-};
-
-export type TsWhereStripe_PaymentIntentPreferredLocalesInput = {
-  /** Exact match */
-  eq?: InputMaybe<Scalars['String']>;
-  /** Array of possible exact match values. */
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Full text searching with fuzzy matching. */
-  match?: InputMaybe<Scalars['String']>;
-  /** Regular expression string matching. Use of * wildcards could degrade performance. */
-  regexp?: InputMaybe<Scalars['String']>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsInteracPresentReceiptInput = {
-  account_type?: InputMaybe<TsWhereInput>;
-  application_cryptogram?: InputMaybe<TsWhereStringInput>;
-  application_preferred_name?: InputMaybe<TsWhereStringInput>;
-  authorization_code?: InputMaybe<TsWhereStringInput>;
-  authorization_response_code?: InputMaybe<TsWhereStringInput>;
-  cardholder_verification_method?: InputMaybe<TsWhereStringInput>;
-  dedicated_file_name?: InputMaybe<TsWhereStringInput>;
-  terminal_verification_results?: InputMaybe<TsWhereStringInput>;
-  transaction_status_information?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsKlarnaInput = {
-  payment_method_category?: InputMaybe<TsWhereStringInput>;
-  preferred_locale?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsKonbiniInput = {
-  store?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKonbiniStoreInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsKonbiniStoreInput = {
-  chain?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsMultibancoInput = {
-  entity?: InputMaybe<TsWhereStringInput>;
-  reference?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsOxxoInput = {
-  number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsP24Input = {
-  bank?: InputMaybe<TsWhereInput>;
-  reference?: InputMaybe<TsWhereStringInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsPaynowInput = {
-  reference?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsSepaDebitInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  branch_code?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  mandate?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsSofortInput = {
-  bank_code?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  bic?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  generated_sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
-  generated_sepa_debit_mandate?: InputMaybe<TsWhereStripe_MandateWrappedStringUnionInput>;
-  iban_last4?: InputMaybe<TsWhereStringInput>;
-  preferred_language?: InputMaybe<TsWhereInput>;
-  verified_name?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsUsBankAccountInput = {
-  account_holder_type?: InputMaybe<TsWhereInput>;
-  account_type?: InputMaybe<TsWhereInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentMethodDetailsWechatPayInput = {
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  transaction_id?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_ChargeRefundsInput = {
-  data?: InputMaybe<TsWhereStripe_RefundInput>;
-  has_more?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_RefundInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  balance_transaction?: InputMaybe<TsWhereStripe_BalanceTransactionWrappedStringUnionInput>;
-  charge?: InputMaybe<TsWhereStripe_ChargeWrappedStringUnionInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  failure_balance_transaction?: InputMaybe<TsWhereStripe_BalanceTransactionWrappedStringUnionInput>;
-  failure_reason?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  next_action?: InputMaybe<TsWhereStripe_RefundNextActionInput>;
-  object?: InputMaybe<TsWhereInput>;
-  payment_intent?: InputMaybe<TsWhereStripe_PaymentIntentWrappedStringUnionInput>;
-  reason?: InputMaybe<TsWhereInput>;
-  receipt_number?: InputMaybe<TsWhereStringInput>;
-  source_transfer_reversal?: InputMaybe<TsWhereStripe_TransferReversalWrappedStringUnionInput>;
-  status?: InputMaybe<TsWhereStringInput>;
-  transfer_reversal?: InputMaybe<TsWhereStripe_TransferReversalWrappedStringUnionInput>;
-};
-
-export type TsWhereStripe_RefundNextActionInput = {
-  display_details?: InputMaybe<TsWhereStripe_RefundNextActionDisplayDetailsInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_RefundNextActionDisplayDetailsInput = {
-  email_sent?: InputMaybe<TsWhereStripe_EmailSentInput>;
-  expires_at?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_EmailSentInput = {
-  email_sent_at?: InputMaybe<TsWhereIntegerInput>;
-  email_sent_to?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  amount_capturable?: InputMaybe<TsWhereIntegerInput>;
-  amount_received?: InputMaybe<TsWhereIntegerInput>;
-  application?: InputMaybe<TsWhereStripe_ApplicationWrappedStringUnionInput>;
-  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
-  automatic_payment_methods?: InputMaybe<TsWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput>;
-  canceled_at?: InputMaybe<TsWhereIntegerInput>;
-  cancellation_reason?: InputMaybe<TsWhereInput>;
-  capture_method?: InputMaybe<TsWhereInput>;
-  charges?: InputMaybe<TsWhereStripe_PaymentIntentChargesInput>;
-  client_secret?: InputMaybe<TsWhereStringInput>;
-  confirmation_method?: InputMaybe<TsWhereInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  invoice?: InputMaybe<TsWhereStripe_InvoiceInput>;
-  last_payment_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  next_action?: InputMaybe<TsWhereStripe_PaymentIntentNextActionInput>;
-  object?: InputMaybe<TsWhereInput>;
-  on_behalf_of?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
-  payment_method?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
-  payment_method_options?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodOptionsInput>;
-  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
-  processing?: InputMaybe<TsWhereStripe_PaymentIntentProcessingInput>;
-  receipt_email?: InputMaybe<TsWhereStringInput>;
-  review?: InputMaybe<TsWhereStripe_ReviewWrappedStringUnionInput>;
-  setup_future_usage?: InputMaybe<TsWhereInput>;
-  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
-  status?: InputMaybe<TsWhereInput>;
-  transfer_data?: InputMaybe<TsWhereStripe_TransferDataInput>;
-  transfer_group?: InputMaybe<TsWhereStringInput>;
-  session?: InputMaybe<TsWhereStripe_CheckoutSessionInput>;
+  invoiceItems?: InputMaybe<TsWhereStripe_InvoiceitemInput>;
+  sessionItems?: InputMaybe<TsWhereStripe_ItemInput>;
   shipment?: InputMaybe<TsWhereShipEngine_LabelInput>;
   _shapeId?: InputMaybe<TsWhereIdInput>;
   _id?: InputMaybe<TsWhereIdInput>;
@@ -2834,6 +2056,204 @@ export type TsWhereStripe_AccountTosAcceptanceInput = {
   user_agent?: InputMaybe<TsWhereStringInput>;
 };
 
+export type TsWhereStripe_PaymentMethodWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  acss_debit?: InputMaybe<TsWhereStripe_PaymentMethodAcssDebitInput>;
+  au_becs_debit?: InputMaybe<TsWhereStripe_PaymentMethodAuBecsDebitInput>;
+  bacs_debit?: InputMaybe<TsWhereStripe_PaymentMethodBacsDebitInput>;
+  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
+  boleto?: InputMaybe<TsWhereStripe_PaymentMethodBoletoInput>;
+  card?: InputMaybe<TsWhereStripe_PaymentMethodCardInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  eps?: InputMaybe<TsWhereStripe_PaymentMethodEpsInput>;
+  fpx?: InputMaybe<TsWhereStripe_PaymentMethodFpxInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  ideal?: InputMaybe<TsWhereStripe_PaymentMethodIdealInput>;
+  klarna?: InputMaybe<TsWhereStripe_PaymentMethodKlarnaInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  p24?: InputMaybe<TsWhereStripe_PaymentMethodP24Input>;
+  sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodSepaDebitInput>;
+  sofort?: InputMaybe<TsWhereStripe_PaymentMethodSofortInput>;
+  type?: InputMaybe<TsWhereInput>;
+  us_bank_account?: InputMaybe<TsWhereStripe_PaymentMethodUsBankAccountInput>;
+};
+
+export type TsWhereStripe_PaymentMethodAcssDebitInput = {
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  institution_number?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  transit_number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodAuBecsDebitInput = {
+  bsb_number?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodBacsDebitInput = {
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  sort_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodBoletoInput = {
+  tax_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardInput = {
+  brand?: InputMaybe<TsWhereStringInput>;
+  checks?: InputMaybe<TsWhereStripe_PaymentMethodCardChecksInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  generated_from?: InputMaybe<TsWhereStripe_PaymentMethodCardGeneratedCardInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  networks?: InputMaybe<TsWhereStripe_NetworksInput>;
+  three_d_secure_usage?: InputMaybe<TsWhereStripe_ThreeDSecureUsageInput>;
+  wallet?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardChecksInput = {
+  address_line1_check?: InputMaybe<TsWhereStringInput>;
+  address_postal_code_check?: InputMaybe<TsWhereStringInput>;
+  cvc_check?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardGeneratedCardInput = {
+  charge?: InputMaybe<TsWhereStringInput>;
+  payment_method_details?: InputMaybe<TsWhereStripe_CardGeneratedFromPaymentMethodDetailsInput>;
+};
+
+export type TsWhereStripe_CardGeneratedFromPaymentMethodDetailsInput = {
+  card_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardPresentInput = {
+  amount_authorized?: InputMaybe<TsWhereIntegerInput>;
+  brand?: InputMaybe<TsWhereStringInput>;
+  capture_before?: InputMaybe<TsWhereIntegerInput>;
+  cardholder_name?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  emv_auth_data?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  generated_card?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  network?: InputMaybe<TsWhereStringInput>;
+  overcapture_supported?: InputMaybe<TsWhereBooleanInput>;
+  read_method?: InputMaybe<TsWhereInput>;
+  receipt?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentReceiptInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardPresentReceiptInput = {
+  account_type?: InputMaybe<TsWhereInput>;
+  application_cryptogram?: InputMaybe<TsWhereStringInput>;
+  application_preferred_name?: InputMaybe<TsWhereStringInput>;
+  authorization_code?: InputMaybe<TsWhereStringInput>;
+  authorization_response_code?: InputMaybe<TsWhereStringInput>;
+  cardholder_verification_method?: InputMaybe<TsWhereStringInput>;
+  dedicated_file_name?: InputMaybe<TsWhereStringInput>;
+  terminal_verification_results?: InputMaybe<TsWhereStringInput>;
+  transaction_status_information?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_NetworksInput = {
+  available?: InputMaybe<TsWhereStripe_PaymentMethodAvailableInput>;
+  preferred?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodAvailableInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_ThreeDSecureUsageInput = {
+  supported?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardWalletInput = {
+  dynamic_last4?: InputMaybe<TsWhereStringInput>;
+  masterpass?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletMasterpassInput>;
+  type?: InputMaybe<TsWhereInput>;
+  visa_checkout?: InputMaybe<TsWhereStripe_PaymentMethodCardWalletVisaCheckoutInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardWalletMasterpassInput = {
+  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
+};
+
+export type TsWhereStripe_PaymentMethodCardWalletVisaCheckoutInput = {
+  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
+};
+
+export type TsWhereStripe_PaymentMethodEpsInput = {
+  bank?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodFpxInput = {
+  bank?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodIdealInput = {
+  bank?: InputMaybe<TsWhereInput>;
+  bic?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodKlarnaInput = {
+  dob?: InputMaybe<TsWhereStripe_PaymentFlowsPrivatePaymentMethodsKlarnaDobInput>;
+};
+
+export type TsWhereStripe_PaymentFlowsPrivatePaymentMethodsKlarnaDobInput = {
+  day?: InputMaybe<TsWhereIntegerInput>;
+  month?: InputMaybe<TsWhereIntegerInput>;
+  year?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_PaymentMethodP24Input = {
+  bank?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodSepaDebitInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  branch_code?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodSofortInput = {
+  country?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodUsBankAccountInput = {
+  account_holder_type?: InputMaybe<TsWhereInput>;
+  account_type?: InputMaybe<TsWhereInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+};
+
 export type TsWhereStripe_PaymentIntentPaymentMethodOptionsInput = {
   acss_debit?: InputMaybe<TsWhere4c5fc35133092d01c0a6f6273b32acefUnionInput>;
   afterpay_clearpay?: InputMaybe<TsWhere69c699ae4c023cdd5081fd0b275d2314UnionInput>;
@@ -2928,6 +2348,12 @@ export type TsWhereStripe_PaymentMethodOptionsCardInstallmentsInput = {
   available_plans?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput>;
   enabled?: InputMaybe<TsWhereBooleanInput>;
   plan?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput = {
+  count?: InputMaybe<TsWhereIntegerInput>;
+  interval?: InputMaybe<TsWhereInput>;
+  type?: InputMaybe<TsWhereInput>;
 };
 
 export type TsWhereStripe_PaymentMethodOptionsCardMandateOptionsInput = {
@@ -3108,110 +2534,47 @@ export type TsWhereStripe_TransferDataInput = {
   destination?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
 };
 
-export type TsWhereStripe_CheckoutSessionInput = {
-  after_expiration?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionAfterExpirationInput>;
-  allow_promotion_codes?: InputMaybe<TsWhereBooleanInput>;
-  amount_subtotal?: InputMaybe<TsWhereIntegerInput>;
-  amount_total?: InputMaybe<TsWhereIntegerInput>;
-  automatic_tax?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionAutomaticTaxInput>;
-  billing_address_collection?: InputMaybe<TsWhereInput>;
-  cancel_url?: InputMaybe<TsWhereStringInput>;
-  client_reference_id?: InputMaybe<TsWhereStringInput>;
-  consent?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionConsentInput>;
-  consent_collection?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionConsentCollectionInput>;
+export type TsWhereStripe_InvoiceitemInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
   currency?: InputMaybe<TsWhereStringInput>;
   customer?: InputMaybe<TsWhereStringInput>;
-  customer_creation?: InputMaybe<TsWhereInput>;
-  customer_details?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionCustomerDetailsInput>;
-  customer_email?: InputMaybe<TsWhereStringInput>;
-  expires_at?: InputMaybe<TsWhereIntegerInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  line_items?: InputMaybe<TsWhereStripe_PaymentIntentLineItemsInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  locale?: InputMaybe<TsWhereInput>;
-  mode?: InputMaybe<TsWhereInput>;
-  object?: InputMaybe<TsWhereInput>;
-  payment_intent?: InputMaybe<TsWhereStripe_PaymentIntentWrappedStringUnionInput>;
-  payment_link?: InputMaybe<TsWhereStripe_PaymentLinkWrappedStringUnionInput>;
-  payment_method_options?: InputMaybe<TsWhereStripe_CheckoutSessionPaymentMethodOptionsInput>;
-  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
-  payment_status?: InputMaybe<TsWhereInput>;
-  phone_number_collection?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionPhoneNumberCollectionInput>;
-  recovered_from?: InputMaybe<TsWhereStringInput>;
-  setup_intent?: InputMaybe<TsWhereStripe_SetupIntentWrappedStringUnionInput>;
-  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
-  shipping_options?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionShippingOptionInput>;
-  shipping_rate?: InputMaybe<TsWhereStripe_ShippingRateWrappedStringUnionInput>;
-  status?: InputMaybe<TsWhereInput>;
-  submit_type?: InputMaybe<TsWhereInput>;
-  subscription?: InputMaybe<TsWhereStripe_SubscriptionWrappedStringUnionInput>;
-  success_url?: InputMaybe<TsWhereStringInput>;
-  tax_id_collection?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionTaxIdCollectionInput>;
-  total_details?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionTotalDetailsInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentPagesCheckoutSessionAfterExpirationInput = {
-  recovery?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionAfterExpirationRecoveryInput>;
-};
-
-export type TsWhereStripe_PaymentPagesCheckoutSessionAfterExpirationRecoveryInput = {
-  allow_promotion_codes?: InputMaybe<TsWhereBooleanInput>;
-  enabled?: InputMaybe<TsWhereBooleanInput>;
-  expires_at?: InputMaybe<TsWhereIntegerInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentPagesCheckoutSessionAutomaticTaxInput = {
-  enabled?: InputMaybe<TsWhereBooleanInput>;
-  status?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentPagesCheckoutSessionConsentInput = {
-  promotions?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentPagesCheckoutSessionConsentCollectionInput = {
-  promotions?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentPagesCheckoutSessionCustomerDetailsInput = {
-  address?: InputMaybe<TsWhereStripe_AddressInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  phone?: InputMaybe<TsWhereStringInput>;
-  tax_exempt?: InputMaybe<TsWhereInput>;
-  tax_ids?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionTaxIdInput>;
-};
-
-export type TsWhereStripe_PaymentPagesCheckoutSessionTaxIdInput = {
-  type?: InputMaybe<TsWhereInput>;
-  value?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentIntentLineItemsInput = {
-  data?: InputMaybe<TsWhereStripe_ItemInput>;
-  has_more?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_ItemInput = {
-  amount_subtotal?: InputMaybe<TsWhereIntegerInput>;
-  amount_total?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
+  date?: InputMaybe<TsWhereIntegerInput>;
   description?: InputMaybe<TsWhereStringInput>;
-  discounts?: InputMaybe<TsWhereStripe_LineItemsDiscountAmountInput>;
+  discountable?: InputMaybe<TsWhereBooleanInput>;
+  discounts?: InputMaybe<TsWhereStripe_PaymentIntentDiscountsInput>;
   id?: InputMaybe<TsWhereStringInput>;
+  invoice?: InputMaybe<TsWhereStripe_InvoiceWrappedStringUnionInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
   object?: InputMaybe<TsWhereInput>;
+  period?: InputMaybe<TsWhereStripe_InvoiceLineItemPeriodInput>;
   price?: InputMaybe<TsWhereStripe_PriceInput>;
+  proration?: InputMaybe<TsWhereBooleanInput>;
   quantity?: InputMaybe<TsWhereIntegerInput>;
-  taxes?: InputMaybe<TsWhereStripe_LineItemsTaxAmountInput>;
+  subscription?: InputMaybe<TsWhereStripe_SubscriptionWrappedStringUnionInput>;
+  subscription_item?: InputMaybe<TsWhereStringInput>;
+  tax_rates?: InputMaybe<TsWhereStripe_TaxRateInput>;
+  test_clock?: InputMaybe<TsWhereStripe_TestHelpersTestClockWrappedStringUnionInput>;
+  unit_amount?: InputMaybe<TsWhereIntegerInput>;
+  unit_amount_decimal?: InputMaybe<TsWhereStringInput>;
 };
 
-export type TsWhereStripe_LineItemsDiscountAmountInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  discount?: InputMaybe<TsWhereStripe_DiscountInput>;
+export type TsWhereStripe_PaymentIntentDiscountsInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  checkout_session?: InputMaybe<TsWhereStringInput>;
+  coupon?: InputMaybe<TsWhereStripe_CouponInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  end?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice?: InputMaybe<TsWhereStringInput>;
+  invoice_item?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  start?: InputMaybe<TsWhereIntegerInput>;
+  subscription?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_InvoiceLineItemPeriodInput = {
+  end?: InputMaybe<TsWhereIntegerInput>;
+  start?: InputMaybe<TsWhereIntegerInput>;
 };
 
 export type TsWhereStripe_PriceInput = {
@@ -3388,233 +2751,6 @@ export type TsWhereStripe_TransformQuantityInput = {
   round?: InputMaybe<TsWhereInput>;
 };
 
-export type TsWhereStripe_LineItemsTaxAmountInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  rate?: InputMaybe<TsWhereStripe_TaxRateInput>;
-};
-
-export type TsWhereStripe_PaymentLinkWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  active?: InputMaybe<TsWhereBooleanInput>;
-  after_completion?: InputMaybe<TsWhereStripe_PaymentLinksResourceAfterCompletionInput>;
-  allow_promotion_codes?: InputMaybe<TsWhereBooleanInput>;
-  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
-  application_fee_percent?: InputMaybe<TsWhereNumberInput>;
-  automatic_tax?: InputMaybe<TsWhereStripe_PaymentLinksResourceAutomaticTaxInput>;
-  billing_address_collection?: InputMaybe<TsWhereInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  line_items?: InputMaybe<TsWhereStripe_PaymentLinkLineItemsInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  phone_number_collection?: InputMaybe<TsWhereStripe_PaymentLinksResourcePhoneNumberCollectionInput>;
-  subscription_data?: InputMaybe<TsWhereStripe_PaymentLinksResourceSubscriptionDataInput>;
-  transfer_data?: InputMaybe<TsWhereStripe_PaymentLinksResourceTransferDataInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentLinksResourceAfterCompletionInput = {
-  hosted_confirmation?: InputMaybe<TsWhereStripe_PaymentLinksResourceCompletionBehaviorConfirmationPageInput>;
-  redirect?: InputMaybe<TsWhereStripe_PaymentLinksResourceCompletionBehaviorRedirectInput>;
-  type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentLinksResourceCompletionBehaviorConfirmationPageInput = {
-  custom_message?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentLinksResourceCompletionBehaviorRedirectInput = {
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentLinksResourceAutomaticTaxInput = {
-  enabled?: InputMaybe<TsWhereBooleanInput>;
-};
-
-export type TsWhereStripe_PaymentLinkLineItemsInput = {
-  data?: InputMaybe<TsWhereStripe_ItemInput>;
-  has_more?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_PaymentLinksResourcePhoneNumberCollectionInput = {
-  enabled?: InputMaybe<TsWhereBooleanInput>;
-};
-
-export type TsWhereStripe_PaymentLinksResourceSubscriptionDataInput = {
-  trial_period_days?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_PaymentLinksResourceTransferDataInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_CheckoutSessionPaymentMethodOptionsInput = {
-  acss_debit?: InputMaybe<TsWhereStripe_CheckoutAcssDebitPaymentMethodOptionsInput>;
-  boleto?: InputMaybe<TsWhereStripe_CheckoutBoletoPaymentMethodOptionsInput>;
-  konbini?: InputMaybe<TsWhereStripe_CheckoutKonbiniPaymentMethodOptionsInput>;
-  oxxo?: InputMaybe<TsWhereStripe_CheckoutOxxoPaymentMethodOptionsInput>;
-  us_bank_account?: InputMaybe<TsWhereStripe_CheckoutUsBankAccountPaymentMethodOptionsInput>;
-};
-
-export type TsWhereStripe_CheckoutAcssDebitPaymentMethodOptionsInput = {
-  currency?: InputMaybe<TsWhereInput>;
-  mandate_options?: InputMaybe<TsWhereStripe_CheckoutAcssDebitMandateOptionsInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_CheckoutAcssDebitMandateOptionsInput = {
-  custom_mandate_url?: InputMaybe<TsWhereStringInput>;
-  interval_description?: InputMaybe<TsWhereStringInput>;
-  payment_schedule?: InputMaybe<TsWhereInput>;
-  transaction_type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_CheckoutBoletoPaymentMethodOptionsInput = {
-  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_CheckoutKonbiniPaymentMethodOptionsInput = {
-  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_CheckoutOxxoPaymentMethodOptionsInput = {
-  expires_after_days?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_CheckoutUsBankAccountPaymentMethodOptionsInput = {
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_PaymentPagesCheckoutSessionPhoneNumberCollectionInput = {
-  enabled?: InputMaybe<TsWhereBooleanInput>;
-};
-
-export type TsWhereStripe_SetupIntentWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  cancellation_reason?: InputMaybe<TsWhereInput>;
-  client_secret?: InputMaybe<TsWhereStringInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  last_setup_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  next_action?: InputMaybe<TsWhereStripe_SetupIntentNextActionInput>;
-  object?: InputMaybe<TsWhereInput>;
-  payment_method_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsInput>;
-  payment_method_types?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodTypesInput>;
-  status?: InputMaybe<TsWhereInput>;
-  usage?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SetupIntentNextActionInput = {
-  redirect_to_url?: InputMaybe<TsWhereStripe_SetupIntentNextActionRedirectToUrlInput>;
-  type?: InputMaybe<TsWhereStringInput>;
-  verify_with_microdeposits?: InputMaybe<TsWhereStripe_SetupIntentNextActionVerifyWithMicrodepositsInput>;
-};
-
-export type TsWhereStripe_SetupIntentNextActionRedirectToUrlInput = {
-  return_url?: InputMaybe<TsWhereStringInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_SetupIntentNextActionVerifyWithMicrodepositsInput = {
-  arrival_date?: InputMaybe<TsWhereIntegerInput>;
-  hosted_verification_url?: InputMaybe<TsWhereStringInput>;
-  microdeposit_type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_SetupIntentPaymentMethodOptionsInput = {
-  acss_debit?: InputMaybe<TsWhere6c955fa05d8df9184cc18d8841c3705dUnionInput>;
-  card?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsCardInput>;
-  sepa_debit?: InputMaybe<TsWhere256af04705b008a07ca5c137b490ba88UnionInput>;
-  us_bank_account?: InputMaybe<TsWhere5e84458a02fb07e8c3d5d9b0bb3e5d99UnionInput>;
-};
-
-export type TsWhere6c955fa05d8df9184cc18d8841c3705dUnionInput = {
-  currency?: InputMaybe<TsWhereInput>;
-  mandate_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsMandateOptionsAcssDebitInput>;
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_SetupIntentPaymentMethodOptionsMandateOptionsAcssDebitInput = {
-  custom_mandate_url?: InputMaybe<TsWhereStringInput>;
-  interval_description?: InputMaybe<TsWhereStringInput>;
-  payment_schedule?: InputMaybe<TsWhereInput>;
-  transaction_type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_SetupIntentPaymentMethodOptionsCardInput = {
-  mandate_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsCardMandateOptionsInput>;
-  request_three_d_secure?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_SetupIntentPaymentMethodOptionsCardMandateOptionsInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  amount_type?: InputMaybe<TsWhereInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  end_date?: InputMaybe<TsWhereIntegerInput>;
-  interval?: InputMaybe<TsWhereInput>;
-  interval_count?: InputMaybe<TsWhereIntegerInput>;
-  reference?: InputMaybe<TsWhereStringInput>;
-  start_date?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhere256af04705b008a07ca5c137b490ba88UnionInput = {
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhere5e84458a02fb07e8c3d5d9b0bb3e5d99UnionInput = {
-  verification_method?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_SetupIntentPaymentMethodTypesInput = {
-  /** Exact match */
-  eq?: InputMaybe<Scalars['String']>;
-  /** Array of possible exact match values. */
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Full text searching with fuzzy matching. */
-  match?: InputMaybe<Scalars['String']>;
-  /** Regular expression string matching. Use of * wildcards could degrade performance. */
-  regexp?: InputMaybe<Scalars['String']>;
-};
-
-export type TsWhereStripe_PaymentPagesCheckoutSessionShippingOptionInput = {
-  shipping_amount?: InputMaybe<TsWhereIntegerInput>;
-  shipping_rate?: InputMaybe<TsWhereStripe_ShippingRateWrappedStringUnionInput>;
-};
-
-export type TsWhereStripe_ShippingRateWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  active?: InputMaybe<TsWhereBooleanInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  delivery_estimate?: InputMaybe<TsWhereStripe_ShippingRateDeliveryEstimateInput>;
-  display_name?: InputMaybe<TsWhereStringInput>;
-  fixed_amount?: InputMaybe<TsWhereStripe_ShippingRateFixedAmountInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  tax_behavior?: InputMaybe<TsWhereInput>;
-  type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_ShippingRateDeliveryEstimateInput = {
-  maximum?: InputMaybe<TsWhereStripe_ShippingRateDeliveryEstimateBoundInput>;
-  minimum?: InputMaybe<TsWhereStripe_ShippingRateDeliveryEstimateBoundInput>;
-};
-
-export type TsWhereStripe_ShippingRateDeliveryEstimateBoundInput = {
-  unit?: InputMaybe<TsWhereInput>;
-  value?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_ShippingRateFixedAmountInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-};
-
 export type TsWhereStripe_SubscriptionWrappedStringUnionInput = {
   value?: InputMaybe<TsWhereStringInput>;
   application_fee_percent?: InputMaybe<TsWhereNumberInput>;
@@ -3751,20 +2887,39 @@ export type TsWhereStripe_SubscriptionTransferDataInput = {
   amount_percent?: InputMaybe<TsWhereNumberInput>;
 };
 
-export type TsWhereStripe_PaymentPagesCheckoutSessionTaxIdCollectionInput = {
-  enabled?: InputMaybe<TsWhereBooleanInput>;
+export type TsWhereStripe_TestHelpersTestClockWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  deletes_after?: InputMaybe<TsWhereIntegerInput>;
+  frozen_time?: InputMaybe<TsWhereIntegerInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  status?: InputMaybe<TsWhereInput>;
 };
 
-export type TsWhereStripe_PaymentPagesCheckoutSessionTotalDetailsInput = {
-  amount_discount?: InputMaybe<TsWhereIntegerInput>;
-  amount_shipping?: InputMaybe<TsWhereIntegerInput>;
-  amount_tax?: InputMaybe<TsWhereIntegerInput>;
-  breakdown?: InputMaybe<TsWhereStripe_PaymentPagesCheckoutSessionTotalDetailsResourceBreakdownInput>;
-};
-
-export type TsWhereStripe_PaymentPagesCheckoutSessionTotalDetailsResourceBreakdownInput = {
+export type TsWhereStripe_ItemInput = {
+  amount_subtotal?: InputMaybe<TsWhereIntegerInput>;
+  amount_total?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
   discounts?: InputMaybe<TsWhereStripe_LineItemsDiscountAmountInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
+  price?: InputMaybe<TsWhereStripe_PriceInput>;
+  quantity?: InputMaybe<TsWhereIntegerInput>;
   taxes?: InputMaybe<TsWhereStripe_LineItemsTaxAmountInput>;
+};
+
+export type TsWhereStripe_LineItemsDiscountAmountInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  discount?: InputMaybe<TsWhereStripe_DiscountInput>;
+};
+
+export type TsWhereStripe_LineItemsTaxAmountInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  rate?: InputMaybe<TsWhereStripe_TaxRateInput>;
 };
 
 export type TsWhereShipEngine_LabelInput = {
@@ -3820,22 +2975,80 @@ export type TsWhereShipEngine_DimensionsInput = {
   unit?: InputMaybe<TsWhereStringInput>;
 };
 
-export type TsWhereStripe_TransferReversalWrappedStringUnionInput = {
+export type TsWhereStripe_PaymentMethodInput = {
+  acss_debit?: InputMaybe<TsWhereStripe_PaymentMethodAcssDebitInput>;
+  au_becs_debit?: InputMaybe<TsWhereStripe_PaymentMethodAuBecsDebitInput>;
+  bacs_debit?: InputMaybe<TsWhereStripe_PaymentMethodBacsDebitInput>;
+  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
+  boleto?: InputMaybe<TsWhereStripe_PaymentMethodBoletoInput>;
+  card?: InputMaybe<TsWhereStripe_PaymentMethodCardInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  customer?: InputMaybe<TsWhereStripe_CustomerWrappedStringUnionInput>;
+  eps?: InputMaybe<TsWhereStripe_PaymentMethodEpsInput>;
+  fpx?: InputMaybe<TsWhereStripe_PaymentMethodFpxInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  ideal?: InputMaybe<TsWhereStripe_PaymentMethodIdealInput>;
+  klarna?: InputMaybe<TsWhereStripe_PaymentMethodKlarnaInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  p24?: InputMaybe<TsWhereStripe_PaymentMethodP24Input>;
+  sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodSepaDebitInput>;
+  sofort?: InputMaybe<TsWhereStripe_PaymentMethodSofortInput>;
+  type?: InputMaybe<TsWhereInput>;
+  us_bank_account?: InputMaybe<TsWhereStripe_PaymentMethodUsBankAccountInput>;
+};
+
+export type TsWhereStripe_CustomerWrappedStringUnionInput = {
   value?: InputMaybe<TsWhereStringInput>;
-  amount?: InputMaybe<TsWhereIntegerInput>;
+  address?: InputMaybe<TsWhereStripe_AddressInput>;
+  balance?: InputMaybe<TsWhereIntegerInput>;
   created?: InputMaybe<TsWhereIntegerInput>;
   currency?: InputMaybe<TsWhereStringInput>;
+  delinquent?: InputMaybe<TsWhereBooleanInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  discount?: InputMaybe<TsWhereStripe_DiscountInput>;
+  email?: InputMaybe<TsWhereStringInput>;
   id?: InputMaybe<TsWhereStringInput>;
+  invoice_prefix?: InputMaybe<TsWhereStringInput>;
+  invoice_settings?: InputMaybe<TsWhereStripe_InvoiceSettingCustomerSettingInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  next_invoice_sequence?: InputMaybe<TsWhereIntegerInput>;
   object?: InputMaybe<TsWhereInput>;
+  phone?: InputMaybe<TsWhereStringInput>;
+  preferred_locales?: InputMaybe<TsWhereStripe_CustomerPreferredLocalesInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  sources?: InputMaybe<TsWhereStripe_CustomerSourcesInput>;
+  subscriptions?: InputMaybe<TsWhereStripe_CustomerSubscriptionsInput>;
+  tax?: InputMaybe<TsWhereStripe_CustomerTaxInput>;
+  tax_exempt?: InputMaybe<TsWhereInput>;
+  tax_ids?: InputMaybe<TsWhereStripe_CustomerTaxIdsInput>;
 };
 
-export type TsWhereStripe_ChargeTransferDataInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  destination?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+export type TsWhereStripe_InvoiceSettingCustomerSettingInput = {
+  custom_fields?: InputMaybe<TsWhereStripe_InvoiceSettingCustomFieldInput>;
+  footer?: InputMaybe<TsWhereStringInput>;
 };
 
-export type TsWhere0dfdf3d2da91f0e817d280b6398091a5UnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
+export type TsWhereStripe_CustomerPreferredLocalesInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_CustomerSourcesInput = {
+  data?: InputMaybe<TsWhereStripe_CustomerDataInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_CustomerDataInput = {
   created?: InputMaybe<TsWhereIntegerInput>;
   customer?: InputMaybe<TsWhereStringInput>;
   fingerprint?: InputMaybe<TsWhereStringInput>;
@@ -4192,464 +3405,6 @@ export type TsWhereStripe_SourceTypeWechatInput = {
   statement_descriptor?: InputMaybe<TsWhereStringInput>;
 };
 
-export type TsWhereStripe_PaymentIntentDiscountsInput = {
-  /** Exact match */
-  eq?: InputMaybe<Scalars['String']>;
-  /** Array of possible exact match values. */
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Full text searching with fuzzy matching. */
-  match?: InputMaybe<Scalars['String']>;
-  /** Regular expression string matching. Use of * wildcards could degrade performance. */
-  regexp?: InputMaybe<Scalars['String']>;
-};
-
-export type TsWhereStripe_PaymentIntentLinesInput = {
-  data?: InputMaybe<TsWhereStripe_LineItemInput>;
-  has_more?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_LineItemInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  discount_amounts?: InputMaybe<TsWhereStripe_DiscountsResourceDiscountAmountInput>;
-  discountable?: InputMaybe<TsWhereBooleanInput>;
-  discounts?: InputMaybe<TsWhereStripe_PaymentIntentDiscountsInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  invoice_item?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  period?: InputMaybe<TsWhereStripe_InvoiceLineItemPeriodInput>;
-  price?: InputMaybe<TsWhereStripe_PriceInput>;
-  proration?: InputMaybe<TsWhereBooleanInput>;
-  proration_details?: InputMaybe<TsWhereStripe_InvoicesLineItemsProrationDetailsInput>;
-  quantity?: InputMaybe<TsWhereIntegerInput>;
-  subscription?: InputMaybe<TsWhereStringInput>;
-  subscription_item?: InputMaybe<TsWhereStringInput>;
-  tax_amounts?: InputMaybe<TsWhereStripe_InvoiceTaxAmountInput>;
-  tax_rates?: InputMaybe<TsWhereStripe_TaxRateInput>;
-  type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_DiscountsResourceDiscountAmountInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  discount?: InputMaybe<TsWhereStripe_DeletedDiscountStripe_DiscountWrappedStringUnionInput>;
-};
-
-export type TsWhereStripe_DeletedDiscountStripe_DiscountWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  checkout_session?: InputMaybe<TsWhereStringInput>;
-  coupon?: InputMaybe<TsWhereStripe_CouponInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  end?: InputMaybe<TsWhereIntegerInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  invoice?: InputMaybe<TsWhereStringInput>;
-  invoice_item?: InputMaybe<TsWhereStringInput>;
-  object?: InputMaybe<TsWhereInput>;
-  start?: InputMaybe<TsWhereIntegerInput>;
-  subscription?: InputMaybe<TsWhereStringInput>;
-  deleted?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_InvoiceLineItemPeriodInput = {
-  end?: InputMaybe<TsWhereIntegerInput>;
-  start?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_InvoicesLineItemsProrationDetailsInput = {
-  credited_items?: InputMaybe<TsWhereStripe_InvoicesLineItemsCreditedItemsInput>;
-};
-
-export type TsWhereStripe_InvoicesLineItemsCreditedItemsInput = {
-  invoice?: InputMaybe<TsWhereStringInput>;
-  invoice_line_items?: InputMaybe<TsWhereStripe_PaymentIntentInvoiceLineItemsInput>;
-};
-
-export type TsWhereStripe_PaymentIntentInvoiceLineItemsInput = {
-  /** Exact match */
-  eq?: InputMaybe<Scalars['String']>;
-  /** Array of possible exact match values. */
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Full text searching with fuzzy matching. */
-  match?: InputMaybe<Scalars['String']>;
-  /** Regular expression string matching. Use of * wildcards could degrade performance. */
-  regexp?: InputMaybe<Scalars['String']>;
-};
-
-export type TsWhereStripe_InvoiceTaxAmountInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  inclusive?: InputMaybe<TsWhereBooleanInput>;
-  tax_rate?: InputMaybe<TsWhereStripe_TaxRateWrappedStringUnionInput>;
-};
-
-export type TsWhereStripe_TaxRateWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  active?: InputMaybe<TsWhereBooleanInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  display_name?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  inclusive?: InputMaybe<TsWhereBooleanInput>;
-  jurisdiction?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  percentage?: InputMaybe<TsWhereNumberInput>;
-  state?: InputMaybe<TsWhereStringInput>;
-  tax_type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_InvoicesPaymentSettingsInput = {
-  payment_method_options?: InputMaybe<TsWhereStripe_InvoicesPaymentMethodOptionsInput>;
-  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
-};
-
-export type TsWhereStripe_InvoicesPaymentMethodOptionsInput = {
-  acss_debit?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsAcssDebitInput>;
-  bancontact?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsBancontactInput>;
-  card?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsCardInput>;
-  customer_balance?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsCustomerBalanceInput>;
-  us_bank_account?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsUsBankAccountInput>;
-};
-
-export type TsWhereStripe_InvoicePaymentMethodOptionsCardInput = {
-  request_three_d_secure?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_QuoteWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  amount_subtotal?: InputMaybe<TsWhereIntegerInput>;
-  amount_total?: InputMaybe<TsWhereIntegerInput>;
-  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
-  application_fee_percent?: InputMaybe<TsWhereNumberInput>;
-  automatic_tax?: InputMaybe<TsWhereStripe_QuotesResourceAutomaticTaxInput>;
-  collection_method?: InputMaybe<TsWhereInput>;
-  computed?: InputMaybe<TsWhereStripe_QuotesResourceComputedInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  default_tax_rates?: InputMaybe<TsWhereStripe_QuoteDefaultTaxRatesInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  discounts?: InputMaybe<TsWhereStripe_QuoteDiscountsInput>;
-  expires_at?: InputMaybe<TsWhereIntegerInput>;
-  footer?: InputMaybe<TsWhereStringInput>;
-  from_quote?: InputMaybe<TsWhereStripe_QuotesResourceFromQuoteInput>;
-  header?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  invoice_settings?: InputMaybe<TsWhereStripe_InvoiceSettingQuoteSettingInput>;
-  line_items?: InputMaybe<TsWhereStripe_QuoteLineItemsInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  number?: InputMaybe<TsWhereStringInput>;
-  object?: InputMaybe<TsWhereInput>;
-  status?: InputMaybe<TsWhereInput>;
-  status_transitions?: InputMaybe<TsWhereStripe_QuotesResourceStatusTransitionsInput>;
-  subscription_data?: InputMaybe<TsWhereStripe_QuotesResourceSubscriptionDataInput>;
-  total_details?: InputMaybe<TsWhereStripe_QuotesResourceTotalDetailsInput>;
-  transfer_data?: InputMaybe<TsWhereStripe_QuotesResourceTransferDataInput>;
-};
-
-export type TsWhereStripe_QuotesResourceAutomaticTaxInput = {
-  enabled?: InputMaybe<TsWhereBooleanInput>;
-  status?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_QuotesResourceComputedInput = {
-  recurring?: InputMaybe<TsWhereStripe_QuotesResourceRecurringInput>;
-  upfront?: InputMaybe<TsWhereStripe_QuotesResourceUpfrontInput>;
-};
-
-export type TsWhereStripe_QuotesResourceRecurringInput = {
-  amount_subtotal?: InputMaybe<TsWhereIntegerInput>;
-  amount_total?: InputMaybe<TsWhereIntegerInput>;
-  interval?: InputMaybe<TsWhereInput>;
-  interval_count?: InputMaybe<TsWhereIntegerInput>;
-  total_details?: InputMaybe<TsWhereStripe_QuotesResourceTotalDetailsInput>;
-};
-
-export type TsWhereStripe_QuotesResourceTotalDetailsInput = {
-  amount_discount?: InputMaybe<TsWhereIntegerInput>;
-  amount_shipping?: InputMaybe<TsWhereIntegerInput>;
-  amount_tax?: InputMaybe<TsWhereIntegerInput>;
-  breakdown?: InputMaybe<TsWhereStripe_QuotesResourceTotalDetailsResourceBreakdownInput>;
-};
-
-export type TsWhereStripe_QuotesResourceTotalDetailsResourceBreakdownInput = {
-  discounts?: InputMaybe<TsWhereStripe_LineItemsDiscountAmountInput>;
-  taxes?: InputMaybe<TsWhereStripe_LineItemsTaxAmountInput>;
-};
-
-export type TsWhereStripe_QuotesResourceUpfrontInput = {
-  amount_subtotal?: InputMaybe<TsWhereIntegerInput>;
-  amount_total?: InputMaybe<TsWhereIntegerInput>;
-  line_items?: InputMaybe<TsWhereStripe_QuoteLineItemsInput>;
-  total_details?: InputMaybe<TsWhereStripe_QuotesResourceTotalDetailsInput>;
-};
-
-export type TsWhereStripe_QuoteLineItemsInput = {
-  data?: InputMaybe<TsWhereStripe_ItemInput>;
-  has_more?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_QuoteDefaultTaxRatesInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  active?: InputMaybe<TsWhereBooleanInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  display_name?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  inclusive?: InputMaybe<TsWhereBooleanInput>;
-  jurisdiction?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  percentage?: InputMaybe<TsWhereNumberInput>;
-  state?: InputMaybe<TsWhereStringInput>;
-  tax_type?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_QuoteDiscountsInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  checkout_session?: InputMaybe<TsWhereStringInput>;
-  coupon?: InputMaybe<TsWhereStripe_CouponInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  end?: InputMaybe<TsWhereIntegerInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  invoice?: InputMaybe<TsWhereStringInput>;
-  invoice_item?: InputMaybe<TsWhereStringInput>;
-  object?: InputMaybe<TsWhereInput>;
-  start?: InputMaybe<TsWhereIntegerInput>;
-  subscription?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_QuotesResourceFromQuoteInput = {
-  is_revision?: InputMaybe<TsWhereBooleanInput>;
-};
-
-export type TsWhereStripe_InvoiceSettingQuoteSettingInput = {
-  days_until_due?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_QuotesResourceStatusTransitionsInput = {
-  accepted_at?: InputMaybe<TsWhereIntegerInput>;
-  canceled_at?: InputMaybe<TsWhereIntegerInput>;
-  finalized_at?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_QuotesResourceSubscriptionDataInput = {
-  effective_date?: InputMaybe<TsWhereIntegerInput>;
-  trial_period_days?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_QuotesResourceTransferDataInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  amount_percent?: InputMaybe<TsWhereNumberInput>;
-};
-
-export type TsWhereStripe_InvoicesStatusTransitionsInput = {
-  finalized_at?: InputMaybe<TsWhereIntegerInput>;
-  marked_uncollectible_at?: InputMaybe<TsWhereIntegerInput>;
-  paid_at?: InputMaybe<TsWhereIntegerInput>;
-  voided_at?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_TestHelpersTestClockWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  deletes_after?: InputMaybe<TsWhereIntegerInput>;
-  frozen_time?: InputMaybe<TsWhereIntegerInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  object?: InputMaybe<TsWhereInput>;
-  status?: InputMaybe<TsWhereInput>;
-};
-
-export type TsWhereStripe_InvoiceThresholdReasonInput = {
-  amount_gte?: InputMaybe<TsWhereIntegerInput>;
-  item_reasons?: InputMaybe<TsWhereStripe_InvoiceItemThresholdReasonInput>;
-};
-
-export type TsWhereStripe_InvoiceItemThresholdReasonInput = {
-  line_item_ids?: InputMaybe<TsWhereStripe_PaymentIntentLineItemIdsInput>;
-  usage_gte?: InputMaybe<TsWhereIntegerInput>;
-};
-
-export type TsWhereStripe_PaymentIntentLineItemIdsInput = {
-  /** Exact match */
-  eq?: InputMaybe<Scalars['String']>;
-  /** Array of possible exact match values. */
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Full text searching with fuzzy matching. */
-  match?: InputMaybe<Scalars['String']>;
-  /** Regular expression string matching. Use of * wildcards could degrade performance. */
-  regexp?: InputMaybe<Scalars['String']>;
-};
-
-export type TsWhereStripe_InvoiceTransferDataInput = {
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  destination?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
-};
-
-export type TsWhereStripe_PaymentMethodInput = {
-  acss_debit?: InputMaybe<TsWhereStripe_PaymentMethodAcssDebitInput>;
-  au_becs_debit?: InputMaybe<TsWhereStripe_PaymentMethodAuBecsDebitInput>;
-  bacs_debit?: InputMaybe<TsWhereStripe_PaymentMethodBacsDebitInput>;
-  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
-  boleto?: InputMaybe<TsWhereStripe_PaymentMethodBoletoInput>;
-  card?: InputMaybe<TsWhereStripe_PaymentMethodCardInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  customer?: InputMaybe<TsWhereStripe_CustomerWrappedStringUnionInput>;
-  eps?: InputMaybe<TsWhereStripe_PaymentMethodEpsInput>;
-  fpx?: InputMaybe<TsWhereStripe_PaymentMethodFpxInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  ideal?: InputMaybe<TsWhereStripe_PaymentMethodIdealInput>;
-  klarna?: InputMaybe<TsWhereStripe_PaymentMethodKlarnaInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  p24?: InputMaybe<TsWhereStripe_PaymentMethodP24Input>;
-  sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodSepaDebitInput>;
-  sofort?: InputMaybe<TsWhereStripe_PaymentMethodSofortInput>;
-  type?: InputMaybe<TsWhereInput>;
-  us_bank_account?: InputMaybe<TsWhereStripe_PaymentMethodUsBankAccountInput>;
-};
-
-export type TsWhereStripe_CustomerWrappedStringUnionInput = {
-  value?: InputMaybe<TsWhereStringInput>;
-  address?: InputMaybe<TsWhereStripe_AddressInput>;
-  balance?: InputMaybe<TsWhereIntegerInput>;
-  created?: InputMaybe<TsWhereIntegerInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  delinquent?: InputMaybe<TsWhereBooleanInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  discount?: InputMaybe<TsWhereStripe_DiscountInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  invoice_prefix?: InputMaybe<TsWhereStringInput>;
-  invoice_settings?: InputMaybe<TsWhereStripe_InvoiceSettingCustomerSettingInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  next_invoice_sequence?: InputMaybe<TsWhereIntegerInput>;
-  object?: InputMaybe<TsWhereInput>;
-  phone?: InputMaybe<TsWhereStringInput>;
-  preferred_locales?: InputMaybe<TsWhereStripe_CustomerPreferredLocalesInput>;
-  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
-  sources?: InputMaybe<TsWhereStripe_CustomerSourcesInput>;
-  subscriptions?: InputMaybe<TsWhereStripe_CustomerSubscriptionsInput>;
-  tax?: InputMaybe<TsWhereStripe_CustomerTaxInput>;
-  tax_exempt?: InputMaybe<TsWhereInput>;
-  tax_ids?: InputMaybe<TsWhereStripe_CustomerTaxIdsInput>;
-};
-
-export type TsWhereStripe_InvoiceSettingCustomerSettingInput = {
-  custom_fields?: InputMaybe<TsWhereStripe_InvoiceSettingCustomFieldInput>;
-  footer?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_CustomerPreferredLocalesInput = {
-  /** Exact match */
-  eq?: InputMaybe<Scalars['String']>;
-  /** Array of possible exact match values. */
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Full text searching with fuzzy matching. */
-  match?: InputMaybe<Scalars['String']>;
-  /** Regular expression string matching. Use of * wildcards could degrade performance. */
-  regexp?: InputMaybe<Scalars['String']>;
-};
-
-export type TsWhereStripe_CustomerSourcesInput = {
-  data?: InputMaybe<TsWhereStripe_CustomerDataInput>;
-  has_more?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  url?: InputMaybe<TsWhereStringInput>;
-};
-
-export type TsWhereStripe_CustomerDataInput = {
-  created?: InputMaybe<TsWhereIntegerInput>;
-  customer?: InputMaybe<TsWhereStringInput>;
-  fingerprint?: InputMaybe<TsWhereStringInput>;
-  id?: InputMaybe<TsWhereStringInput>;
-  livemode?: InputMaybe<TsWhereBooleanInput>;
-  object?: InputMaybe<TsWhereInput>;
-  payment_amount?: InputMaybe<TsWhereIntegerInput>;
-  payment_currency?: InputMaybe<TsWhereStringInput>;
-  reusable?: InputMaybe<TsWhereBooleanInput>;
-  used?: InputMaybe<TsWhereBooleanInput>;
-  username?: InputMaybe<TsWhereStringInput>;
-  account_holder_name?: InputMaybe<TsWhereStringInput>;
-  account_holder_type?: InputMaybe<TsWhereStringInput>;
-  account_type?: InputMaybe<TsWhereStringInput>;
-  bank_name?: InputMaybe<TsWhereStringInput>;
-  country?: InputMaybe<TsWhereStringInput>;
-  currency?: InputMaybe<TsWhereStringInput>;
-  default_for_currency?: InputMaybe<TsWhereBooleanInput>;
-  last4?: InputMaybe<TsWhereStringInput>;
-  routing_number?: InputMaybe<TsWhereStringInput>;
-  status?: InputMaybe<TsWhereStringInput>;
-  active?: InputMaybe<TsWhereBooleanInput>;
-  amount?: InputMaybe<TsWhereIntegerInput>;
-  amount_received?: InputMaybe<TsWhereIntegerInput>;
-  bitcoin_amount?: InputMaybe<TsWhereIntegerInput>;
-  bitcoin_amount_received?: InputMaybe<TsWhereIntegerInput>;
-  bitcoin_uri?: InputMaybe<TsWhereStringInput>;
-  description?: InputMaybe<TsWhereStringInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  filled?: InputMaybe<TsWhereBooleanInput>;
-  inbound_address?: InputMaybe<TsWhereStringInput>;
-  payment?: InputMaybe<TsWhereStringInput>;
-  refund_address?: InputMaybe<TsWhereStringInput>;
-  transactions?: InputMaybe<TsWhereStripe_BitcoinReceiverTransactionsInput>;
-  uncaptured_funds?: InputMaybe<TsWhereBooleanInput>;
-  used_for_payment?: InputMaybe<TsWhereBooleanInput>;
-  address_city?: InputMaybe<TsWhereStringInput>;
-  address_country?: InputMaybe<TsWhereStringInput>;
-  address_line1?: InputMaybe<TsWhereStringInput>;
-  address_line1_check?: InputMaybe<TsWhereStringInput>;
-  address_line2?: InputMaybe<TsWhereStringInput>;
-  address_state?: InputMaybe<TsWhereStringInput>;
-  address_zip?: InputMaybe<TsWhereStringInput>;
-  address_zip_check?: InputMaybe<TsWhereStringInput>;
-  brand?: InputMaybe<TsWhereStringInput>;
-  cvc_check?: InputMaybe<TsWhereStringInput>;
-  dynamic_last4?: InputMaybe<TsWhereStringInput>;
-  exp_month?: InputMaybe<TsWhereIntegerInput>;
-  exp_year?: InputMaybe<TsWhereIntegerInput>;
-  funding?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  tokenization_method?: InputMaybe<TsWhereStringInput>;
-  ach_credit_transfer?: InputMaybe<TsWhereStripe_SourceTypeAchCreditTransferInput>;
-  ach_debit?: InputMaybe<TsWhereStripe_SourceTypeAchDebitInput>;
-  acss_debit?: InputMaybe<TsWhereStripe_SourceTypeAcssDebitInput>;
-  alipay?: InputMaybe<TsWhereStripe_SourceTypeAlipayInput>;
-  au_becs_debit?: InputMaybe<TsWhereStripe_SourceTypeAuBecsDebitInput>;
-  bancontact?: InputMaybe<TsWhereStripe_SourceTypeBancontactInput>;
-  card?: InputMaybe<TsWhereStripe_SourceTypeCardInput>;
-  card_present?: InputMaybe<TsWhereStripe_SourceTypeCardPresentInput>;
-  client_secret?: InputMaybe<TsWhereStringInput>;
-  code_verification?: InputMaybe<TsWhereStripe_SourceCodeVerificationFlowInput>;
-  eps?: InputMaybe<TsWhereStripe_SourceTypeEpsInput>;
-  flow?: InputMaybe<TsWhereStringInput>;
-  giropay?: InputMaybe<TsWhereStripe_SourceTypeGiropayInput>;
-  ideal?: InputMaybe<TsWhereStripe_SourceTypeIdealInput>;
-  klarna?: InputMaybe<TsWhereStripe_SourceTypeKlarnaInput>;
-  multibanco?: InputMaybe<TsWhereStripe_SourceTypeMultibancoInput>;
-  owner?: InputMaybe<TsWhereStripe_SourceOwnerInput>;
-  p24?: InputMaybe<TsWhereStripe_SourceTypeP24Input>;
-  receiver?: InputMaybe<TsWhereStripe_SourceReceiverFlowInput>;
-  redirect?: InputMaybe<TsWhereStripe_SourceRedirectFlowInput>;
-  sepa_debit?: InputMaybe<TsWhereStripe_SourceTypeSepaDebitInput>;
-  sofort?: InputMaybe<TsWhereStripe_SourceTypeSofortInput>;
-  source_order?: InputMaybe<TsWhereStripe_SourceOrderInput>;
-  statement_descriptor?: InputMaybe<TsWhereStringInput>;
-  three_d_secure?: InputMaybe<TsWhereStripe_SourceTypeThreeDSecureInput>;
-  type?: InputMaybe<TsWhereInput>;
-  usage?: InputMaybe<TsWhereStringInput>;
-  wechat?: InputMaybe<TsWhereStripe_SourceTypeWechatInput>;
-};
-
 export type TsWhereStripe_CustomerSubscriptionsInput = {
   data?: InputMaybe<TsWhereStripe_SubscriptionInput>;
   has_more?: InputMaybe<TsWhereBooleanInput>;
@@ -4783,6 +3538,13 @@ export type TsWhereStripe_SetupAttemptPaymentMethodDetailsCardInput = {
   three_d_secure?: InputMaybe<TsWhereStripe_ThreeDSecureDetailsInput>;
 };
 
+export type TsWhereStripe_ThreeDSecureDetailsInput = {
+  authentication_flow?: InputMaybe<TsWhereInput>;
+  result?: InputMaybe<TsWhereInput>;
+  result_reason?: InputMaybe<TsWhereInput>;
+  version?: InputMaybe<TsWhereInput>;
+};
+
 export type TsWhereStripe_SetupAttemptPaymentMethodDetailsIdealInput = {
   bank?: InputMaybe<TsWhereInput>;
   bic?: InputMaybe<TsWhereInput>;
@@ -4797,6 +3559,125 @@ export type TsWhereStripe_SetupAttemptPaymentMethodDetailsSofortInput = {
   iban_last4?: InputMaybe<TsWhereStringInput>;
   preferred_language?: InputMaybe<TsWhereInput>;
   verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandateWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  customer_acceptance?: InputMaybe<TsWhereStripe_CustomerAcceptanceInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  payment_method_details?: InputMaybe<TsWhereStripe_MandatePaymentMethodDetailsInput>;
+  single_use?: InputMaybe<TsWhereStripe_MandateSingleUseInput>;
+  status?: InputMaybe<TsWhereInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_CustomerAcceptanceInput = {
+  accepted_at?: InputMaybe<TsWhereIntegerInput>;
+  online?: InputMaybe<TsWhereStripe_OnlineAcceptanceInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_OnlineAcceptanceInput = {
+  ip_address?: InputMaybe<TsWhereStringInput>;
+  user_agent?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandatePaymentMethodDetailsInput = {
+  acss_debit?: InputMaybe<TsWhereStripe_MandateAcssDebitInput>;
+  au_becs_debit?: InputMaybe<TsWhereStripe_MandateAuBecsDebitInput>;
+  bacs_debit?: InputMaybe<TsWhereStripe_MandateBacsDebitInput>;
+  sepa_debit?: InputMaybe<TsWhereStripe_MandateSepaDebitInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandateAcssDebitInput = {
+  interval_description?: InputMaybe<TsWhereStringInput>;
+  payment_schedule?: InputMaybe<TsWhereInput>;
+  transaction_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_MandateAuBecsDebitInput = {
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandateBacsDebitInput = {
+  network_status?: InputMaybe<TsWhereInput>;
+  reference?: InputMaybe<TsWhereStringInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandateSepaDebitInput = {
+  reference?: InputMaybe<TsWhereStringInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_MandateSingleUseInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SetupIntentNextActionInput = {
+  redirect_to_url?: InputMaybe<TsWhereStripe_SetupIntentNextActionRedirectToUrlInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+  verify_with_microdeposits?: InputMaybe<TsWhereStripe_SetupIntentNextActionVerifyWithMicrodepositsInput>;
+};
+
+export type TsWhereStripe_SetupIntentNextActionRedirectToUrlInput = {
+  return_url?: InputMaybe<TsWhereStringInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_SetupIntentNextActionVerifyWithMicrodepositsInput = {
+  arrival_date?: InputMaybe<TsWhereIntegerInput>;
+  hosted_verification_url?: InputMaybe<TsWhereStringInput>;
+  microdeposit_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_SetupIntentPaymentMethodOptionsInput = {
+  acss_debit?: InputMaybe<TsWhere6c955fa05d8df9184cc18d8841c3705dUnionInput>;
+  card?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsCardInput>;
+  sepa_debit?: InputMaybe<TsWhere256af04705b008a07ca5c137b490ba88UnionInput>;
+  us_bank_account?: InputMaybe<TsWhere5e84458a02fb07e8c3d5d9b0bb3e5d99UnionInput>;
+};
+
+export type TsWhere6c955fa05d8df9184cc18d8841c3705dUnionInput = {
+  currency?: InputMaybe<TsWhereInput>;
+  mandate_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsMandateOptionsAcssDebitInput>;
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_SetupIntentPaymentMethodOptionsMandateOptionsAcssDebitInput = {
+  custom_mandate_url?: InputMaybe<TsWhereStringInput>;
+  interval_description?: InputMaybe<TsWhereStringInput>;
+  payment_schedule?: InputMaybe<TsWhereInput>;
+  transaction_type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_SetupIntentPaymentMethodOptionsCardInput = {
+  mandate_options?: InputMaybe<TsWhereStripe_SetupIntentPaymentMethodOptionsCardMandateOptionsInput>;
+  request_three_d_secure?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_SetupIntentPaymentMethodOptionsCardMandateOptionsInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_type?: InputMaybe<TsWhereInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  end_date?: InputMaybe<TsWhereIntegerInput>;
+  interval?: InputMaybe<TsWhereInput>;
+  interval_count?: InputMaybe<TsWhereIntegerInput>;
+  reference?: InputMaybe<TsWhereStringInput>;
+  start_date?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhere256af04705b008a07ca5c137b490ba88UnionInput = {
+  verification_method?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhere5e84458a02fb07e8c3d5d9b0bb3e5d99UnionInput = {
+  verification_method?: InputMaybe<TsWhereInput>;
 };
 
 export type TsWhereStripe_BankAccountStripe_CardStripe_SourceUnionInput = {
@@ -4868,6 +3749,106 @@ export type TsWhereStripe_InvoiceLinesInput = {
   has_more?: InputMaybe<TsWhereBooleanInput>;
   object?: InputMaybe<TsWhereInput>;
   url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_LineItemInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  discount_amounts?: InputMaybe<TsWhereStripe_DiscountsResourceDiscountAmountInput>;
+  discountable?: InputMaybe<TsWhereBooleanInput>;
+  discounts?: InputMaybe<TsWhereStripe_InvoiceDiscountsInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice_item?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  period?: InputMaybe<TsWhereStripe_InvoiceLineItemPeriodInput>;
+  price?: InputMaybe<TsWhereStripe_PriceInput>;
+  proration?: InputMaybe<TsWhereBooleanInput>;
+  proration_details?: InputMaybe<TsWhereStripe_InvoicesLineItemsProrationDetailsInput>;
+  quantity?: InputMaybe<TsWhereIntegerInput>;
+  subscription?: InputMaybe<TsWhereStringInput>;
+  subscription_item?: InputMaybe<TsWhereStringInput>;
+  tax_amounts?: InputMaybe<TsWhereStripe_InvoiceTaxAmountInput>;
+  tax_rates?: InputMaybe<TsWhereStripe_TaxRateInput>;
+  type?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_DiscountsResourceDiscountAmountInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_InvoicesLineItemsProrationDetailsInput = {
+  credited_items?: InputMaybe<TsWhereStripe_InvoicesLineItemsCreditedItemsInput>;
+};
+
+export type TsWhereStripe_InvoicesLineItemsCreditedItemsInput = {
+  invoice?: InputMaybe<TsWhereStringInput>;
+  invoice_line_items?: InputMaybe<TsWhereStripe_InvoiceInvoiceLineItemsInput>;
+};
+
+export type TsWhereStripe_InvoiceInvoiceLineItemsInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_InvoiceTaxAmountInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  inclusive?: InputMaybe<TsWhereBooleanInput>;
+};
+
+export type TsWhereStripe_InvoicesPaymentSettingsInput = {
+  payment_method_options?: InputMaybe<TsWhereStripe_InvoicesPaymentMethodOptionsInput>;
+};
+
+export type TsWhereStripe_InvoicesPaymentMethodOptionsInput = {
+  acss_debit?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsAcssDebitInput>;
+  bancontact?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsBancontactInput>;
+  card?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsCardInput>;
+  customer_balance?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsCustomerBalanceInput>;
+  us_bank_account?: InputMaybe<TsWhereStripe_InvoicePaymentMethodOptionsUsBankAccountInput>;
+};
+
+export type TsWhereStripe_InvoicePaymentMethodOptionsCardInput = {
+  request_three_d_secure?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_InvoicesStatusTransitionsInput = {
+  finalized_at?: InputMaybe<TsWhereIntegerInput>;
+  marked_uncollectible_at?: InputMaybe<TsWhereIntegerInput>;
+  paid_at?: InputMaybe<TsWhereIntegerInput>;
+  voided_at?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_InvoiceThresholdReasonInput = {
+  amount_gte?: InputMaybe<TsWhereIntegerInput>;
+  item_reasons?: InputMaybe<TsWhereStripe_InvoiceItemThresholdReasonInput>;
+};
+
+export type TsWhereStripe_InvoiceItemThresholdReasonInput = {
+  line_item_ids?: InputMaybe<TsWhereStripe_InvoiceLineItemIdsInput>;
+  usage_gte?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_InvoiceLineItemIdsInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_InvoiceTransferDataInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
 };
 
 export type TsWhereStripe_OrderWrappedStringUnionInput = {
@@ -4943,11 +3924,445 @@ export type TsWhereStripe_StatusTransitionsInput = {
   returned?: InputMaybe<TsWhereIntegerInput>;
 };
 
+export type TsWhereStripe_ChargeOutcomeInput = {
+  network_status?: InputMaybe<TsWhereStringInput>;
+  reason?: InputMaybe<TsWhereStringInput>;
+  risk_level?: InputMaybe<TsWhereStringInput>;
+  risk_score?: InputMaybe<TsWhereIntegerInput>;
+  rule?: InputMaybe<TsWhereStripe_RuleWrappedStringUnionInput>;
+  seller_message?: InputMaybe<TsWhereStringInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_RuleWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  action?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  predicate?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentIntentWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_capturable?: InputMaybe<TsWhereIntegerInput>;
+  amount_received?: InputMaybe<TsWhereIntegerInput>;
+  application?: InputMaybe<TsWhereStripe_ApplicationWrappedStringUnionInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  automatic_payment_methods?: InputMaybe<TsWhereStripe_PaymentFlowsAutomaticPaymentMethodsPaymentIntentInput>;
+  canceled_at?: InputMaybe<TsWhereIntegerInput>;
+  cancellation_reason?: InputMaybe<TsWhereInput>;
+  capture_method?: InputMaybe<TsWhereInput>;
+  charges?: InputMaybe<TsWhereStripe_PaymentIntentChargesInput>;
+  client_secret?: InputMaybe<TsWhereStringInput>;
+  confirmation_method?: InputMaybe<TsWhereInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  invoice?: InputMaybe<TsWhereStripe_InvoiceWrappedStringUnionInput>;
+  last_payment_error?: InputMaybe<TsWhereStripe_ApiErrorsInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  next_action?: InputMaybe<TsWhereStripe_PaymentIntentNextActionInput>;
+  object?: InputMaybe<TsWhereInput>;
+  on_behalf_of?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+  payment_method?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  payment_method_options?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodOptionsInput>;
+  payment_method_types?: InputMaybe<TsWhereStripe_PaymentIntentPaymentMethodTypesInput>;
+  processing?: InputMaybe<TsWhereStripe_PaymentIntentProcessingInput>;
+  receipt_email?: InputMaybe<TsWhereStringInput>;
+  review?: InputMaybe<TsWhereStripe_ReviewWrappedStringUnionInput>;
+  setup_future_usage?: InputMaybe<TsWhereInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_TransferDataInput>;
+  transfer_group?: InputMaybe<TsWhereStringInput>;
+  invoiceItems?: InputMaybe<TsWhereStripe_InvoiceitemInput>;
+  sessionItems?: InputMaybe<TsWhereStripe_ItemInput>;
+  shipment?: InputMaybe<TsWhereShipEngine_LabelInput>;
+  _shapeId?: InputMaybe<TsWhereIdInput>;
+  _id?: InputMaybe<TsWhereIdInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsInput = {
+  ach_credit_transfer?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAchCreditTransferInput>;
+  ach_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAchDebitInput>;
+  acss_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAcssDebitInput>;
+  afterpay_clearpay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAfterpayClearpayInput>;
+  alipay?: InputMaybe<TsWhereStripe_PaymentFlowsPrivatePaymentMethodsAlipayDetailsInput>;
+  au_becs_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsAuBecsDebitInput>;
+  bacs_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBacsDebitInput>;
+  bancontact?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBancontactInput>;
+  boleto?: InputMaybe<TsWhereStripe_PaymentMethodDetailsBoletoInput>;
+  card?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInput>;
+  card_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardPresentInput>;
+  eps?: InputMaybe<TsWhereStripe_PaymentMethodDetailsEpsInput>;
+  fpx?: InputMaybe<TsWhereStripe_PaymentMethodDetailsFpxInput>;
+  giropay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsGiropayInput>;
+  grabpay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsGrabpayInput>;
+  ideal?: InputMaybe<TsWhereStripe_PaymentMethodDetailsIdealInput>;
+  interac_present?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInteracPresentInput>;
+  klarna?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKlarnaInput>;
+  konbini?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKonbiniInput>;
+  multibanco?: InputMaybe<TsWhereStripe_PaymentMethodDetailsMultibancoInput>;
+  oxxo?: InputMaybe<TsWhereStripe_PaymentMethodDetailsOxxoInput>;
+  p24?: InputMaybe<TsWhereStripe_PaymentMethodDetailsP24Input>;
+  paynow?: InputMaybe<TsWhereStripe_PaymentMethodDetailsPaynowInput>;
+  sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodDetailsSepaDebitInput>;
+  sofort?: InputMaybe<TsWhereStripe_PaymentMethodDetailsSofortInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+  us_bank_account?: InputMaybe<TsWhereStripe_PaymentMethodDetailsUsBankAccountInput>;
+  wechat_pay?: InputMaybe<TsWhereStripe_PaymentMethodDetailsWechatPayInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsAchCreditTransferInput = {
+  account_number?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+  swift_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsAchDebitInput = {
+  account_holder_type?: InputMaybe<TsWhereInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsAcssDebitInput = {
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  institution_number?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  mandate?: InputMaybe<TsWhereStringInput>;
+  transit_number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsAfterpayClearpayInput = {
+  reference?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentFlowsPrivatePaymentMethodsAlipayDetailsInput = {
+  buyer_id?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  transaction_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsAuBecsDebitInput = {
+  bsb_number?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  mandate?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsBacsDebitInput = {
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  mandate?: InputMaybe<TsWhereStringInput>;
+  sort_code?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsBancontactInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  generated_sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  generated_sepa_debit_mandate?: InputMaybe<TsWhereStripe_MandateWrappedStringUnionInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  preferred_language?: InputMaybe<TsWhereInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsBoletoInput = {
+  tax_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardInput = {
+  brand?: InputMaybe<TsWhereStringInput>;
+  checks?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardChecksInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  installments?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  mandate?: InputMaybe<TsWhereStringInput>;
+  network?: InputMaybe<TsWhereStringInput>;
+  three_d_secure?: InputMaybe<TsWhereStripe_ThreeDSecureDetailsInput>;
+  wallet?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardChecksInput = {
+  address_line1_check?: InputMaybe<TsWhereStringInput>;
+  address_postal_code_check?: InputMaybe<TsWhereStringInput>;
+  cvc_check?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardInstallmentsInput = {
+  plan?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardInstallmentsPlanInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardWalletInput = {
+  dynamic_last4?: InputMaybe<TsWhereStringInput>;
+  masterpass?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletMasterpassInput>;
+  type?: InputMaybe<TsWhereInput>;
+  visa_checkout?: InputMaybe<TsWhereStripe_PaymentMethodDetailsCardWalletVisaCheckoutInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardWalletMasterpassInput = {
+  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsCardWalletVisaCheckoutInput = {
+  billing_address?: InputMaybe<TsWhereStripe_AddressInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  shipping_address?: InputMaybe<TsWhereStripe_AddressInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsEpsInput = {
+  bank?: InputMaybe<TsWhereInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsFpxInput = {
+  bank?: InputMaybe<TsWhereInput>;
+  transaction_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsGiropayInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsGrabpayInput = {
+  transaction_id?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsIdealInput = {
+  bank?: InputMaybe<TsWhereInput>;
+  bic?: InputMaybe<TsWhereInput>;
+  generated_sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  generated_sepa_debit_mandate?: InputMaybe<TsWhereStripe_MandateWrappedStringUnionInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsInteracPresentInput = {
+  brand?: InputMaybe<TsWhereStringInput>;
+  cardholder_name?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  emv_auth_data?: InputMaybe<TsWhereStringInput>;
+  exp_month?: InputMaybe<TsWhereIntegerInput>;
+  exp_year?: InputMaybe<TsWhereIntegerInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  funding?: InputMaybe<TsWhereStringInput>;
+  generated_card?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  network?: InputMaybe<TsWhereStringInput>;
+  preferred_locales?: InputMaybe<TsWhereStripe_PaymentIntentPreferredLocalesInput>;
+  read_method?: InputMaybe<TsWhereInput>;
+  receipt?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInteracPresentReceiptInput>;
+};
+
+export type TsWhereStripe_PaymentIntentPreferredLocalesInput = {
+  /** Exact match */
+  eq?: InputMaybe<Scalars['String']>;
+  /** Array of possible exact match values. */
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Full text searching with fuzzy matching. */
+  match?: InputMaybe<Scalars['String']>;
+  /** Regular expression string matching. Use of * wildcards could degrade performance. */
+  regexp?: InputMaybe<Scalars['String']>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsInteracPresentReceiptInput = {
+  account_type?: InputMaybe<TsWhereInput>;
+  application_cryptogram?: InputMaybe<TsWhereStringInput>;
+  application_preferred_name?: InputMaybe<TsWhereStringInput>;
+  authorization_code?: InputMaybe<TsWhereStringInput>;
+  authorization_response_code?: InputMaybe<TsWhereStringInput>;
+  cardholder_verification_method?: InputMaybe<TsWhereStringInput>;
+  dedicated_file_name?: InputMaybe<TsWhereStringInput>;
+  terminal_verification_results?: InputMaybe<TsWhereStringInput>;
+  transaction_status_information?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsKlarnaInput = {
+  payment_method_category?: InputMaybe<TsWhereStringInput>;
+  preferred_locale?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsKonbiniInput = {
+  store?: InputMaybe<TsWhereStripe_PaymentMethodDetailsKonbiniStoreInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsKonbiniStoreInput = {
+  chain?: InputMaybe<TsWhereInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsMultibancoInput = {
+  entity?: InputMaybe<TsWhereStringInput>;
+  reference?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsOxxoInput = {
+  number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsP24Input = {
+  bank?: InputMaybe<TsWhereInput>;
+  reference?: InputMaybe<TsWhereStringInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsPaynowInput = {
+  reference?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsSepaDebitInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  branch_code?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  mandate?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsSofortInput = {
+  bank_code?: InputMaybe<TsWhereStringInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  bic?: InputMaybe<TsWhereStringInput>;
+  country?: InputMaybe<TsWhereStringInput>;
+  generated_sepa_debit?: InputMaybe<TsWhereStripe_PaymentMethodWrappedStringUnionInput>;
+  generated_sepa_debit_mandate?: InputMaybe<TsWhereStripe_MandateWrappedStringUnionInput>;
+  iban_last4?: InputMaybe<TsWhereStringInput>;
+  preferred_language?: InputMaybe<TsWhereInput>;
+  verified_name?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsUsBankAccountInput = {
+  account_holder_type?: InputMaybe<TsWhereInput>;
+  account_type?: InputMaybe<TsWhereInput>;
+  bank_name?: InputMaybe<TsWhereStringInput>;
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  last4?: InputMaybe<TsWhereStringInput>;
+  routing_number?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_PaymentMethodDetailsWechatPayInput = {
+  fingerprint?: InputMaybe<TsWhereStringInput>;
+  transaction_id?: InputMaybe<TsWhereStringInput>;
+};
+
 export type TsWhereStripe_PaymentIntentRefundsInput = {
   data?: InputMaybe<TsWhereStripe_RefundInput>;
   has_more?: InputMaybe<TsWhereBooleanInput>;
   object?: InputMaybe<TsWhereInput>;
   url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_RefundInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  balance_transaction?: InputMaybe<TsWhereStripe_BalanceTransactionWrappedStringUnionInput>;
+  charge?: InputMaybe<TsWhereStripe_ChargeWrappedStringUnionInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  failure_balance_transaction?: InputMaybe<TsWhereStripe_BalanceTransactionWrappedStringUnionInput>;
+  failure_reason?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  next_action?: InputMaybe<TsWhereStripe_RefundNextActionInput>;
+  object?: InputMaybe<TsWhereInput>;
+  payment_intent?: InputMaybe<TsWhereStripe_PaymentIntentWrappedStringUnionInput>;
+  reason?: InputMaybe<TsWhereInput>;
+  receipt_number?: InputMaybe<TsWhereStringInput>;
+  source_transfer_reversal?: InputMaybe<TsWhereStripe_TransferReversalWrappedStringUnionInput>;
+  status?: InputMaybe<TsWhereStringInput>;
+  transfer_reversal?: InputMaybe<TsWhereStripe_TransferReversalWrappedStringUnionInput>;
+};
+
+export type TsWhereStripe_ChargeWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  amount_captured?: InputMaybe<TsWhereIntegerInput>;
+  amount_refunded?: InputMaybe<TsWhereIntegerInput>;
+  application_fee_amount?: InputMaybe<TsWhereIntegerInput>;
+  billing_details?: InputMaybe<TsWhereStripe_BillingDetailsInput>;
+  calculated_statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  captured?: InputMaybe<TsWhereBooleanInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  customer?: InputMaybe<TsWhereStringInput>;
+  description?: InputMaybe<TsWhereStringInput>;
+  disputed?: InputMaybe<TsWhereBooleanInput>;
+  failure_code?: InputMaybe<TsWhereStringInput>;
+  failure_message?: InputMaybe<TsWhereStringInput>;
+  fraud_details?: InputMaybe<TsWhereStripe_ChargeFraudDetailsInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  livemode?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  outcome?: InputMaybe<TsWhereStripe_ChargeOutcomeInput>;
+  paid?: InputMaybe<TsWhereBooleanInput>;
+  payment_method?: InputMaybe<TsWhereStringInput>;
+  payment_method_details?: InputMaybe<TsWhereStripe_PaymentMethodDetailsInput>;
+  receipt_email?: InputMaybe<TsWhereStringInput>;
+  receipt_number?: InputMaybe<TsWhereStringInput>;
+  receipt_url?: InputMaybe<TsWhereStringInput>;
+  refunded?: InputMaybe<TsWhereBooleanInput>;
+  refunds?: InputMaybe<TsWhereStripe_ChargeRefundsInput>;
+  shipping?: InputMaybe<TsWhereStripe_ShippingInput>;
+  statement_descriptor?: InputMaybe<TsWhereStringInput>;
+  statement_descriptor_suffix?: InputMaybe<TsWhereStringInput>;
+  status?: InputMaybe<TsWhereInput>;
+  transfer_data?: InputMaybe<TsWhereStripe_ChargeTransferDataInput>;
+  transfer_group?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ChargeRefundsInput = {
+  data?: InputMaybe<TsWhereStripe_RefundInput>;
+  has_more?: InputMaybe<TsWhereBooleanInput>;
+  object?: InputMaybe<TsWhereInput>;
+  url?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_ChargeTransferDataInput = {
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  destination?: InputMaybe<TsWhereStripe_AccountWrappedStringUnionInput>;
+};
+
+export type TsWhereStripe_RefundNextActionInput = {
+  display_details?: InputMaybe<TsWhereStripe_RefundNextActionDisplayDetailsInput>;
+  type?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_RefundNextActionDisplayDetailsInput = {
+  email_sent?: InputMaybe<TsWhereStripe_EmailSentInput>;
+  expires_at?: InputMaybe<TsWhereIntegerInput>;
+};
+
+export type TsWhereStripe_EmailSentInput = {
+  email_sent_at?: InputMaybe<TsWhereIntegerInput>;
+  email_sent_to?: InputMaybe<TsWhereStringInput>;
+};
+
+export type TsWhereStripe_TransferReversalWrappedStringUnionInput = {
+  value?: InputMaybe<TsWhereStringInput>;
+  amount?: InputMaybe<TsWhereIntegerInput>;
+  created?: InputMaybe<TsWhereIntegerInput>;
+  currency?: InputMaybe<TsWhereStringInput>;
+  id?: InputMaybe<TsWhereStringInput>;
+  object?: InputMaybe<TsWhereInput>;
 };
 
 export type TsWhereStripe_TransferWrappedStringUnionInput = {
@@ -7601,7 +7016,7 @@ export type Stripe_PaymentIntent = TsSearchable & {
   description?: Maybe<Scalars['String']>;
   /** Unique identifier for the object. */
   id?: Maybe<Scalars['String']>;
-  invoice?: Maybe<Stripe_Invoice>;
+  invoice?: Maybe<Stripe_PaymentIntentInvoiceProperty>;
   last_payment_error?: Maybe<Stripe_ApiErrors>;
   /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
   livemode?: Maybe<Scalars['Boolean']>;
@@ -7637,8 +7052,9 @@ export type Stripe_PaymentIntent = TsSearchable & {
   transfer_data?: Maybe<Stripe_TransferData>;
   /** A string that identifies the resulting payment as part of a group. See the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts) for details. */
   transfer_group?: Maybe<Scalars['String']>;
+  invoiceItems?: Maybe<Array<Maybe<Stripe_Invoiceitem>>>;
   /** The Stripe checkout session associated with this payment. */
-  session?: Maybe<Stripe_CheckoutSession>;
+  sessionItems?: Maybe<Array<Maybe<Stripe_Item>>>;
   /** The ShipEngine label associated with this payment. */
   shipment?: Maybe<ShipEngine_Label>;
   _shapeId?: Maybe<Scalars['String']>;
@@ -13883,6 +13299,8 @@ export enum Stripe_PaymentIntentConfirmationMethodProperty {
   Manual = 'manual'
 }
 
+export type Stripe_PaymentIntentInvoiceProperty = WrappedString | Stripe_Invoice;
+
 export type Stripe_PaymentIntentNextAction = {
   __typename?: 'Stripe_PaymentIntentNextAction';
   alipay_handle_redirect?: Maybe<Stripe_PaymentIntentNextActionAlipayHandleRedirect>;
@@ -14796,6 +14214,1592 @@ export type Stripe_TransferData = {
 
 export type Stripe_TransferDataDestinationProperty = WrappedString | Stripe_Account;
 
+export type Stripe_Invoiceitem = {
+  __typename?: 'Stripe_Invoiceitem';
+  /** Amount (in the `currency` specified) of the invoice item. This should always be equal to `unit_amount * quantity`. */
+  amount?: Maybe<Scalars['Int']>;
+  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
+  currency?: Maybe<Scalars['String']>;
+  customer?: Maybe<Scalars['String']>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  date?: Maybe<Scalars['Int']>;
+  /** An arbitrary string attached to the object. Often useful for displaying to users. */
+  description?: Maybe<Scalars['String']>;
+  /** If true, discounts will apply to this invoice item. Always false for prorations. */
+  discountable?: Maybe<Scalars['Boolean']>;
+  /** The discounts which apply to the invoice item. Item discounts are applied before invoice discounts. Use `expand[]=discounts` to expand each discount. */
+  discounts?: Maybe<Array<Maybe<Stripe_InvoiceitemDiscountsProperty>>>;
+  /** Unique identifier for the object. */
+  id?: Maybe<Scalars['String']>;
+  invoice?: Maybe<Stripe_InvoiceitemInvoiceProperty>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: Maybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: Maybe<Scalars['JSONObject']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: Maybe<Stripe_InvoiceitemObjectProperty>;
+  period?: Maybe<Stripe_InvoiceLineItemPeriod>;
+  price?: Maybe<Stripe_Price>;
+  /** Whether the invoice item was created automatically as a proration adjustment when the customer switched plans. */
+  proration?: Maybe<Scalars['Boolean']>;
+  /** Quantity of units for the invoice item. If the invoice item is a proration, the quantity of the subscription that the proration was computed for. */
+  quantity?: Maybe<Scalars['Int']>;
+  subscription?: Maybe<Stripe_InvoiceitemSubscriptionProperty>;
+  /** The subscription item that this invoice item has been created for, if any. */
+  subscription_item?: Maybe<Scalars['String']>;
+  /** The tax rates which apply to the invoice item. When set, the `default_tax_rates` on the invoice do not apply to this invoice item. */
+  tax_rates?: Maybe<Array<Maybe<Stripe_TaxRate>>>;
+  test_clock?: Maybe<Stripe_InvoiceitemTestClockProperty>;
+  /** Unit amount (in the `currency` specified) of the invoice item. */
+  unit_amount?: Maybe<Scalars['Int']>;
+  /** Same as `unit_amount`, but contains a decimal value with at most 12 decimal places. */
+  unit_amount_decimal?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_InvoiceitemDiscountsProperty = WrappedString | Stripe_Discount;
+
+export type Stripe_InvoiceitemInvoiceProperty = WrappedString | Stripe_Invoice;
+
+export enum Stripe_InvoiceitemObjectProperty {
+  Invoiceitem = 'invoiceitem'
+}
+
+export type Stripe_InvoiceitemSubscriptionProperty = WrappedString | Stripe_Subscription;
+
+export type Stripe_InvoiceitemTestClockProperty = WrappedString | Stripe_TestHelpersTestClock;
+
+export type ShipEngine_Label = {
+  __typename?: 'ShipEngine_Label';
+  label_id?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['String']>;
+  shipment_id?: Maybe<Scalars['String']>;
+  ship_date?: Maybe<Scalars['String']>;
+  created_at?: Maybe<Scalars['String']>;
+  tracking_number?: Maybe<Scalars['String']>;
+  batch_id?: Maybe<Scalars['String']>;
+  carrier_id?: Maybe<Scalars['String']>;
+  charge_event?: Maybe<Scalars['String']>;
+  service_code?: Maybe<Scalars['String']>;
+  package_code?: Maybe<Scalars['String']>;
+  voided_at?: Maybe<Scalars['String']>;
+  label_format?: Maybe<Scalars['String']>;
+  display_scheme?: Maybe<Scalars['String']>;
+  label_layout?: Maybe<Scalars['String']>;
+  label_image_id?: Maybe<Scalars['String']>;
+  carrier_code?: Maybe<Scalars['String']>;
+  tracking_status?: Maybe<Scalars['String']>;
+  label_download?: Maybe<ShipEngine_LabelDownload>;
+  trackable?: Maybe<Scalars['Boolean']>;
+  packages?: Maybe<Array<Maybe<ShipEngine_Package>>>;
+};
+
+export type ShipEngine_LabelDownload = {
+  __typename?: 'ShipEngine_LabelDownload';
+  href?: Maybe<Scalars['String']>;
+  pdf?: Maybe<Scalars['String']>;
+  png?: Maybe<Scalars['String']>;
+  zpl?: Maybe<Scalars['String']>;
+};
+
+export type ShipEngine_Package = {
+  __typename?: 'ShipEngine_Package';
+  package_id?: Maybe<Scalars['Int']>;
+  description?: Maybe<Scalars['String']>;
+  package_code?: Maybe<Scalars['String']>;
+  tracking_number?: Maybe<Scalars['String']>;
+  label_download?: Maybe<ShipEngine_LabelDownload>;
+  weight?: Maybe<ShipEngine_Weight>;
+  dimensions?: Maybe<ShipEngine_Dimensions>;
+};
+
+export type ShipEngine_Weight = {
+  __typename?: 'ShipEngine_Weight';
+  value?: Maybe<Scalars['Float']>;
+  unit?: Maybe<Scalars['String']>;
+};
+
+export type ShipEngine_Dimensions = {
+  __typename?: 'ShipEngine_Dimensions';
+  length?: Maybe<Scalars['Float']>;
+  width?: Maybe<Scalars['Float']>;
+  height?: Maybe<Scalars['Float']>;
+  unit?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_ApiErrorsSourceProperty = Stripe_BankAccount | Stripe_Card | Stripe_Source;
+
+export enum Stripe_ApiErrorsTypeProperty {
+  ApiError = 'api_error',
+  CardError = 'card_error',
+  IdempotencyError = 'idempotency_error',
+  InvalidRequestError = 'invalid_request_error'
+}
+
+export type Stripe_SetupAttemptSetupIntentProperty = WrappedString | Stripe_SetupIntent;
+
+export type Stripe_Networks = {
+  __typename?: 'Stripe_Networks';
+  /** All available networks for the card. */
+  available?: Maybe<Array<Maybe<Scalars['String']>>>;
+  /** The preferred network for the card. */
+  preferred?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_ThreeDSecureUsage = {
+  __typename?: 'Stripe_ThreeDSecureUsage';
+  /** Whether 3D Secure is supported on this card. */
+  supported?: Maybe<Scalars['Boolean']>;
+};
+
+export type Stripe_PaymentMethodCardWallet = {
+  __typename?: 'Stripe_PaymentMethodCardWallet';
+  amex_express_checkout?: Maybe<Stripe_PaymentMethodCardWalletAmexExpressCheckout>;
+  apple_pay?: Maybe<Stripe_PaymentMethodCardWalletApplePay>;
+  /** (For tokenized numbers only.) The last four digits of the device account number. */
+  dynamic_last4?: Maybe<Scalars['String']>;
+  google_pay?: Maybe<Stripe_PaymentMethodCardWalletGooglePay>;
+  masterpass?: Maybe<Stripe_PaymentMethodCardWalletMasterpass>;
+  samsung_pay?: Maybe<Stripe_PaymentMethodCardWalletSamsungPay>;
+  /** The type of the card wallet, one of `amex_express_checkout`, `apple_pay`, `google_pay`, `masterpass`, `samsung_pay`, or `visa_checkout`. An additional hash is included on the Wallet subhash with a name matching this value. It contains additional information specific to the card wallet type. */
+  type?: Maybe<Stripe_PaymentMethodCardWalletTypeProperty>;
+  visa_checkout?: Maybe<Stripe_PaymentMethodCardWalletVisaCheckout>;
+};
+
+export type Stripe_PaymentMethodCardWalletAmexExpressCheckout = {
+  __typename?: 'Stripe_PaymentMethodCardWalletAmexExpressCheckout';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodCardWalletApplePay = {
+  __typename?: 'Stripe_PaymentMethodCardWalletApplePay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodCardWalletGooglePay = {
+  __typename?: 'Stripe_PaymentMethodCardWalletGooglePay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodCardWalletMasterpass = {
+  __typename?: 'Stripe_PaymentMethodCardWalletMasterpass';
+  billing_address?: Maybe<Stripe_Address>;
+  /** Owner's verified email. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
+  email?: Maybe<Scalars['String']>;
+  /** Owner's verified full name. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
+  name?: Maybe<Scalars['String']>;
+  shipping_address?: Maybe<Stripe_Address>;
+};
+
+export type Stripe_PaymentMethodCardWalletSamsungPay = {
+  __typename?: 'Stripe_PaymentMethodCardWalletSamsungPay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export enum Stripe_PaymentMethodCardWalletTypeProperty {
+  AmexExpressCheckout = 'amex_express_checkout',
+  ApplePay = 'apple_pay',
+  GooglePay = 'google_pay',
+  Masterpass = 'masterpass',
+  SamsungPay = 'samsung_pay',
+  VisaCheckout = 'visa_checkout'
+}
+
+export type Stripe_PaymentMethodCardWalletVisaCheckout = {
+  __typename?: 'Stripe_PaymentMethodCardWalletVisaCheckout';
+  billing_address?: Maybe<Stripe_Address>;
+  /** Owner's verified email. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
+  email?: Maybe<Scalars['String']>;
+  /** Owner's verified full name. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
+  name?: Maybe<Scalars['String']>;
+  shipping_address?: Maybe<Stripe_Address>;
+};
+
+export type Stripe_PaymentMethodCardPresent = {
+  __typename?: 'Stripe_PaymentMethodCardPresent';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodCustomerProperty = WrappedString | Stripe_Customer;
+
+export type Stripe_PaymentMethodEps = {
+  __typename?: 'Stripe_PaymentMethodEps';
+  /** The customer's bank. Should be one of `arzte_und_apotheker_bank`, `austrian_anadi_bank_ag`, `bank_austria`, `bankhaus_carl_spangler`, `bankhaus_schelhammer_und_schattera_ag`, `bawag_psk_ag`, `bks_bank_ag`, `brull_kallmus_bank_ag`, `btv_vier_lander_bank`, `capital_bank_grawe_gruppe_ag`, `dolomitenbank`, `easybank_ag`, `erste_bank_und_sparkassen`, `hypo_alpeadriabank_international_ag`, `hypo_noe_lb_fur_niederosterreich_u_wien`, `hypo_oberosterreich_salzburg_steiermark`, `hypo_tirol_bank_ag`, `hypo_vorarlberg_bank_ag`, `hypo_bank_burgenland_aktiengesellschaft`, `marchfelder_bank`, `oberbank_ag`, `raiffeisen_bankengruppe_osterreich`, `schoellerbank_ag`, `sparda_bank_wien`, `volksbank_gruppe`, `volkskreditbank_ag`, or `vr_bank_braunau`. */
+  bank?: Maybe<Stripe_PaymentMethodEpsBankProperty>;
+};
+
+export enum Stripe_PaymentMethodEpsBankProperty {
+  ArzteUndApothekerBank = 'arzte_und_apotheker_bank',
+  AustrianAnadiBankAg = 'austrian_anadi_bank_ag',
+  BankAustria = 'bank_austria',
+  BankhausCarlSpangler = 'bankhaus_carl_spangler',
+  BankhausSchelhammerUndSchatteraAg = 'bankhaus_schelhammer_und_schattera_ag',
+  BawagPskAg = 'bawag_psk_ag',
+  BksBankAg = 'bks_bank_ag',
+  BrullKallmusBankAg = 'brull_kallmus_bank_ag',
+  BtvVierLanderBank = 'btv_vier_lander_bank',
+  CapitalBankGraweGruppeAg = 'capital_bank_grawe_gruppe_ag',
+  Dolomitenbank = 'dolomitenbank',
+  EasybankAg = 'easybank_ag',
+  ErsteBankUndSparkassen = 'erste_bank_und_sparkassen',
+  HypoAlpeadriabankInternationalAg = 'hypo_alpeadriabank_international_ag',
+  HypoBankBurgenlandAktiengesellschaft = 'hypo_bank_burgenland_aktiengesellschaft',
+  HypoNoeLbFurNiederosterreichUWien = 'hypo_noe_lb_fur_niederosterreich_u_wien',
+  HypoOberosterreichSalzburgSteiermark = 'hypo_oberosterreich_salzburg_steiermark',
+  HypoTirolBankAg = 'hypo_tirol_bank_ag',
+  HypoVorarlbergBankAg = 'hypo_vorarlberg_bank_ag',
+  MarchfelderBank = 'marchfelder_bank',
+  OberbankAg = 'oberbank_ag',
+  RaiffeisenBankengruppeOsterreich = 'raiffeisen_bankengruppe_osterreich',
+  SchoellerbankAg = 'schoellerbank_ag',
+  SpardaBankWien = 'sparda_bank_wien',
+  VolksbankGruppe = 'volksbank_gruppe',
+  VolkskreditbankAg = 'volkskreditbank_ag',
+  VrBankBraunau = 'vr_bank_braunau'
+}
+
+export type Stripe_PaymentMethodFpx = {
+  __typename?: 'Stripe_PaymentMethodFpx';
+  /** The customer's bank, if provided. Can be one of `affin_bank`, `agrobank`, `alliance_bank`, `ambank`, `bank_islam`, `bank_muamalat`, `bank_rakyat`, `bsn`, `cimb`, `hong_leong_bank`, `hsbc`, `kfh`, `maybank2u`, `ocbc`, `public_bank`, `rhb`, `standard_chartered`, `uob`, `deutsche_bank`, `maybank2e`, or `pb_enterprise`. */
+  bank?: Maybe<Stripe_PaymentMethodFpxBankProperty>;
+};
+
+export enum Stripe_PaymentMethodFpxBankProperty {
+  AffinBank = 'affin_bank',
+  Agrobank = 'agrobank',
+  AllianceBank = 'alliance_bank',
+  Ambank = 'ambank',
+  BankIslam = 'bank_islam',
+  BankMuamalat = 'bank_muamalat',
+  BankRakyat = 'bank_rakyat',
+  Bsn = 'bsn',
+  Cimb = 'cimb',
+  DeutscheBank = 'deutsche_bank',
+  HongLeongBank = 'hong_leong_bank',
+  Hsbc = 'hsbc',
+  Kfh = 'kfh',
+  Maybank2e = 'maybank2e',
+  Maybank2u = 'maybank2u',
+  Ocbc = 'ocbc',
+  PbEnterprise = 'pb_enterprise',
+  PublicBank = 'public_bank',
+  Rhb = 'rhb',
+  StandardChartered = 'standard_chartered',
+  Uob = 'uob'
+}
+
+export type Stripe_PaymentMethodGiropay = {
+  __typename?: 'Stripe_PaymentMethodGiropay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodGrabpay = {
+  __typename?: 'Stripe_PaymentMethodGrabpay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodIdeal = {
+  __typename?: 'Stripe_PaymentMethodIdeal';
+  /** The customer's bank, if provided. Can be one of `abn_amro`, `asn_bank`, `bunq`, `handelsbanken`, `ing`, `knab`, `moneyou`, `rabobank`, `regiobank`, `revolut`, `sns_bank`, `triodos_bank`, or `van_lanschot`. */
+  bank?: Maybe<Stripe_PaymentMethodIdealBankProperty>;
+  /** The Bank Identifier Code of the customer's bank, if the bank was provided. */
+  bic?: Maybe<Stripe_PaymentMethodIdealBicProperty>;
+};
+
+export enum Stripe_PaymentMethodIdealBankProperty {
+  AbnAmro = 'abn_amro',
+  AsnBank = 'asn_bank',
+  Bunq = 'bunq',
+  Handelsbanken = 'handelsbanken',
+  Ing = 'ing',
+  Knab = 'knab',
+  Moneyou = 'moneyou',
+  Rabobank = 'rabobank',
+  Regiobank = 'regiobank',
+  Revolut = 'revolut',
+  SnsBank = 'sns_bank',
+  TriodosBank = 'triodos_bank',
+  VanLanschot = 'van_lanschot'
+}
+
+export enum Stripe_PaymentMethodIdealBicProperty {
+  Abnanl2A = 'ABNANL2A',
+  Asnbnl21 = 'ASNBNL21',
+  Bunqnl2A = 'BUNQNL2A',
+  Fvlbnl22 = 'FVLBNL22',
+  Handnl2A = 'HANDNL2A',
+  Ingbnl2A = 'INGBNL2A',
+  Knabnl2H = 'KNABNL2H',
+  Moyonl21 = 'MOYONL21',
+  Rabonl2U = 'RABONL2U',
+  Rbrbnl21 = 'RBRBNL21',
+  Revolt21 = 'REVOLT21',
+  Snsbnl2A = 'SNSBNL2A',
+  Trionl2U = 'TRIONL2U'
+}
+
+export type Stripe_PaymentMethodInteracPresent = {
+  __typename?: 'Stripe_PaymentMethodInteracPresent';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodKlarna = {
+  __typename?: 'Stripe_PaymentMethodKlarna';
+  dob?: Maybe<Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob>;
+};
+
+export type Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob = {
+  __typename?: 'Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob';
+  /** The day of birth, between 1 and 31. */
+  day?: Maybe<Scalars['Int']>;
+  /** The month of birth, between 1 and 12. */
+  month?: Maybe<Scalars['Int']>;
+  /** The four-digit year of birth. */
+  year?: Maybe<Scalars['Int']>;
+};
+
+export type Stripe_PaymentMethodKonbini = {
+  __typename?: 'Stripe_PaymentMethodKonbini';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export enum Stripe_PaymentMethodObjectProperty {
+  PaymentMethod = 'payment_method'
+}
+
+export type Stripe_PaymentMethodOxxo = {
+  __typename?: 'Stripe_PaymentMethodOxxo';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodP24 = {
+  __typename?: 'Stripe_PaymentMethodP24';
+  /** The customer's bank, if provided. */
+  bank?: Maybe<Stripe_PaymentMethodP24BankProperty>;
+};
+
+export enum Stripe_PaymentMethodP24BankProperty {
+  AliorBank = 'alior_bank',
+  BankMillennium = 'bank_millennium',
+  BankNowyBfgSa = 'bank_nowy_bfg_sa',
+  BankPekaoSa = 'bank_pekao_sa',
+  BankiSpbdzielcze = 'banki_spbdzielcze',
+  Blik = 'blik',
+  BnpParibas = 'bnp_paribas',
+  Boz = 'boz',
+  CitiHandlowy = 'citi_handlowy',
+  CreditAgricole = 'credit_agricole',
+  Envelobank = 'envelobank',
+  EtransferPocztowy24 = 'etransfer_pocztowy24',
+  GetinBank = 'getin_bank',
+  Ideabank = 'ideabank',
+  Ing = 'ing',
+  Inteligo = 'inteligo',
+  MbankMtransfer = 'mbank_mtransfer',
+  NestPrzelew = 'nest_przelew',
+  NoblePay = 'noble_pay',
+  PbacZIpko = 'pbac_z_ipko',
+  PlusBank = 'plus_bank',
+  SantanderPrzelew24 = 'santander_przelew24',
+  TmobileUsbugiBankowe = 'tmobile_usbugi_bankowe',
+  ToyotaBank = 'toyota_bank',
+  VolkswagenBank = 'volkswagen_bank'
+}
+
+export type Stripe_PaymentMethodPaynow = {
+  __typename?: 'Stripe_PaymentMethodPaynow';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_PaymentMethodSepaDebit = {
+  __typename?: 'Stripe_PaymentMethodSepaDebit';
+  /** Bank code of bank associated with the bank account. */
+  bank_code?: Maybe<Scalars['String']>;
+  /** Branch code of bank associated with the bank account. */
+  branch_code?: Maybe<Scalars['String']>;
+  /** Two-letter ISO code representing the country the bank account is located in. */
+  country?: Maybe<Scalars['String']>;
+  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
+  fingerprint?: Maybe<Scalars['String']>;
+  generated_from?: Maybe<Stripe_SepaDebitGeneratedFrom>;
+  /** Last four characters of the IBAN. */
+  last4?: Maybe<Scalars['String']>;
+};
+
+export type Stripe_SepaDebitGeneratedFrom = {
+  __typename?: 'Stripe_SepaDebitGeneratedFrom';
+  charge?: Maybe<Stripe_SepaDebitGeneratedFromChargeProperty>;
+  setup_attempt?: Maybe<Stripe_SepaDebitGeneratedFromSetupAttemptProperty>;
+};
+
+export type Stripe_SepaDebitGeneratedFromChargeProperty = WrappedString | Stripe_Charge;
+
+export type Stripe_SepaDebitGeneratedFromSetupAttemptProperty = WrappedString | Stripe_SetupAttempt;
+
+export type Stripe_PaymentMethodSofort = {
+  __typename?: 'Stripe_PaymentMethodSofort';
+  /** Two-letter ISO code representing the country the bank account is located in. */
+  country?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_PaymentMethodTypeProperty {
+  AcssDebit = 'acss_debit',
+  AfterpayClearpay = 'afterpay_clearpay',
+  Alipay = 'alipay',
+  AuBecsDebit = 'au_becs_debit',
+  BacsDebit = 'bacs_debit',
+  Bancontact = 'bancontact',
+  Boleto = 'boleto',
+  Card = 'card',
+  CardPresent = 'card_present',
+  Eps = 'eps',
+  Fpx = 'fpx',
+  Giropay = 'giropay',
+  Grabpay = 'grabpay',
+  Ideal = 'ideal',
+  InteracPresent = 'interac_present',
+  Klarna = 'klarna',
+  Konbini = 'konbini',
+  Oxxo = 'oxxo',
+  P24 = 'p24',
+  Paynow = 'paynow',
+  SepaDebit = 'sepa_debit',
+  Sofort = 'sofort',
+  UsBankAccount = 'us_bank_account',
+  WechatPay = 'wechat_pay'
+}
+
+export type Stripe_PaymentMethodUsBankAccount = {
+  __typename?: 'Stripe_PaymentMethodUsBankAccount';
+  /** Account holder type: individual or company. */
+  account_holder_type?: Maybe<Stripe_PaymentMethodUsBankAccountAccountHolderTypeProperty>;
+  /** Account type: checkings or savings. Defaults to checking if omitted. */
+  account_type?: Maybe<Stripe_PaymentMethodUsBankAccountAccountTypeProperty>;
+  /** The name of the bank. */
+  bank_name?: Maybe<Scalars['String']>;
+  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
+  fingerprint?: Maybe<Scalars['String']>;
+  /** Last four digits of the bank account number. */
+  last4?: Maybe<Scalars['String']>;
+  /** Routing number of the bank account. */
+  routing_number?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_PaymentMethodUsBankAccountAccountHolderTypeProperty {
+  Company = 'company',
+  Individual = 'individual'
+}
+
+export enum Stripe_PaymentMethodUsBankAccountAccountTypeProperty {
+  Checking = 'checking',
+  Savings = 'savings'
+}
+
+export type Stripe_PaymentMethodWechatPay = {
+  __typename?: 'Stripe_PaymentMethodWechatPay';
+  result?: Maybe<Scalars['JSONObject']>;
+};
+
+export enum Stripe_CustomerObjectProperty {
+  Customer = 'customer'
+}
+
+/** The customer's payment sources, if any. */
+export type Stripe_CustomerSourcesProperty = {
+  __typename?: 'Stripe_CustomerSourcesProperty';
+  /** Details about each object. */
+  data: Array<Stripe_CustomerSourcesDataProperty>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_CustomerSourcesObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export type Stripe_CustomerSourcesDataProperty = Stripe_AlipayAccount | Stripe_BankAccount | Stripe_BitcoinReceiver | Stripe_Card | Stripe_Source;
+
+export enum Stripe_CustomerSourcesObjectProperty {
+  List = 'list'
+}
+
+/** The customer's current subscriptions, if any. */
+export type Stripe_CustomerSubscriptionsProperty = {
+  __typename?: 'Stripe_CustomerSubscriptionsProperty';
+  /** Details about each object. */
+  data: Array<Stripe_Subscription>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_CustomerSubscriptionsObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export enum Stripe_CustomerSubscriptionsObjectProperty {
+  List = 'list'
+}
+
+export type Stripe_CustomerTax = {
+  __typename?: 'Stripe_CustomerTax';
+  /** Surfaces if automatic tax computation is possible given the current customer location information. */
+  automatic_tax?: Maybe<Stripe_CustomerTaxAutomaticTaxProperty>;
+  /** A recent IP address of the customer used for tax reporting and tax location inference. */
+  ip_address?: Maybe<Scalars['String']>;
+  location?: Maybe<Stripe_CustomerTaxLocation>;
+};
+
+export enum Stripe_CustomerTaxAutomaticTaxProperty {
+  Failed = 'failed',
+  NotCollecting = 'not_collecting',
+  Supported = 'supported',
+  UnrecognizedLocation = 'unrecognized_location'
+}
+
+export type Stripe_CustomerTaxLocation = {
+  __typename?: 'Stripe_CustomerTaxLocation';
+  /** The customer's country as identified by Stripe Tax. */
+  country?: Maybe<Scalars['String']>;
+  /** The data source used to infer the customer's location. */
+  source?: Maybe<Stripe_CustomerTaxLocationSourceProperty>;
+  /** The customer's state, county, province, or region as identified by Stripe Tax. */
+  state?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_CustomerTaxLocationSourceProperty {
+  BillingAddress = 'billing_address',
+  IpAddress = 'ip_address',
+  PaymentMethod = 'payment_method',
+  ShippingDestination = 'shipping_destination'
+}
+
+export enum Stripe_CustomerTaxExemptProperty {
+  Exempt = 'exempt',
+  None = 'none',
+  Reverse = 'reverse'
+}
+
+/** The customer's tax IDs. */
+export type Stripe_CustomerTaxIdsProperty = {
+  __typename?: 'Stripe_CustomerTaxIdsProperty';
+  /** Details about each object. */
+  data: Array<Stripe_TaxId>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: Stripe_CustomerTaxIdsObjectProperty;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export enum Stripe_CustomerTaxIdsObjectProperty {
+  List = 'list'
+}
+
+export type Stripe_CustomerTestClockProperty = WrappedString | Stripe_TestHelpersTestClock;
+
+export type Voucherify_LoyaltyCard = {
+  __typename?: 'Voucherify_LoyaltyCard';
+  id?: Maybe<Scalars['String']>;
+  code?: Maybe<Scalars['String']>;
+  campaign?: Maybe<Scalars['String']>;
+  campaign_id?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+  loyalty_card?: Maybe<Voucherify_LoyaltyCardStats>;
+  active?: Maybe<Scalars['Boolean']>;
+  assets?: Maybe<Voucherify_LoyaltyCardAssets>;
+};
+
+export type Voucherify_LoyaltyCardStats = {
+  __typename?: 'Voucherify_LoyaltyCardStats';
+  points?: Maybe<Scalars['Int']>;
+  balance?: Maybe<Scalars['Int']>;
+};
+
+export type Voucherify_LoyaltyCardAssets = {
+  __typename?: 'Voucherify_LoyaltyCardAssets';
+  qr?: Maybe<Voucherify_LoyaltyCardAsset>;
+  barcode?: Maybe<Voucherify_LoyaltyCardAsset>;
+};
+
+export type Voucherify_LoyaltyCardAsset = {
+  __typename?: 'Voucherify_LoyaltyCardAsset';
+  id?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
+};
+
+export type ProfileNewsletterStatus = {
+  __typename?: 'ProfileNewsletterStatus';
+  listId?: Maybe<Scalars['String']>;
+  listName?: Maybe<Scalars['String']>;
+  subscribed?: Maybe<Scalars['Boolean']>;
+};
+
+export type ProfilePaginatedList = {
+  __typename?: 'ProfilePaginatedList';
+  items: Array<Profile>;
+  total: Scalars['Int'];
+};
+
+export type TsWhereProfileInput = {
+  id?: InputMaybe<TsWhereStringInput>;
+  name?: InputMaybe<TsWhereStringInput>;
+  email?: InputMaybe<TsWhereStringInput>;
+  bio?: InputMaybe<TsWhereStringInput>;
+  avatar?: InputMaybe<TsWhereAssetRelationshipInput>;
+  stripeCustomerId?: InputMaybe<TsWhereStringInput>;
+  _shapeId?: InputMaybe<TsWhereIdInput>;
+  _id?: InputMaybe<TsWhereIdInput>;
+  _version?: InputMaybe<TsWhereIntegerInput>;
+  _shapeName?: InputMaybe<TsWhereStringInput>;
+  _createdAt?: InputMaybe<TsWhereDateInput>;
+  _updatedAt?: InputMaybe<TsWhereDateInput>;
+  _schemaVersion?: InputMaybe<TsWhereNumberInput>;
+  _status?: InputMaybe<TsWhereWorkflowInput>;
+  _contentTypeId?: InputMaybe<TsWhereIdInput>;
+  _contentTypeName?: InputMaybe<TsWhereStringInput>;
+  AND?: InputMaybe<Array<InputMaybe<TsWhereProfileInput>>>;
+  OR?: InputMaybe<Array<InputMaybe<TsWhereProfileInput>>>;
+  NOT?: InputMaybe<TsWhereProfileInput>;
+};
+
+export type Stripe_ListProductsResponse = {
+  __typename?: 'Stripe_ListProductsResponse';
+  /** Details about each object. */
+  data?: Maybe<Array<Maybe<Stripe_Product>>>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more?: Maybe<Scalars['Boolean']>;
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object?: Maybe<Stripe_ListProductsResponseObjectProperty>;
+  /** The URL where this list can be accessed. */
+  url?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_ListProductsResponseObjectProperty {
+  List = 'list'
+}
+
+export type Stripe_ListInvoiceLinesResponse = {
+  __typename?: 'Stripe_ListInvoiceLinesResponse';
+  /** Details about each object. */
+  data?: Maybe<Array<Maybe<Stripe_LineItem>>>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more?: Maybe<Scalars['Boolean']>;
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object?: Maybe<Stripe_ListInvoiceLinesResponseObjectProperty>;
+  /** The URL where this list can be accessed. */
+  url?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_ListInvoiceLinesResponseObjectProperty {
+  List = 'list'
+}
+
+export type Stripe_ListPaymentIntentsResponse = {
+  __typename?: 'Stripe_ListPaymentIntentsResponse';
+  data?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more?: Maybe<Scalars['Boolean']>;
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object?: Maybe<Stripe_ListPaymentIntentsResponseObjectProperty>;
+  /** The URL where this list can be accessed. */
+  url?: Maybe<Scalars['String']>;
+};
+
+export enum Stripe_ListPaymentIntentsResponseObjectProperty {
+  List = 'list'
+}
+
+/** Asset search results */
+export type AssetSearchResults = {
+  __typename?: 'AssetSearchResults';
+  results: Array<Asset>;
+  total: Scalars['Int'];
+};
+
+/** TsStaticSite search results */
+export type TsStaticSiteSearchResults = {
+  __typename?: 'TsStaticSiteSearchResults';
+  results: Array<TsStaticSite>;
+  total: Scalars['Int'];
+};
+
+/** Profile search results */
+export type ProfileSearchResults = {
+  __typename?: 'ProfileSearchResults';
+  results: Array<Profile>;
+  total: Scalars['Int'];
+};
+
+/** TSSearchable search results */
+export type TsSearchableSearchResults = {
+  __typename?: 'TSSearchableSearchResults';
+  results: Array<TsSearchable>;
+  total: Scalars['Int'];
+};
+
+/** This query allow you to pass context to your queries */
+export type WithContext = {
+  __typename?: 'WithContext';
+  taxonomySuggest?: Maybe<TsSuggestionPaginatedList>;
+  /** List Versions for a piece of content */
+  getContentVersion?: Maybe<TsVersionResponse>;
+  /** List Versions for a piece of content */
+  getContentVersionList?: Maybe<TsVersionsPaginatedList>;
+  /** Get a Asset by ID */
+  getAsset?: Maybe<Asset>;
+  /** Returns a list Asset in natural order. */
+  getAssetList?: Maybe<AssetPaginatedList>;
+  /** Get a TsStaticSite by ID */
+  getTsStaticSite?: Maybe<TsStaticSite>;
+  /** Returns a list TsStaticSite in natural order. */
+  getTsStaticSiteList?: Maybe<TsStaticSitePaginatedList>;
+  ReviewsIo_listProductReviews?: Maybe<ReviewsIo_ListProductReviewsResponse>;
+  /** Get Stripe products from the TakeShape API Index */
+  getIndexedProductList?: Maybe<Stripe_ProductPaginatedList>;
+  /** Get the signed in user's profile from ShapeDB */
+  getMyProfile?: Maybe<Profile>;
+  /** Get the signed in user's subscriptions from Stripe */
+  getMySubscriptions?: Maybe<Array<Maybe<Stripe_Subscription>>>;
+  /** Get the signed-in user's payments from Stripe */
+  getMyPayments_UNINDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** Get the signed-in user's payments from Stripe */
+  getMyPayments_INDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** Get the signed-in user's payments from Stripe */
+  getMyPayments?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** Get the signed-in user's payments from Stripe */
+  getMyPaymentsIndexed?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
+  /** Get a profile by ID */
+  getProfile?: Maybe<Profile>;
+  /** Returns a list of profiles in natural order. */
+  getProfileList?: Maybe<ProfilePaginatedList>;
+  /** <p>Returns a list of your products. The products are returned sorted by creation date, with the most recently created products appearing first.</p> */
+  Stripe_listProducts?: Maybe<Stripe_ListProductsResponse>;
+  /** <p>Retrieves the details of an existing product. Supply the unique product ID from either a product creation request or the product list, and Stripe will return the corresponding product information.</p> */
+  Stripe_getProduct?: Maybe<Stripe_Product>;
+  /** Get a loyalty card from Voucherify */
+  getMyLoyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
+  getMyNewsletterSubscriptions?: Maybe<Array<Maybe<ProfileNewsletterStatus>>>;
+  /** <p>When retrieving an invoice, you’ll get a <strong>lines</strong> property containing the total count of line items and the first handful of those items. There is also a URL where you can retrieve the full (paginated) list of line items.</p> */
+  Stripe_listInvoiceLines?: Maybe<Stripe_ListInvoiceLinesResponse>;
+  /** <p>Returns a list of PaymentIntents.</p> */
+  Stripe_listPaymentIntents?: Maybe<Stripe_ListPaymentIntentsResponse>;
+  searchAssetIndex?: Maybe<AssetSearchResults>;
+  searchTsStaticSiteIndex?: Maybe<TsStaticSiteSearchResults>;
+  searchProfileIndex?: Maybe<ProfileSearchResults>;
+  search?: Maybe<TsSearchableSearchResults>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextTaxonomySuggestArgs = {
+  shapeNames?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  shapeIds?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  contentTypeNames?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  contentTypeIds?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  terms?: InputMaybe<Scalars['String']>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSON']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSort>>>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetContentVersionArgs = {
+  id: Scalars['ID'];
+  version: Scalars['Int'];
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetContentVersionListArgs = {
+  id: Scalars['ID'];
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetAssetArgs = {
+  _id: Scalars['ID'];
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetAssetListArgs = {
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
+  where?: InputMaybe<TsWhereAssetInput>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetTsStaticSiteArgs = {
+  _id: Scalars['ID'];
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetTsStaticSiteListArgs = {
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
+  where?: InputMaybe<TsWhereTsStaticSiteInput>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextReviewsIo_ListProductReviewsArgs = {
+  sku?: InputMaybe<Scalars['String']>;
+  mpn?: InputMaybe<Scalars['String']>;
+  page?: InputMaybe<Scalars['String']>;
+  per_page?: InputMaybe<Scalars['String']>;
+  photos?: InputMaybe<Scalars['Int']>;
+  verified_only?: InputMaybe<Scalars['Int']>;
+  comments_only?: InputMaybe<Scalars['Int']>;
+  minRating?: InputMaybe<Scalars['Int']>;
+  include_unpublished_images?: InputMaybe<Scalars['Int']>;
+  include_moderated?: InputMaybe<Scalars['Int']>;
+  order_id?: InputMaybe<Scalars['String']>;
+  min_date?: InputMaybe<Scalars['String']>;
+  max_date?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetIndexedProductListArgs = {
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
+  where?: InputMaybe<TsWhereStripeProductInput>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetMySubscriptionsArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetMyPayments_UnindexedArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Float']>;
+  created?: InputMaybe<Scalars['JSON']>;
+  startingAfter?: InputMaybe<Scalars['String']>;
+  endingBefore?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetMyPayments_IndexedArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Float']>;
+  created?: InputMaybe<Scalars['JSON']>;
+  startingAfter?: InputMaybe<Scalars['String']>;
+  endingBefore?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetMyPaymentsArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Float']>;
+  created?: InputMaybe<Scalars['JSON']>;
+  startingAfter?: InputMaybe<Scalars['String']>;
+  endingBefore?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetMyPaymentsIndexedArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Float']>;
+  created?: InputMaybe<Scalars['JSON']>;
+  starting_after?: InputMaybe<Scalars['String']>;
+  ending_before?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetProfileArgs = {
+  _id: Scalars['ID'];
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextGetProfileListArgs = {
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
+  where?: InputMaybe<TsWhereProfileInput>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextStripe_ListProductsArgs = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  created?: InputMaybe<Scalars['JSON']>;
+  ending_before?: InputMaybe<Scalars['String']>;
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  shippable?: InputMaybe<Scalars['Boolean']>;
+  starting_after?: InputMaybe<Scalars['String']>;
+  url?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextStripe_GetProductArgs = {
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  id: Scalars['String'];
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextStripe_ListInvoiceLinesArgs = {
+  ending_before?: InputMaybe<Scalars['String']>;
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  invoice: Scalars['String'];
+  limit?: InputMaybe<Scalars['Int']>;
+  starting_after?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextStripe_ListPaymentIntentsArgs = {
+  created?: InputMaybe<Scalars['JSON']>;
+  customer?: InputMaybe<Scalars['String']>;
+  ending_before?: InputMaybe<Scalars['String']>;
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  starting_after?: InputMaybe<Scalars['String']>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextSearchAssetIndexArgs = {
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  where?: InputMaybe<TsWhereAssetInput>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextSearchTsStaticSiteIndexArgs = {
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  where?: InputMaybe<TsWhereTsStaticSiteInput>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextSearchProfileIndexArgs = {
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  where?: InputMaybe<TsWhereProfileInput>;
+};
+
+
+/** This query allow you to pass context to your queries */
+export type WithContextSearchArgs = {
+  terms?: InputMaybe<Scalars['String']>;
+  from?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+  filter?: InputMaybe<Scalars['JSONObject']>;
+  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+  shapeNames?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  shapeIds?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  contentTypeNames?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  contentTypeIds?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  where?: InputMaybe<TsWhereInput>;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  /** Initiate upload process for asset(s) */
+  uploadAssets?: Maybe<Array<Maybe<Upload>>>;
+  /** Replace an asset file */
+  replaceAsset?: Maybe<Upload>;
+  /** Update Asset */
+  updateAsset?: Maybe<UpdateAssetResult>;
+  /** Create Asset */
+  createAsset?: Maybe<CreateAssetResult>;
+  /** Duplicate Asset */
+  duplicateAsset?: Maybe<DuplicateAssetResult>;
+  /** Delete Asset */
+  deleteAsset?: Maybe<DeleteAssetResult>;
+  /** Update TsStaticSite */
+  updateTsStaticSite?: Maybe<UpdateTsStaticSiteResult>;
+  /** Create TsStaticSite */
+  createTsStaticSite?: Maybe<CreateTsStaticSiteResult>;
+  /** Duplicate TsStaticSite */
+  duplicateTsStaticSite?: Maybe<DuplicateTsStaticSiteResult>;
+  /** Delete TsStaticSite */
+  deleteTsStaticSite?: Maybe<DeleteTsStaticSiteResult>;
+  /** Create a shipment with ShipEngine. */
+  createShipment?: Maybe<ShipEngine_Label>;
+  /** Upsert the signed-in user's profile, updating ShapeDB and Stripe */
+  upsertMyProfile?: Maybe<Profile>;
+  /** Upsert the signed-in user's Stripe customer */
+  upsertMyCustomer?: Maybe<Stripe_Customer>;
+  /** Delete the signed-in user's subscription in Stripe */
+  deleteMySubscription?: Maybe<Stripe_Subscription>;
+  /** Create a Stripe checkout session for the signed-in user */
+  createMyCheckoutSession?: Maybe<Stripe_CheckoutSession>;
+  /** Update Profile */
+  updateProfile?: Maybe<UpdateProfileResult>;
+  /** Create Profile */
+  createProfile?: Maybe<CreateProfileResult>;
+  /** Duplicate Profile */
+  duplicateProfile?: Maybe<DuplicateProfileResult>;
+  /** Delete Profile */
+  deleteProfile?: Maybe<DeleteProfileResult>;
+  /** Create an order in Voucherify */
+  Voucherify_createOrder?: Maybe<Voucherify_Order>;
+  Klaviyo_addMembers?: Maybe<Klaviyo_AddMembersResponse>;
+  Klaviyo_removeMembers?: Maybe<Klaviyo_200Ok>;
+  /** <p>Returns a list of Checkout Sessions.</p> */
+  listCheckoutSessions?: Maybe<Stripe_ListCheckoutSessionsResponse>;
+  ReviewsIo_createInvitation?: Maybe<ReviewsIo_CreateInvitationResponse>;
+};
+
+
+export type MutationUploadAssetsArgs = {
+  projectId?: InputMaybe<Scalars['ID']>;
+  files: Array<InputMaybe<TsFile>>;
+};
+
+
+export type MutationReplaceAssetArgs = {
+  projectId?: InputMaybe<Scalars['ID']>;
+  _id: Scalars['ID'];
+  _version: Scalars['Int'];
+  file: TsFile;
+};
+
+
+export type MutationUpdateAssetArgs = {
+  input: UpdateAssetInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+  structure?: InputMaybe<Array<InputMaybe<ContentStructureInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type MutationCreateAssetArgs = {
+  input: CreateAssetInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationDuplicateAssetArgs = {
+  input: DuplicateAssetInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteAssetArgs = {
+  input: DeleteAssetInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationUpdateTsStaticSiteArgs = {
+  input: UpdateTsStaticSiteInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+  structure?: InputMaybe<Array<InputMaybe<ContentStructureInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type MutationCreateTsStaticSiteArgs = {
+  input: CreateTsStaticSiteInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationDuplicateTsStaticSiteArgs = {
+  input: DuplicateTsStaticSiteInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteTsStaticSiteArgs = {
+  input: DeleteTsStaticSiteInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationCreateShipmentArgs = {
+  shipment_id?: InputMaybe<Scalars['String']>;
+  carrier_id?: InputMaybe<Scalars['String']>;
+  service_code?: InputMaybe<Scalars['String']>;
+  external_order_id?: InputMaybe<Scalars['String']>;
+  external_shipment_id?: InputMaybe<Scalars['String']>;
+  ship_date?: InputMaybe<Scalars['String']>;
+  created_at?: InputMaybe<Scalars['String']>;
+  modified_at?: InputMaybe<Scalars['String']>;
+  shipment_status?: InputMaybe<Scalars['String']>;
+  origin_type?: InputMaybe<Scalars['String']>;
+  insurance_provider?: InputMaybe<Scalars['String']>;
+  order_source_code?: InputMaybe<Scalars['String']>;
+  packages?: InputMaybe<Array<InputMaybe<ShipEngine_PackageInput>>>;
+  ship_to?: InputMaybe<ShipEngine_AddressInput>;
+  ship_from?: InputMaybe<ShipEngine_AddressInput>;
+};
+
+
+export type MutationUpsertMyProfileArgs = {
+  name?: InputMaybe<Scalars['String']>;
+  bio?: InputMaybe<Scalars['String']>;
+  avatarId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationUpsertMyCustomerArgs = {
+  name?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  address?: InputMaybe<Stripe_CustomerAddressPropertyInput>;
+};
+
+
+export type MutationDeleteMySubscriptionArgs = {
+  subscriptionId: Scalars['String'];
+};
+
+
+export type MutationCreateMyCheckoutSessionArgs = {
+  redirectUrl: Scalars['String'];
+  mode: Scalars['String'];
+  lineItems: Array<Stripe_CheckoutSessionLineItemsPropertyInput>;
+};
+
+
+export type MutationUpdateProfileArgs = {
+  input: UpdateProfileInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+  structure?: InputMaybe<Array<InputMaybe<ContentStructureInput>>>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type MutationCreateProfileArgs = {
+  input: CreateProfileInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationDuplicateProfileArgs = {
+  input: DuplicateProfileInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+  locale?: InputMaybe<Scalars['String']>;
+  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteProfileArgs = {
+  input: DeleteProfileInput;
+  clientMutationId?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationVoucherify_CreateOrderArgs = {
+  email?: InputMaybe<Scalars['String']>;
+  amount?: InputMaybe<Scalars['Float']>;
+  status?: InputMaybe<Scalars['String']>;
+  items?: InputMaybe<Array<InputMaybe<Voucherify_OrderItemInput>>>;
+};
+
+
+export type MutationKlaviyo_AddMembersArgs = {
+  input?: InputMaybe<AddListMembersInput>;
+  list_id: Scalars['String'];
+};
+
+
+export type MutationKlaviyo_RemoveMembersArgs = {
+  input?: InputMaybe<Klaviyo_200OkPropertyInput>;
+  list_id: Scalars['String'];
+};
+
+
+export type MutationListCheckoutSessionsArgs = {
+  ending_before?: InputMaybe<Scalars['String']>;
+  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  payment_intent?: InputMaybe<Scalars['String']>;
+  starting_after?: InputMaybe<Scalars['String']>;
+  subscription?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationReviewsIo_CreateInvitationArgs = {
+  input?: InputMaybe<ReviewsIo_CreateInvitationResponsePropertyInput>;
+};
+
+/** A project file stored on s3 */
+export type Upload = {
+  __typename?: 'Upload';
+  uploadUrl?: Maybe<Scalars['ID']>;
+  asset?: Maybe<Asset>;
+};
+
+export type TsFile = {
+  name: Scalars['String'];
+  type: Scalars['String'];
+};
+
+export type UpdateAssetResult = {
+  __typename?: 'UpdateAssetResult';
+  clientMutationId?: Maybe<Scalars['String']>;
+  result?: Maybe<Asset>;
+};
+
+/** update Asset input */
+export type UpdateAssetInput = {
+  _id: Scalars['ID'];
+  title?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  filename?: InputMaybe<Scalars['String']>;
+  caption?: InputMaybe<Scalars['JSON']>;
+  credit?: InputMaybe<Scalars['JSON']>;
+  path?: InputMaybe<Scalars['String']>;
+  mimeType?: InputMaybe<Scalars['String']>;
+  sourceUrl?: InputMaybe<Scalars['String']>;
+  uploadStatus?: InputMaybe<Scalars['String']>;
+  _shapeId?: InputMaybe<Scalars['String']>;
+  _version?: InputMaybe<Scalars['Int']>;
+  _shapeName?: InputMaybe<Scalars['String']>;
+  _createdAt?: InputMaybe<Scalars['String']>;
+  _createdBy?: InputMaybe<Scalars['String']>;
+  _updatedAt?: InputMaybe<Scalars['String']>;
+  _updatedBy?: InputMaybe<Scalars['String']>;
+  _schemaVersion?: InputMaybe<Scalars['Float']>;
+  _enabled?: InputMaybe<Scalars['Boolean']>;
+  _enabledAt?: InputMaybe<Scalars['String']>;
+  _status?: InputMaybe<DefaultWorkflow>;
+  _contentTypeId?: InputMaybe<Scalars['String']>;
+  _contentTypeName?: InputMaybe<Scalars['String']>;
+  s3Key?: InputMaybe<Scalars['String']>;
+};
+
+/** Describes a structural update to an array of data. */
+export type ContentStructureInput = {
+  /** A deep path to the array being updated (e.g. a.b[1].c). */
+  path: Scalars['String'];
+  /** An array where the indices represent the to index, and the values represent the from index.For example to transform ["a","b","c","d"] into ["c","a"], this value would be [2,0]. */
+  structure?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type CreateAssetResult = {
+  __typename?: 'CreateAssetResult';
+  clientMutationId?: Maybe<Scalars['String']>;
+  result?: Maybe<Asset>;
+};
+
+/** create Asset input */
+export type CreateAssetInput = {
+  title?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  filename: Scalars['String'];
+  caption?: InputMaybe<Scalars['JSON']>;
+  credit?: InputMaybe<Scalars['JSON']>;
+  path: Scalars['String'];
+  mimeType?: InputMaybe<Scalars['String']>;
+  sourceUrl?: InputMaybe<Scalars['String']>;
+  uploadStatus?: InputMaybe<Scalars['String']>;
+  _shapeId?: InputMaybe<Scalars['String']>;
+  _id?: InputMaybe<Scalars['ID']>;
+  _version?: InputMaybe<Scalars['Int']>;
+  _shapeName?: InputMaybe<Scalars['String']>;
+  _createdAt?: InputMaybe<Scalars['String']>;
+  _createdBy?: InputMaybe<Scalars['String']>;
+  _updatedAt?: InputMaybe<Scalars['String']>;
+  _updatedBy?: InputMaybe<Scalars['String']>;
+  _schemaVersion?: InputMaybe<Scalars['Float']>;
+  _enabled?: InputMaybe<Scalars['Boolean']>;
+  _enabledAt?: InputMaybe<Scalars['String']>;
+  _status?: InputMaybe<DefaultWorkflow>;
+  _contentTypeId?: InputMaybe<Scalars['String']>;
+  _contentTypeName?: InputMaybe<Scalars['String']>;
+  s3Key?: InputMaybe<Scalars['String']>;
+};
+
+export type DuplicateAssetResult = {
+  __typename?: 'DuplicateAssetResult';
+  clientMutationId?: Maybe<Scalars['String']>;
+  result?: Maybe<Asset>;
+};
+
+/** duplicate Asset input */
+export type DuplicateAssetInput = {
+  _id: Scalars['ID'];
+  title?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  filename?: InputMaybe<Scalars['String']>;
+  caption?: InputMaybe<Scalars['JSON']>;
+  credit?: InputMaybe<Scalars['JSON']>;
+  path?: InputMaybe<Scalars['String']>;
+  mimeType?: InputMaybe<Scalars['String']>;
+  sourceUrl?: InputMaybe<Scalars['String']>;
+  uploadStatus?: InputMaybe<Scalars['String']>;
+  _shapeId?: InputMaybe<Scalars['String']>;
+  _version?: InputMaybe<Scalars['Int']>;
+  _shapeName?: InputMaybe<Scalars['String']>;
+  _createdAt?: InputMaybe<Scalars['String']>;
+  _createdBy?: InputMaybe<Scalars['String']>;
+  _updatedAt?: InputMaybe<Scalars['String']>;
+  _updatedBy?: InputMaybe<Scalars['String']>;
+  _schemaVersion?: InputMaybe<Scalars['Float']>;
+  _enabled?: InputMaybe<Scalars['Boolean']>;
+  _enabledAt?: InputMaybe<Scalars['String']>;
+  _status?: InputMaybe<DefaultWorkflow>;
+  _contentTypeId?: InputMaybe<Scalars['String']>;
+  _contentTypeName?: InputMaybe<Scalars['String']>;
+  s3Key?: InputMaybe<Scalars['String']>;
+};
+
+export type DeleteAssetResult = {
+  __typename?: 'DeleteAssetResult';
+  clientMutationId?: Maybe<Scalars['String']>;
+  result?: Maybe<Scalars['Boolean']>;
+};
+
+/** delete Asset input */
+export type DeleteAssetInput = {
+  _id: Scalars['ID'];
+};
+
+export type UpdateTsStaticSiteResult = {
+  __typename?: 'UpdateTsStaticSiteResult';
+  clientMutationId?: Maybe<Scalars['String']>;
+  result?: Maybe<TsStaticSite>;
+};
+
+/** update TsStaticSite input */
+export type UpdateTsStaticSiteInput = {
+  _id: Scalars['ID'];
+  title?: InputMaybe<Scalars['String']>;
+  baseUrl?: InputMaybe<Scalars['String']>;
+  provider?: InputMaybe<Scalars['String']>;
+  idKey?: InputMaybe<Scalars['String']>;
+  secretKey?: InputMaybe<Scalars['String']>;
+  destination?: InputMaybe<Scalars['String']>;
+  privateAcl?: InputMaybe<Scalars['Boolean']>;
+  environmentVariables?: InputMaybe<Array<InputMaybe<TsStaticSiteEnvironmentVariablesInput>>>;
+  triggers?: InputMaybe<Array<InputMaybe<TsStaticSiteTriggersInput>>>;
+  templateHash?: InputMaybe<Scalars['String']>;
+  _shapeId?: InputMaybe<Scalars['String']>;
+  _version?: InputMaybe<Scalars['Int']>;
+  _shapeName?: InputMaybe<Scalars['String']>;
+  _createdAt?: InputMaybe<Scalars['String']>;
+  _createdBy?: InputMaybe<Scalars['String']>;
+  _updatedAt?: InputMaybe<Scalars['String']>;
+  _updatedBy?: InputMaybe<Scalars['String']>;
+  _schemaVersion?: InputMaybe<Scalars['Float']>;
+  _enabled?: InputMaybe<Scalars['Boolean']>;
+  _enabledAt?: InputMaybe<Scalars['String']>;
+  _status?: InputMaybe<DefaultWorkflow>;
+  _contentTypeId?: InputMaybe<Scalars['String']>;
+  _contentTypeName?: InputMaybe<Scalars['String']>;
+};
+
+export type TsStaticSiteEnvironmentVariablesInput = {
+  name?: InputMaybe<Scalars['String']>;
+  value?: InputMaybe<Scalars['String']>;
+};
+
+export type TsStaticSiteTriggersInput = {
+  contentTypeId?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<Scalars['String']>;
+};
+
+export type CreateTsStaticSiteResult = {
+  __typename?: 'CreateTsStaticSiteResult';
+  clientMutationId?: Maybe<Scalars['String']>;
+  result?: Maybe<TsStaticSite>;
+};
+
+/** create TsStaticSite input */
+export type CreateTsStaticSiteInput = {
+  title: Scalars['String'];
+  baseUrl?: InputMaybe<Scalars['String']>;
+  provider?: Scalars['String'];
+  idKey?: InputMaybe<Scalars['String']>;
+  secretKey?: InputMaybe<Scalars['String']>;
+  destination: Scalars['String'];
+  privateAcl?: InputMaybe<Scalars['Boolean']>;
+  environmentVariables?: InputMaybe<Array<InputMaybe<TsStaticSiteEnvironmentVariablesInput>>>;
+  triggers?: InputMaybe<Array<InputMaybe<TsStaticSiteTriggersInput>>>;
+  templateHash?: InputMaybe<Scalars['String']>;
+  _shapeId?: InputMaybe<Scalars['String']>;
+  _id?: InputMaybe<Scalars['ID']>;
+  _version?: InputMaybe<Scalars['Int']>;
+  _shapeName?: InputMaybe<Scalars['String']>;
+  _createdAt?: InputMaybe<Scalars['String']>;
+  _createdBy?: InputMaybe<Scalars['String']>;
+  _updatedAt?: InputMaybe<Scalars['String']>;
+  _updatedBy?: InputMaybe<Scalars['String']>;
+  _schemaVersion?: InputMaybe<Scalars['Float']>;
+  _enabled?: InputMaybe<Scalars['Boolean']>;
+  _enabledAt?: InputMaybe<Scalars['String']>;
+  _status?: InputMaybe<DefaultWorkflow>;
+  _contentTypeId?: InputMaybe<Scalars['String']>;
+  _contentTypeName?: InputMaybe<Scalars['String']>;
+};
+
+export type DuplicateTsStaticSiteResult = {
+  __typename?: 'DuplicateTsStaticSiteResult';
+  clientMutationId?: Maybe<Scalars['String']>;
+  result?: Maybe<TsStaticSite>;
+};
+
+/** duplicate TsStaticSite input */
+export type DuplicateTsStaticSiteInput = {
+  _id: Scalars['ID'];
+  title?: InputMaybe<Scalars['String']>;
+  baseUrl?: InputMaybe<Scalars['String']>;
+  provider?: InputMaybe<Scalars['String']>;
+  idKey?: InputMaybe<Scalars['String']>;
+  secretKey?: InputMaybe<Scalars['String']>;
+  destination?: InputMaybe<Scalars['String']>;
+  privateAcl?: InputMaybe<Scalars['Boolean']>;
+  environmentVariables?: InputMaybe<Array<InputMaybe<TsStaticSiteEnvironmentVariablesInput>>>;
+  triggers?: InputMaybe<Array<InputMaybe<TsStaticSiteTriggersInput>>>;
+  templateHash?: InputMaybe<Scalars['String']>;
+  _shapeId?: InputMaybe<Scalars['String']>;
+  _version?: InputMaybe<Scalars['Int']>;
+  _shapeName?: InputMaybe<Scalars['String']>;
+  _createdAt?: InputMaybe<Scalars['String']>;
+  _createdBy?: InputMaybe<Scalars['String']>;
+  _updatedAt?: InputMaybe<Scalars['String']>;
+  _updatedBy?: InputMaybe<Scalars['String']>;
+  _schemaVersion?: InputMaybe<Scalars['Float']>;
+  _enabled?: InputMaybe<Scalars['Boolean']>;
+  _enabledAt?: InputMaybe<Scalars['String']>;
+  _status?: InputMaybe<DefaultWorkflow>;
+  _contentTypeId?: InputMaybe<Scalars['String']>;
+  _contentTypeName?: InputMaybe<Scalars['String']>;
+};
+
+export type DeleteTsStaticSiteResult = {
+  __typename?: 'DeleteTsStaticSiteResult';
+  clientMutationId?: Maybe<Scalars['String']>;
+  result?: Maybe<Scalars['Boolean']>;
+};
+
+/** delete TsStaticSite input */
+export type DeleteTsStaticSiteInput = {
+  _id: Scalars['ID'];
+};
+
+export type ShipEngine_PackageInput = {
+  package_id?: InputMaybe<Scalars['Int']>;
+  description?: InputMaybe<Scalars['String']>;
+  package_code?: InputMaybe<Scalars['String']>;
+  tracking_number?: InputMaybe<Scalars['String']>;
+  label_download?: InputMaybe<ShipEngine_LabelDownloadInput>;
+  weight?: InputMaybe<ShipEngine_WeightInput>;
+  dimensions?: InputMaybe<ShipEngine_DimensionsInput>;
+};
+
+export type ShipEngine_LabelDownloadInput = {
+  href?: InputMaybe<Scalars['String']>;
+  pdf?: InputMaybe<Scalars['String']>;
+  png?: InputMaybe<Scalars['String']>;
+  zpl?: InputMaybe<Scalars['String']>;
+};
+
+export type ShipEngine_WeightInput = {
+  value?: InputMaybe<Scalars['Float']>;
+  unit?: InputMaybe<Scalars['String']>;
+};
+
+export type ShipEngine_DimensionsInput = {
+  length?: InputMaybe<Scalars['Float']>;
+  width?: InputMaybe<Scalars['Float']>;
+  height?: InputMaybe<Scalars['Float']>;
+  unit?: InputMaybe<Scalars['String']>;
+};
+
+export type ShipEngine_AddressInput = {
+  name?: InputMaybe<Scalars['String']>;
+  phone?: InputMaybe<Scalars['String']>;
+  address_line1?: InputMaybe<Scalars['String']>;
+  address_line2?: InputMaybe<Scalars['String']>;
+  city_locality?: InputMaybe<Scalars['String']>;
+  state_province?: InputMaybe<Scalars['String']>;
+  postal_code?: InputMaybe<Scalars['String']>;
+  country_code?: InputMaybe<Scalars['String']>;
+  address_residential_indicator?: InputMaybe<Scalars['String']>;
+};
+
+export type Stripe_CustomerAddressPropertyInput = {
+  line1?: InputMaybe<Scalars['String']>;
+  line2?: InputMaybe<Scalars['String']>;
+  city?: InputMaybe<Scalars['String']>;
+  country?: InputMaybe<Scalars['String']>;
+  postal_code?: InputMaybe<Scalars['String']>;
+  state?: InputMaybe<Scalars['String']>;
+};
+
 export type Stripe_CheckoutSession = {
   __typename?: 'Stripe_CheckoutSession';
   after_expiration?: Maybe<Stripe_PaymentPagesCheckoutSessionAfterExpiration>;
@@ -14849,8 +15853,7 @@ export type Stripe_CheckoutSession = {
   metadata?: Maybe<Scalars['JSONObject']>;
   /** The mode of the Checkout Session. */
   mode?: Maybe<Stripe_CheckoutSessionModeProperty>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: Maybe<Stripe_CheckoutSessionObjectProperty>;
+  object?: Maybe<Scalars['String']>;
   payment_intent?: Maybe<Stripe_CheckoutSessionPaymentIntentProperty>;
   payment_link?: Maybe<Stripe_CheckoutSessionPaymentLinkProperty>;
   payment_method_options?: Maybe<Stripe_CheckoutSessionPaymentMethodOptions>;
@@ -15113,10 +16116,6 @@ export enum Stripe_CheckoutSessionModeProperty {
   Payment = 'payment',
   Setup = 'setup',
   Subscription = 'subscription'
-}
-
-export enum Stripe_CheckoutSessionObjectProperty {
-  CheckoutDoTsession = 'checkoutDOTsession'
 }
 
 export type Stripe_CheckoutSessionPaymentIntentProperty = WrappedString | Stripe_PaymentIntent;
@@ -15959,1510 +16958,6 @@ export type Stripe_PaymentPagesCheckoutSessionTotalDetailsResourceBreakdown = {
   discounts?: Maybe<Array<Maybe<Stripe_LineItemsDiscountAmount>>>;
   /** The aggregated tax amounts by rate. */
   taxes?: Maybe<Array<Maybe<Stripe_LineItemsTaxAmount>>>;
-};
-
-export type ShipEngine_Label = {
-  __typename?: 'ShipEngine_Label';
-  label_id?: Maybe<Scalars['String']>;
-  status?: Maybe<Scalars['String']>;
-  shipment_id?: Maybe<Scalars['String']>;
-  ship_date?: Maybe<Scalars['String']>;
-  created_at?: Maybe<Scalars['String']>;
-  tracking_number?: Maybe<Scalars['String']>;
-  batch_id?: Maybe<Scalars['String']>;
-  carrier_id?: Maybe<Scalars['String']>;
-  charge_event?: Maybe<Scalars['String']>;
-  service_code?: Maybe<Scalars['String']>;
-  package_code?: Maybe<Scalars['String']>;
-  voided_at?: Maybe<Scalars['String']>;
-  label_format?: Maybe<Scalars['String']>;
-  display_scheme?: Maybe<Scalars['String']>;
-  label_layout?: Maybe<Scalars['String']>;
-  label_image_id?: Maybe<Scalars['String']>;
-  carrier_code?: Maybe<Scalars['String']>;
-  tracking_status?: Maybe<Scalars['String']>;
-  label_download?: Maybe<ShipEngine_LabelDownload>;
-  trackable?: Maybe<Scalars['Boolean']>;
-  packages?: Maybe<Array<Maybe<ShipEngine_Package>>>;
-};
-
-export type ShipEngine_LabelDownload = {
-  __typename?: 'ShipEngine_LabelDownload';
-  href?: Maybe<Scalars['String']>;
-  pdf?: Maybe<Scalars['String']>;
-  png?: Maybe<Scalars['String']>;
-  zpl?: Maybe<Scalars['String']>;
-};
-
-export type ShipEngine_Package = {
-  __typename?: 'ShipEngine_Package';
-  package_id?: Maybe<Scalars['Int']>;
-  description?: Maybe<Scalars['String']>;
-  package_code?: Maybe<Scalars['String']>;
-  tracking_number?: Maybe<Scalars['String']>;
-  label_download?: Maybe<ShipEngine_LabelDownload>;
-  weight?: Maybe<ShipEngine_Weight>;
-  dimensions?: Maybe<ShipEngine_Dimensions>;
-};
-
-export type ShipEngine_Weight = {
-  __typename?: 'ShipEngine_Weight';
-  value?: Maybe<Scalars['Float']>;
-  unit?: Maybe<Scalars['String']>;
-};
-
-export type ShipEngine_Dimensions = {
-  __typename?: 'ShipEngine_Dimensions';
-  length?: Maybe<Scalars['Float']>;
-  width?: Maybe<Scalars['Float']>;
-  height?: Maybe<Scalars['Float']>;
-  unit?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_ApiErrorsSourceProperty = Stripe_BankAccount | Stripe_Card | Stripe_Source;
-
-export enum Stripe_ApiErrorsTypeProperty {
-  ApiError = 'api_error',
-  CardError = 'card_error',
-  IdempotencyError = 'idempotency_error',
-  InvalidRequestError = 'invalid_request_error'
-}
-
-export type Stripe_SetupAttemptSetupIntentProperty = WrappedString | Stripe_SetupIntent;
-
-export type Stripe_Networks = {
-  __typename?: 'Stripe_Networks';
-  /** All available networks for the card. */
-  available?: Maybe<Array<Maybe<Scalars['String']>>>;
-  /** The preferred network for the card. */
-  preferred?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_ThreeDSecureUsage = {
-  __typename?: 'Stripe_ThreeDSecureUsage';
-  /** Whether 3D Secure is supported on this card. */
-  supported?: Maybe<Scalars['Boolean']>;
-};
-
-export type Stripe_PaymentMethodCardWallet = {
-  __typename?: 'Stripe_PaymentMethodCardWallet';
-  amex_express_checkout?: Maybe<Stripe_PaymentMethodCardWalletAmexExpressCheckout>;
-  apple_pay?: Maybe<Stripe_PaymentMethodCardWalletApplePay>;
-  /** (For tokenized numbers only.) The last four digits of the device account number. */
-  dynamic_last4?: Maybe<Scalars['String']>;
-  google_pay?: Maybe<Stripe_PaymentMethodCardWalletGooglePay>;
-  masterpass?: Maybe<Stripe_PaymentMethodCardWalletMasterpass>;
-  samsung_pay?: Maybe<Stripe_PaymentMethodCardWalletSamsungPay>;
-  /** The type of the card wallet, one of `amex_express_checkout`, `apple_pay`, `google_pay`, `masterpass`, `samsung_pay`, or `visa_checkout`. An additional hash is included on the Wallet subhash with a name matching this value. It contains additional information specific to the card wallet type. */
-  type?: Maybe<Stripe_PaymentMethodCardWalletTypeProperty>;
-  visa_checkout?: Maybe<Stripe_PaymentMethodCardWalletVisaCheckout>;
-};
-
-export type Stripe_PaymentMethodCardWalletAmexExpressCheckout = {
-  __typename?: 'Stripe_PaymentMethodCardWalletAmexExpressCheckout';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodCardWalletApplePay = {
-  __typename?: 'Stripe_PaymentMethodCardWalletApplePay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodCardWalletGooglePay = {
-  __typename?: 'Stripe_PaymentMethodCardWalletGooglePay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodCardWalletMasterpass = {
-  __typename?: 'Stripe_PaymentMethodCardWalletMasterpass';
-  billing_address?: Maybe<Stripe_Address>;
-  /** Owner's verified email. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
-  email?: Maybe<Scalars['String']>;
-  /** Owner's verified full name. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
-  name?: Maybe<Scalars['String']>;
-  shipping_address?: Maybe<Stripe_Address>;
-};
-
-export type Stripe_PaymentMethodCardWalletSamsungPay = {
-  __typename?: 'Stripe_PaymentMethodCardWalletSamsungPay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export enum Stripe_PaymentMethodCardWalletTypeProperty {
-  AmexExpressCheckout = 'amex_express_checkout',
-  ApplePay = 'apple_pay',
-  GooglePay = 'google_pay',
-  Masterpass = 'masterpass',
-  SamsungPay = 'samsung_pay',
-  VisaCheckout = 'visa_checkout'
-}
-
-export type Stripe_PaymentMethodCardWalletVisaCheckout = {
-  __typename?: 'Stripe_PaymentMethodCardWalletVisaCheckout';
-  billing_address?: Maybe<Stripe_Address>;
-  /** Owner's verified email. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
-  email?: Maybe<Scalars['String']>;
-  /** Owner's verified full name. Values are verified or provided by the wallet directly (if supported) at the time of authorization or settlement. They cannot be set or mutated. */
-  name?: Maybe<Scalars['String']>;
-  shipping_address?: Maybe<Stripe_Address>;
-};
-
-export type Stripe_PaymentMethodCardPresent = {
-  __typename?: 'Stripe_PaymentMethodCardPresent';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodCustomerProperty = WrappedString | Stripe_Customer;
-
-export type Stripe_PaymentMethodEps = {
-  __typename?: 'Stripe_PaymentMethodEps';
-  /** The customer's bank. Should be one of `arzte_und_apotheker_bank`, `austrian_anadi_bank_ag`, `bank_austria`, `bankhaus_carl_spangler`, `bankhaus_schelhammer_und_schattera_ag`, `bawag_psk_ag`, `bks_bank_ag`, `brull_kallmus_bank_ag`, `btv_vier_lander_bank`, `capital_bank_grawe_gruppe_ag`, `dolomitenbank`, `easybank_ag`, `erste_bank_und_sparkassen`, `hypo_alpeadriabank_international_ag`, `hypo_noe_lb_fur_niederosterreich_u_wien`, `hypo_oberosterreich_salzburg_steiermark`, `hypo_tirol_bank_ag`, `hypo_vorarlberg_bank_ag`, `hypo_bank_burgenland_aktiengesellschaft`, `marchfelder_bank`, `oberbank_ag`, `raiffeisen_bankengruppe_osterreich`, `schoellerbank_ag`, `sparda_bank_wien`, `volksbank_gruppe`, `volkskreditbank_ag`, or `vr_bank_braunau`. */
-  bank?: Maybe<Stripe_PaymentMethodEpsBankProperty>;
-};
-
-export enum Stripe_PaymentMethodEpsBankProperty {
-  ArzteUndApothekerBank = 'arzte_und_apotheker_bank',
-  AustrianAnadiBankAg = 'austrian_anadi_bank_ag',
-  BankAustria = 'bank_austria',
-  BankhausCarlSpangler = 'bankhaus_carl_spangler',
-  BankhausSchelhammerUndSchatteraAg = 'bankhaus_schelhammer_und_schattera_ag',
-  BawagPskAg = 'bawag_psk_ag',
-  BksBankAg = 'bks_bank_ag',
-  BrullKallmusBankAg = 'brull_kallmus_bank_ag',
-  BtvVierLanderBank = 'btv_vier_lander_bank',
-  CapitalBankGraweGruppeAg = 'capital_bank_grawe_gruppe_ag',
-  Dolomitenbank = 'dolomitenbank',
-  EasybankAg = 'easybank_ag',
-  ErsteBankUndSparkassen = 'erste_bank_und_sparkassen',
-  HypoAlpeadriabankInternationalAg = 'hypo_alpeadriabank_international_ag',
-  HypoBankBurgenlandAktiengesellschaft = 'hypo_bank_burgenland_aktiengesellschaft',
-  HypoNoeLbFurNiederosterreichUWien = 'hypo_noe_lb_fur_niederosterreich_u_wien',
-  HypoOberosterreichSalzburgSteiermark = 'hypo_oberosterreich_salzburg_steiermark',
-  HypoTirolBankAg = 'hypo_tirol_bank_ag',
-  HypoVorarlbergBankAg = 'hypo_vorarlberg_bank_ag',
-  MarchfelderBank = 'marchfelder_bank',
-  OberbankAg = 'oberbank_ag',
-  RaiffeisenBankengruppeOsterreich = 'raiffeisen_bankengruppe_osterreich',
-  SchoellerbankAg = 'schoellerbank_ag',
-  SpardaBankWien = 'sparda_bank_wien',
-  VolksbankGruppe = 'volksbank_gruppe',
-  VolkskreditbankAg = 'volkskreditbank_ag',
-  VrBankBraunau = 'vr_bank_braunau'
-}
-
-export type Stripe_PaymentMethodFpx = {
-  __typename?: 'Stripe_PaymentMethodFpx';
-  /** The customer's bank, if provided. Can be one of `affin_bank`, `agrobank`, `alliance_bank`, `ambank`, `bank_islam`, `bank_muamalat`, `bank_rakyat`, `bsn`, `cimb`, `hong_leong_bank`, `hsbc`, `kfh`, `maybank2u`, `ocbc`, `public_bank`, `rhb`, `standard_chartered`, `uob`, `deutsche_bank`, `maybank2e`, or `pb_enterprise`. */
-  bank?: Maybe<Stripe_PaymentMethodFpxBankProperty>;
-};
-
-export enum Stripe_PaymentMethodFpxBankProperty {
-  AffinBank = 'affin_bank',
-  Agrobank = 'agrobank',
-  AllianceBank = 'alliance_bank',
-  Ambank = 'ambank',
-  BankIslam = 'bank_islam',
-  BankMuamalat = 'bank_muamalat',
-  BankRakyat = 'bank_rakyat',
-  Bsn = 'bsn',
-  Cimb = 'cimb',
-  DeutscheBank = 'deutsche_bank',
-  HongLeongBank = 'hong_leong_bank',
-  Hsbc = 'hsbc',
-  Kfh = 'kfh',
-  Maybank2e = 'maybank2e',
-  Maybank2u = 'maybank2u',
-  Ocbc = 'ocbc',
-  PbEnterprise = 'pb_enterprise',
-  PublicBank = 'public_bank',
-  Rhb = 'rhb',
-  StandardChartered = 'standard_chartered',
-  Uob = 'uob'
-}
-
-export type Stripe_PaymentMethodGiropay = {
-  __typename?: 'Stripe_PaymentMethodGiropay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodGrabpay = {
-  __typename?: 'Stripe_PaymentMethodGrabpay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodIdeal = {
-  __typename?: 'Stripe_PaymentMethodIdeal';
-  /** The customer's bank, if provided. Can be one of `abn_amro`, `asn_bank`, `bunq`, `handelsbanken`, `ing`, `knab`, `moneyou`, `rabobank`, `regiobank`, `revolut`, `sns_bank`, `triodos_bank`, or `van_lanschot`. */
-  bank?: Maybe<Stripe_PaymentMethodIdealBankProperty>;
-  /** The Bank Identifier Code of the customer's bank, if the bank was provided. */
-  bic?: Maybe<Stripe_PaymentMethodIdealBicProperty>;
-};
-
-export enum Stripe_PaymentMethodIdealBankProperty {
-  AbnAmro = 'abn_amro',
-  AsnBank = 'asn_bank',
-  Bunq = 'bunq',
-  Handelsbanken = 'handelsbanken',
-  Ing = 'ing',
-  Knab = 'knab',
-  Moneyou = 'moneyou',
-  Rabobank = 'rabobank',
-  Regiobank = 'regiobank',
-  Revolut = 'revolut',
-  SnsBank = 'sns_bank',
-  TriodosBank = 'triodos_bank',
-  VanLanschot = 'van_lanschot'
-}
-
-export enum Stripe_PaymentMethodIdealBicProperty {
-  Abnanl2A = 'ABNANL2A',
-  Asnbnl21 = 'ASNBNL21',
-  Bunqnl2A = 'BUNQNL2A',
-  Fvlbnl22 = 'FVLBNL22',
-  Handnl2A = 'HANDNL2A',
-  Ingbnl2A = 'INGBNL2A',
-  Knabnl2H = 'KNABNL2H',
-  Moyonl21 = 'MOYONL21',
-  Rabonl2U = 'RABONL2U',
-  Rbrbnl21 = 'RBRBNL21',
-  Revolt21 = 'REVOLT21',
-  Snsbnl2A = 'SNSBNL2A',
-  Trionl2U = 'TRIONL2U'
-}
-
-export type Stripe_PaymentMethodInteracPresent = {
-  __typename?: 'Stripe_PaymentMethodInteracPresent';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodKlarna = {
-  __typename?: 'Stripe_PaymentMethodKlarna';
-  dob?: Maybe<Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob>;
-};
-
-export type Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob = {
-  __typename?: 'Stripe_PaymentFlowsPrivatePaymentMethodsKlarnaDob';
-  /** The day of birth, between 1 and 31. */
-  day?: Maybe<Scalars['Int']>;
-  /** The month of birth, between 1 and 12. */
-  month?: Maybe<Scalars['Int']>;
-  /** The four-digit year of birth. */
-  year?: Maybe<Scalars['Int']>;
-};
-
-export type Stripe_PaymentMethodKonbini = {
-  __typename?: 'Stripe_PaymentMethodKonbini';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export enum Stripe_PaymentMethodObjectProperty {
-  PaymentMethod = 'payment_method'
-}
-
-export type Stripe_PaymentMethodOxxo = {
-  __typename?: 'Stripe_PaymentMethodOxxo';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodP24 = {
-  __typename?: 'Stripe_PaymentMethodP24';
-  /** The customer's bank, if provided. */
-  bank?: Maybe<Stripe_PaymentMethodP24BankProperty>;
-};
-
-export enum Stripe_PaymentMethodP24BankProperty {
-  AliorBank = 'alior_bank',
-  BankMillennium = 'bank_millennium',
-  BankNowyBfgSa = 'bank_nowy_bfg_sa',
-  BankPekaoSa = 'bank_pekao_sa',
-  BankiSpbdzielcze = 'banki_spbdzielcze',
-  Blik = 'blik',
-  BnpParibas = 'bnp_paribas',
-  Boz = 'boz',
-  CitiHandlowy = 'citi_handlowy',
-  CreditAgricole = 'credit_agricole',
-  Envelobank = 'envelobank',
-  EtransferPocztowy24 = 'etransfer_pocztowy24',
-  GetinBank = 'getin_bank',
-  Ideabank = 'ideabank',
-  Ing = 'ing',
-  Inteligo = 'inteligo',
-  MbankMtransfer = 'mbank_mtransfer',
-  NestPrzelew = 'nest_przelew',
-  NoblePay = 'noble_pay',
-  PbacZIpko = 'pbac_z_ipko',
-  PlusBank = 'plus_bank',
-  SantanderPrzelew24 = 'santander_przelew24',
-  TmobileUsbugiBankowe = 'tmobile_usbugi_bankowe',
-  ToyotaBank = 'toyota_bank',
-  VolkswagenBank = 'volkswagen_bank'
-}
-
-export type Stripe_PaymentMethodPaynow = {
-  __typename?: 'Stripe_PaymentMethodPaynow';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_PaymentMethodSepaDebit = {
-  __typename?: 'Stripe_PaymentMethodSepaDebit';
-  /** Bank code of bank associated with the bank account. */
-  bank_code?: Maybe<Scalars['String']>;
-  /** Branch code of bank associated with the bank account. */
-  branch_code?: Maybe<Scalars['String']>;
-  /** Two-letter ISO code representing the country the bank account is located in. */
-  country?: Maybe<Scalars['String']>;
-  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
-  fingerprint?: Maybe<Scalars['String']>;
-  generated_from?: Maybe<Stripe_SepaDebitGeneratedFrom>;
-  /** Last four characters of the IBAN. */
-  last4?: Maybe<Scalars['String']>;
-};
-
-export type Stripe_SepaDebitGeneratedFrom = {
-  __typename?: 'Stripe_SepaDebitGeneratedFrom';
-  charge?: Maybe<Stripe_SepaDebitGeneratedFromChargeProperty>;
-  setup_attempt?: Maybe<Stripe_SepaDebitGeneratedFromSetupAttemptProperty>;
-};
-
-export type Stripe_SepaDebitGeneratedFromChargeProperty = WrappedString | Stripe_Charge;
-
-export type Stripe_SepaDebitGeneratedFromSetupAttemptProperty = WrappedString | Stripe_SetupAttempt;
-
-export type Stripe_PaymentMethodSofort = {
-  __typename?: 'Stripe_PaymentMethodSofort';
-  /** Two-letter ISO code representing the country the bank account is located in. */
-  country?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_PaymentMethodTypeProperty {
-  AcssDebit = 'acss_debit',
-  AfterpayClearpay = 'afterpay_clearpay',
-  Alipay = 'alipay',
-  AuBecsDebit = 'au_becs_debit',
-  BacsDebit = 'bacs_debit',
-  Bancontact = 'bancontact',
-  Boleto = 'boleto',
-  Card = 'card',
-  CardPresent = 'card_present',
-  Eps = 'eps',
-  Fpx = 'fpx',
-  Giropay = 'giropay',
-  Grabpay = 'grabpay',
-  Ideal = 'ideal',
-  InteracPresent = 'interac_present',
-  Klarna = 'klarna',
-  Konbini = 'konbini',
-  Oxxo = 'oxxo',
-  P24 = 'p24',
-  Paynow = 'paynow',
-  SepaDebit = 'sepa_debit',
-  Sofort = 'sofort',
-  UsBankAccount = 'us_bank_account',
-  WechatPay = 'wechat_pay'
-}
-
-export type Stripe_PaymentMethodUsBankAccount = {
-  __typename?: 'Stripe_PaymentMethodUsBankAccount';
-  /** Account holder type: individual or company. */
-  account_holder_type?: Maybe<Stripe_PaymentMethodUsBankAccountAccountHolderTypeProperty>;
-  /** Account type: checkings or savings. Defaults to checking if omitted. */
-  account_type?: Maybe<Stripe_PaymentMethodUsBankAccountAccountTypeProperty>;
-  /** The name of the bank. */
-  bank_name?: Maybe<Scalars['String']>;
-  /** Uniquely identifies this particular bank account. You can use this attribute to check whether two bank accounts are the same. */
-  fingerprint?: Maybe<Scalars['String']>;
-  /** Last four digits of the bank account number. */
-  last4?: Maybe<Scalars['String']>;
-  /** Routing number of the bank account. */
-  routing_number?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_PaymentMethodUsBankAccountAccountHolderTypeProperty {
-  Company = 'company',
-  Individual = 'individual'
-}
-
-export enum Stripe_PaymentMethodUsBankAccountAccountTypeProperty {
-  Checking = 'checking',
-  Savings = 'savings'
-}
-
-export type Stripe_PaymentMethodWechatPay = {
-  __typename?: 'Stripe_PaymentMethodWechatPay';
-  result?: Maybe<Scalars['JSONObject']>;
-};
-
-export enum Stripe_CustomerObjectProperty {
-  Customer = 'customer'
-}
-
-/** The customer's payment sources, if any. */
-export type Stripe_CustomerSourcesProperty = {
-  __typename?: 'Stripe_CustomerSourcesProperty';
-  /** Details about each object. */
-  data: Array<Stripe_CustomerSourcesDataProperty>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_CustomerSourcesObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export type Stripe_CustomerSourcesDataProperty = Stripe_AlipayAccount | Stripe_BankAccount | Stripe_BitcoinReceiver | Stripe_Card | Stripe_Source;
-
-export enum Stripe_CustomerSourcesObjectProperty {
-  List = 'list'
-}
-
-/** The customer's current subscriptions, if any. */
-export type Stripe_CustomerSubscriptionsProperty = {
-  __typename?: 'Stripe_CustomerSubscriptionsProperty';
-  /** Details about each object. */
-  data: Array<Stripe_Subscription>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_CustomerSubscriptionsObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export enum Stripe_CustomerSubscriptionsObjectProperty {
-  List = 'list'
-}
-
-export type Stripe_CustomerTax = {
-  __typename?: 'Stripe_CustomerTax';
-  /** Surfaces if automatic tax computation is possible given the current customer location information. */
-  automatic_tax?: Maybe<Stripe_CustomerTaxAutomaticTaxProperty>;
-  /** A recent IP address of the customer used for tax reporting and tax location inference. */
-  ip_address?: Maybe<Scalars['String']>;
-  location?: Maybe<Stripe_CustomerTaxLocation>;
-};
-
-export enum Stripe_CustomerTaxAutomaticTaxProperty {
-  Failed = 'failed',
-  NotCollecting = 'not_collecting',
-  Supported = 'supported',
-  UnrecognizedLocation = 'unrecognized_location'
-}
-
-export type Stripe_CustomerTaxLocation = {
-  __typename?: 'Stripe_CustomerTaxLocation';
-  /** The customer's country as identified by Stripe Tax. */
-  country?: Maybe<Scalars['String']>;
-  /** The data source used to infer the customer's location. */
-  source?: Maybe<Stripe_CustomerTaxLocationSourceProperty>;
-  /** The customer's state, county, province, or region as identified by Stripe Tax. */
-  state?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_CustomerTaxLocationSourceProperty {
-  BillingAddress = 'billing_address',
-  IpAddress = 'ip_address',
-  PaymentMethod = 'payment_method',
-  ShippingDestination = 'shipping_destination'
-}
-
-export enum Stripe_CustomerTaxExemptProperty {
-  Exempt = 'exempt',
-  None = 'none',
-  Reverse = 'reverse'
-}
-
-/** The customer's tax IDs. */
-export type Stripe_CustomerTaxIdsProperty = {
-  __typename?: 'Stripe_CustomerTaxIdsProperty';
-  /** Details about each object. */
-  data: Array<Stripe_TaxId>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: Stripe_CustomerTaxIdsObjectProperty;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export enum Stripe_CustomerTaxIdsObjectProperty {
-  List = 'list'
-}
-
-export type Stripe_CustomerTestClockProperty = WrappedString | Stripe_TestHelpersTestClock;
-
-export type Voucherify_LoyaltyCard = {
-  __typename?: 'Voucherify_LoyaltyCard';
-  id?: Maybe<Scalars['String']>;
-  code?: Maybe<Scalars['String']>;
-  campaign?: Maybe<Scalars['String']>;
-  campaign_id?: Maybe<Scalars['String']>;
-  type?: Maybe<Scalars['String']>;
-  loyalty_card?: Maybe<Voucherify_LoyaltyCardStats>;
-  active?: Maybe<Scalars['Boolean']>;
-  assets?: Maybe<Voucherify_LoyaltyCardAssets>;
-};
-
-export type Voucherify_LoyaltyCardStats = {
-  __typename?: 'Voucherify_LoyaltyCardStats';
-  points?: Maybe<Scalars['Int']>;
-  balance?: Maybe<Scalars['Int']>;
-};
-
-export type Voucherify_LoyaltyCardAssets = {
-  __typename?: 'Voucherify_LoyaltyCardAssets';
-  qr?: Maybe<Voucherify_LoyaltyCardAsset>;
-  barcode?: Maybe<Voucherify_LoyaltyCardAsset>;
-};
-
-export type Voucherify_LoyaltyCardAsset = {
-  __typename?: 'Voucherify_LoyaltyCardAsset';
-  id?: Maybe<Scalars['String']>;
-  url?: Maybe<Scalars['String']>;
-};
-
-export type ProfileNewsletterStatus = {
-  __typename?: 'ProfileNewsletterStatus';
-  listId?: Maybe<Scalars['String']>;
-  listName?: Maybe<Scalars['String']>;
-  subscribed?: Maybe<Scalars['Boolean']>;
-};
-
-export type ProfilePaginatedList = {
-  __typename?: 'ProfilePaginatedList';
-  items: Array<Profile>;
-  total: Scalars['Int'];
-};
-
-export type TsWhereProfileInput = {
-  id?: InputMaybe<TsWhereStringInput>;
-  name?: InputMaybe<TsWhereStringInput>;
-  email?: InputMaybe<TsWhereStringInput>;
-  bio?: InputMaybe<TsWhereStringInput>;
-  avatar?: InputMaybe<TsWhereAssetRelationshipInput>;
-  stripeCustomerId?: InputMaybe<TsWhereStringInput>;
-  _shapeId?: InputMaybe<TsWhereIdInput>;
-  _id?: InputMaybe<TsWhereIdInput>;
-  _version?: InputMaybe<TsWhereIntegerInput>;
-  _shapeName?: InputMaybe<TsWhereStringInput>;
-  _createdAt?: InputMaybe<TsWhereDateInput>;
-  _updatedAt?: InputMaybe<TsWhereDateInput>;
-  _schemaVersion?: InputMaybe<TsWhereNumberInput>;
-  _status?: InputMaybe<TsWhereWorkflowInput>;
-  _contentTypeId?: InputMaybe<TsWhereIdInput>;
-  _contentTypeName?: InputMaybe<TsWhereStringInput>;
-  AND?: InputMaybe<Array<InputMaybe<TsWhereProfileInput>>>;
-  OR?: InputMaybe<Array<InputMaybe<TsWhereProfileInput>>>;
-  NOT?: InputMaybe<TsWhereProfileInput>;
-};
-
-export type Stripe_ListProductsResponse = {
-  __typename?: 'Stripe_ListProductsResponse';
-  /** Details about each object. */
-  data?: Maybe<Array<Maybe<Stripe_Product>>>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more?: Maybe<Scalars['Boolean']>;
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object?: Maybe<Stripe_ListProductsResponseObjectProperty>;
-  /** The URL where this list can be accessed. */
-  url?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_ListProductsResponseObjectProperty {
-  List = 'list'
-}
-
-export type Stripe_ListPaymentIntentsResponse = {
-  __typename?: 'Stripe_ListPaymentIntentsResponse';
-  data?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more?: Maybe<Scalars['Boolean']>;
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object?: Maybe<Stripe_ListPaymentIntentsResponseObjectProperty>;
-  /** The URL where this list can be accessed. */
-  url?: Maybe<Scalars['String']>;
-};
-
-export enum Stripe_ListPaymentIntentsResponseObjectProperty {
-  List = 'list'
-}
-
-/** Asset search results */
-export type AssetSearchResults = {
-  __typename?: 'AssetSearchResults';
-  results: Array<Asset>;
-  total: Scalars['Int'];
-};
-
-/** TsStaticSite search results */
-export type TsStaticSiteSearchResults = {
-  __typename?: 'TsStaticSiteSearchResults';
-  results: Array<TsStaticSite>;
-  total: Scalars['Int'];
-};
-
-/** Profile search results */
-export type ProfileSearchResults = {
-  __typename?: 'ProfileSearchResults';
-  results: Array<Profile>;
-  total: Scalars['Int'];
-};
-
-/** TSSearchable search results */
-export type TsSearchableSearchResults = {
-  __typename?: 'TSSearchableSearchResults';
-  results: Array<TsSearchable>;
-  total: Scalars['Int'];
-};
-
-/** This query allow you to pass context to your queries */
-export type WithContext = {
-  __typename?: 'WithContext';
-  taxonomySuggest?: Maybe<TsSuggestionPaginatedList>;
-  /** List Versions for a piece of content */
-  getContentVersion?: Maybe<TsVersionResponse>;
-  /** List Versions for a piece of content */
-  getContentVersionList?: Maybe<TsVersionsPaginatedList>;
-  /** Get a Asset by ID */
-  getAsset?: Maybe<Asset>;
-  /** Returns a list Asset in natural order. */
-  getAssetList?: Maybe<AssetPaginatedList>;
-  /** Get a TsStaticSite by ID */
-  getTsStaticSite?: Maybe<TsStaticSite>;
-  /** Returns a list TsStaticSite in natural order. */
-  getTsStaticSiteList?: Maybe<TsStaticSitePaginatedList>;
-  ReviewsIo_listProductReviews?: Maybe<ReviewsIo_ListProductReviewsResponse>;
-  /** Get Stripe products from the TakeShape API Index */
-  getIndexedProductList?: Maybe<Stripe_ProductPaginatedList>;
-  /** Get the signed in user's profile from ShapeDB */
-  getMyProfile?: Maybe<Profile>;
-  /** Get the signed in user's subscriptions from Stripe */
-  getMySubscriptions?: Maybe<Array<Maybe<Stripe_Subscription>>>;
-  /** Get the signed-in user's payments from Stripe */
-  getMyPayments_UNINDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
-  /** Get the signed-in user's payments from Stripe */
-  getMyPayments_INDEXED?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
-  /** Get the signed-in user's payments from Stripe */
-  getMyPayments?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
-  /** Get the signed-in user's payments from Stripe */
-  getMyPaymentsIndexed?: Maybe<Array<Maybe<Stripe_PaymentIntent>>>;
-  /** Get a profile by ID */
-  getProfile?: Maybe<Profile>;
-  /** Returns a list of profiles in natural order. */
-  getProfileList?: Maybe<ProfilePaginatedList>;
-  /** <p>Returns a list of your products. The products are returned sorted by creation date, with the most recently created products appearing first.</p> */
-  Stripe_listProducts?: Maybe<Stripe_ListProductsResponse>;
-  /** <p>Retrieves the details of an existing product. Supply the unique product ID from either a product creation request or the product list, and Stripe will return the corresponding product information.</p> */
-  Stripe_getProduct?: Maybe<Stripe_Product>;
-  /** Get a loyalty card from Voucherify */
-  getMyLoyaltyCard?: Maybe<Voucherify_LoyaltyCard>;
-  getMyNewsletterSubscriptions?: Maybe<Array<Maybe<ProfileNewsletterStatus>>>;
-  /** <p>Returns a list of PaymentIntents.</p> */
-  listPaymentIntents?: Maybe<Stripe_ListPaymentIntentsResponse>;
-  searchAssetIndex?: Maybe<AssetSearchResults>;
-  searchTsStaticSiteIndex?: Maybe<TsStaticSiteSearchResults>;
-  searchProfileIndex?: Maybe<ProfileSearchResults>;
-  search?: Maybe<TsSearchableSearchResults>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextTaxonomySuggestArgs = {
-  shapeNames?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  shapeIds?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  contentTypeNames?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  contentTypeIds?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  terms?: InputMaybe<Scalars['String']>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  filter?: InputMaybe<Scalars['JSON']>;
-  sort?: InputMaybe<Array<InputMaybe<TsSearchSort>>>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetContentVersionArgs = {
-  id: Scalars['ID'];
-  version: Scalars['Int'];
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetContentVersionListArgs = {
-  id: Scalars['ID'];
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetAssetArgs = {
-  _id: Scalars['ID'];
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetAssetListArgs = {
-  terms?: InputMaybe<Scalars['String']>;
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  filter?: InputMaybe<Scalars['JSONObject']>;
-  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
-  where?: InputMaybe<TsWhereAssetInput>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetTsStaticSiteArgs = {
-  _id: Scalars['ID'];
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetTsStaticSiteListArgs = {
-  terms?: InputMaybe<Scalars['String']>;
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  filter?: InputMaybe<Scalars['JSONObject']>;
-  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
-  where?: InputMaybe<TsWhereTsStaticSiteInput>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextReviewsIo_ListProductReviewsArgs = {
-  sku?: InputMaybe<Scalars['String']>;
-  mpn?: InputMaybe<Scalars['String']>;
-  page?: InputMaybe<Scalars['String']>;
-  per_page?: InputMaybe<Scalars['String']>;
-  photos?: InputMaybe<Scalars['Int']>;
-  verified_only?: InputMaybe<Scalars['Int']>;
-  comments_only?: InputMaybe<Scalars['Int']>;
-  minRating?: InputMaybe<Scalars['Int']>;
-  include_unpublished_images?: InputMaybe<Scalars['Int']>;
-  include_moderated?: InputMaybe<Scalars['Int']>;
-  order_id?: InputMaybe<Scalars['String']>;
-  min_date?: InputMaybe<Scalars['String']>;
-  max_date?: InputMaybe<Scalars['String']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetIndexedProductListArgs = {
-  terms?: InputMaybe<Scalars['String']>;
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  filter?: InputMaybe<Scalars['JSONObject']>;
-  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
-  where?: InputMaybe<TsWhereStripeProductInput>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetMySubscriptionsArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetMyPayments_UnindexedArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  startingAfter?: InputMaybe<Scalars['String']>;
-  endingBefore?: InputMaybe<Scalars['String']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetMyPayments_IndexedArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  startingAfter?: InputMaybe<Scalars['String']>;
-  endingBefore?: InputMaybe<Scalars['String']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetMyPaymentsArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  startingAfter?: InputMaybe<Scalars['String']>;
-  endingBefore?: InputMaybe<Scalars['String']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetMyPaymentsIndexedArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Float']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-  ending_before?: InputMaybe<Scalars['String']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetProfileArgs = {
-  _id: Scalars['ID'];
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextGetProfileListArgs = {
-  terms?: InputMaybe<Scalars['String']>;
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  filter?: InputMaybe<Scalars['JSONObject']>;
-  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-  onlyEnabled?: InputMaybe<Scalars['Boolean']>;
-  where?: InputMaybe<TsWhereProfileInput>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextStripe_ListProductsArgs = {
-  active?: InputMaybe<Scalars['Boolean']>;
-  created?: InputMaybe<Scalars['JSON']>;
-  ending_before?: InputMaybe<Scalars['String']>;
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  shippable?: InputMaybe<Scalars['Boolean']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-  url?: InputMaybe<Scalars['String']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextStripe_GetProductArgs = {
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  id: Scalars['String'];
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextListPaymentIntentsArgs = {
-  created?: InputMaybe<Scalars['JSON']>;
-  customer?: InputMaybe<Scalars['String']>;
-  ending_before?: InputMaybe<Scalars['String']>;
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextSearchAssetIndexArgs = {
-  terms?: InputMaybe<Scalars['String']>;
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  filter?: InputMaybe<Scalars['JSONObject']>;
-  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-  where?: InputMaybe<TsWhereAssetInput>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextSearchTsStaticSiteIndexArgs = {
-  terms?: InputMaybe<Scalars['String']>;
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  filter?: InputMaybe<Scalars['JSONObject']>;
-  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-  where?: InputMaybe<TsWhereTsStaticSiteInput>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextSearchProfileIndexArgs = {
-  terms?: InputMaybe<Scalars['String']>;
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  filter?: InputMaybe<Scalars['JSONObject']>;
-  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-  where?: InputMaybe<TsWhereProfileInput>;
-};
-
-
-/** This query allow you to pass context to your queries */
-export type WithContextSearchArgs = {
-  terms?: InputMaybe<Scalars['String']>;
-  from?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-  filter?: InputMaybe<Scalars['JSONObject']>;
-  sort?: InputMaybe<Array<InputMaybe<TsSearchSortInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-  shapeNames?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  shapeIds?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  contentTypeNames?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  contentTypeIds?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  where?: InputMaybe<TsWhereInput>;
-};
-
-export type Mutation = {
-  __typename?: 'Mutation';
-  /** Initiate upload process for asset(s) */
-  uploadAssets?: Maybe<Array<Maybe<Upload>>>;
-  /** Replace an asset file */
-  replaceAsset?: Maybe<Upload>;
-  /** Update Asset */
-  updateAsset?: Maybe<UpdateAssetResult>;
-  /** Create Asset */
-  createAsset?: Maybe<CreateAssetResult>;
-  /** Duplicate Asset */
-  duplicateAsset?: Maybe<DuplicateAssetResult>;
-  /** Delete Asset */
-  deleteAsset?: Maybe<DeleteAssetResult>;
-  /** Update TsStaticSite */
-  updateTsStaticSite?: Maybe<UpdateTsStaticSiteResult>;
-  /** Create TsStaticSite */
-  createTsStaticSite?: Maybe<CreateTsStaticSiteResult>;
-  /** Duplicate TsStaticSite */
-  duplicateTsStaticSite?: Maybe<DuplicateTsStaticSiteResult>;
-  /** Delete TsStaticSite */
-  deleteTsStaticSite?: Maybe<DeleteTsStaticSiteResult>;
-  /** Create a shipment with ShipEngine. */
-  createShipment?: Maybe<ShipEngine_Label>;
-  /** Upsert the signed-in user's profile, updating ShapeDB and Stripe */
-  upsertMyProfile?: Maybe<Profile>;
-  /** Upsert the signed-in user's Stripe customer */
-  upsertMyCustomer?: Maybe<Stripe_Customer>;
-  /** Delete the signed-in user's subscription in Stripe */
-  deleteMySubscription?: Maybe<Stripe_Subscription>;
-  /** Create a Stripe checkout session for the signed-in user */
-  createMyCheckoutSession?: Maybe<Stripe_CheckoutSession>;
-  /** Update Profile */
-  updateProfile?: Maybe<UpdateProfileResult>;
-  /** Create Profile */
-  createProfile?: Maybe<CreateProfileResult>;
-  /** Duplicate Profile */
-  duplicateProfile?: Maybe<DuplicateProfileResult>;
-  /** Delete Profile */
-  deleteProfile?: Maybe<DeleteProfileResult>;
-  /** Create an order in Voucherify */
-  Voucherify_createOrder?: Maybe<Voucherify_Order>;
-  Klaviyo_addMembers?: Maybe<Klaviyo_AddMembersResponse>;
-  Klaviyo_removeMembers?: Maybe<Klaviyo_200Ok>;
-  /** <p>Returns a list of Checkout Sessions.</p> */
-  listCheckoutSessions?: Maybe<Stripe_ListCheckoutSessionsResponse>;
-  ReviewsIo_createInvitation?: Maybe<ReviewsIo_CreateInvitationResponse>;
-};
-
-
-export type MutationUploadAssetsArgs = {
-  projectId?: InputMaybe<Scalars['ID']>;
-  files: Array<InputMaybe<TsFile>>;
-};
-
-
-export type MutationReplaceAssetArgs = {
-  projectId?: InputMaybe<Scalars['ID']>;
-  _id: Scalars['ID'];
-  _version: Scalars['Int'];
-  file: TsFile;
-};
-
-
-export type MutationUpdateAssetArgs = {
-  input: UpdateAssetInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-  structure?: InputMaybe<Array<InputMaybe<ContentStructureInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-};
-
-
-export type MutationCreateAssetArgs = {
-  input: CreateAssetInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationDuplicateAssetArgs = {
-  input: DuplicateAssetInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-};
-
-
-export type MutationDeleteAssetArgs = {
-  input: DeleteAssetInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationUpdateTsStaticSiteArgs = {
-  input: UpdateTsStaticSiteInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-  structure?: InputMaybe<Array<InputMaybe<ContentStructureInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-};
-
-
-export type MutationCreateTsStaticSiteArgs = {
-  input: CreateTsStaticSiteInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationDuplicateTsStaticSiteArgs = {
-  input: DuplicateTsStaticSiteInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-};
-
-
-export type MutationDeleteTsStaticSiteArgs = {
-  input: DeleteTsStaticSiteInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationCreateShipmentArgs = {
-  shipment_id?: InputMaybe<Scalars['String']>;
-  carrier_id?: InputMaybe<Scalars['String']>;
-  service_code?: InputMaybe<Scalars['String']>;
-  external_order_id?: InputMaybe<Scalars['String']>;
-  external_shipment_id?: InputMaybe<Scalars['String']>;
-  ship_date?: InputMaybe<Scalars['String']>;
-  created_at?: InputMaybe<Scalars['String']>;
-  modified_at?: InputMaybe<Scalars['String']>;
-  shipment_status?: InputMaybe<Scalars['String']>;
-  origin_type?: InputMaybe<Scalars['String']>;
-  insurance_provider?: InputMaybe<Scalars['String']>;
-  order_source_code?: InputMaybe<Scalars['String']>;
-  packages?: InputMaybe<Array<InputMaybe<ShipEngine_PackageInput>>>;
-  ship_to?: InputMaybe<ShipEngine_AddressInput>;
-  ship_from?: InputMaybe<ShipEngine_AddressInput>;
-};
-
-
-export type MutationUpsertMyProfileArgs = {
-  name?: InputMaybe<Scalars['String']>;
-  bio?: InputMaybe<Scalars['String']>;
-  avatarId?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationUpsertMyCustomerArgs = {
-  name?: InputMaybe<Scalars['String']>;
-  description?: InputMaybe<Scalars['String']>;
-  address?: InputMaybe<Stripe_CustomerAddressPropertyInput>;
-};
-
-
-export type MutationDeleteMySubscriptionArgs = {
-  subscriptionId: Scalars['String'];
-};
-
-
-export type MutationCreateMyCheckoutSessionArgs = {
-  redirectUrl: Scalars['String'];
-  mode: Scalars['String'];
-  lineItems: Array<Stripe_CheckoutSessionLineItemsPropertyInput>;
-};
-
-
-export type MutationUpdateProfileArgs = {
-  input: UpdateProfileInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-  structure?: InputMaybe<Array<InputMaybe<ContentStructureInput>>>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-};
-
-
-export type MutationCreateProfileArgs = {
-  input: CreateProfileInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationDuplicateProfileArgs = {
-  input: DuplicateProfileInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-  locale?: InputMaybe<Scalars['String']>;
-  enableLocaleFallback?: InputMaybe<Scalars['Boolean']>;
-};
-
-
-export type MutationDeleteProfileArgs = {
-  input: DeleteProfileInput;
-  clientMutationId?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationVoucherify_CreateOrderArgs = {
-  email?: InputMaybe<Scalars['String']>;
-  amount?: InputMaybe<Scalars['Float']>;
-  status?: InputMaybe<Scalars['String']>;
-  items?: InputMaybe<Array<InputMaybe<Voucherify_OrderItemInput>>>;
-};
-
-
-export type MutationKlaviyo_AddMembersArgs = {
-  input?: InputMaybe<AddListMembersInput>;
-  list_id: Scalars['String'];
-};
-
-
-export type MutationKlaviyo_RemoveMembersArgs = {
-  input?: InputMaybe<Klaviyo_200OkPropertyInput>;
-  list_id: Scalars['String'];
-};
-
-
-export type MutationListCheckoutSessionsArgs = {
-  ending_before?: InputMaybe<Scalars['String']>;
-  expand?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  limit?: InputMaybe<Scalars['Int']>;
-  payment_intent?: InputMaybe<Scalars['String']>;
-  starting_after?: InputMaybe<Scalars['String']>;
-  subscription?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationReviewsIo_CreateInvitationArgs = {
-  input?: InputMaybe<ReviewsIo_CreateInvitationResponsePropertyInput>;
-};
-
-/** A project file stored on s3 */
-export type Upload = {
-  __typename?: 'Upload';
-  uploadUrl?: Maybe<Scalars['ID']>;
-  asset?: Maybe<Asset>;
-};
-
-export type TsFile = {
-  name: Scalars['String'];
-  type: Scalars['String'];
-};
-
-export type UpdateAssetResult = {
-  __typename?: 'UpdateAssetResult';
-  clientMutationId?: Maybe<Scalars['String']>;
-  result?: Maybe<Asset>;
-};
-
-/** update Asset input */
-export type UpdateAssetInput = {
-  _id: Scalars['ID'];
-  title?: InputMaybe<Scalars['String']>;
-  description?: InputMaybe<Scalars['String']>;
-  filename?: InputMaybe<Scalars['String']>;
-  caption?: InputMaybe<Scalars['JSON']>;
-  credit?: InputMaybe<Scalars['JSON']>;
-  path?: InputMaybe<Scalars['String']>;
-  mimeType?: InputMaybe<Scalars['String']>;
-  sourceUrl?: InputMaybe<Scalars['String']>;
-  uploadStatus?: InputMaybe<Scalars['String']>;
-  _shapeId?: InputMaybe<Scalars['String']>;
-  _version?: InputMaybe<Scalars['Int']>;
-  _shapeName?: InputMaybe<Scalars['String']>;
-  _createdAt?: InputMaybe<Scalars['String']>;
-  _createdBy?: InputMaybe<Scalars['String']>;
-  _updatedAt?: InputMaybe<Scalars['String']>;
-  _updatedBy?: InputMaybe<Scalars['String']>;
-  _schemaVersion?: InputMaybe<Scalars['Float']>;
-  _enabled?: InputMaybe<Scalars['Boolean']>;
-  _enabledAt?: InputMaybe<Scalars['String']>;
-  _status?: InputMaybe<DefaultWorkflow>;
-  _contentTypeId?: InputMaybe<Scalars['String']>;
-  _contentTypeName?: InputMaybe<Scalars['String']>;
-  s3Key?: InputMaybe<Scalars['String']>;
-};
-
-/** Describes a structural update to an array of data. */
-export type ContentStructureInput = {
-  /** A deep path to the array being updated (e.g. a.b[1].c). */
-  path: Scalars['String'];
-  /** An array where the indices represent the to index, and the values represent the from index.For example to transform ["a","b","c","d"] into ["c","a"], this value would be [2,0]. */
-  structure?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-};
-
-export type CreateAssetResult = {
-  __typename?: 'CreateAssetResult';
-  clientMutationId?: Maybe<Scalars['String']>;
-  result?: Maybe<Asset>;
-};
-
-/** create Asset input */
-export type CreateAssetInput = {
-  title?: InputMaybe<Scalars['String']>;
-  description?: InputMaybe<Scalars['String']>;
-  filename: Scalars['String'];
-  caption?: InputMaybe<Scalars['JSON']>;
-  credit?: InputMaybe<Scalars['JSON']>;
-  path: Scalars['String'];
-  mimeType?: InputMaybe<Scalars['String']>;
-  sourceUrl?: InputMaybe<Scalars['String']>;
-  uploadStatus?: InputMaybe<Scalars['String']>;
-  _shapeId?: InputMaybe<Scalars['String']>;
-  _id?: InputMaybe<Scalars['ID']>;
-  _version?: InputMaybe<Scalars['Int']>;
-  _shapeName?: InputMaybe<Scalars['String']>;
-  _createdAt?: InputMaybe<Scalars['String']>;
-  _createdBy?: InputMaybe<Scalars['String']>;
-  _updatedAt?: InputMaybe<Scalars['String']>;
-  _updatedBy?: InputMaybe<Scalars['String']>;
-  _schemaVersion?: InputMaybe<Scalars['Float']>;
-  _enabled?: InputMaybe<Scalars['Boolean']>;
-  _enabledAt?: InputMaybe<Scalars['String']>;
-  _status?: InputMaybe<DefaultWorkflow>;
-  _contentTypeId?: InputMaybe<Scalars['String']>;
-  _contentTypeName?: InputMaybe<Scalars['String']>;
-  s3Key?: InputMaybe<Scalars['String']>;
-};
-
-export type DuplicateAssetResult = {
-  __typename?: 'DuplicateAssetResult';
-  clientMutationId?: Maybe<Scalars['String']>;
-  result?: Maybe<Asset>;
-};
-
-/** duplicate Asset input */
-export type DuplicateAssetInput = {
-  _id: Scalars['ID'];
-  title?: InputMaybe<Scalars['String']>;
-  description?: InputMaybe<Scalars['String']>;
-  filename?: InputMaybe<Scalars['String']>;
-  caption?: InputMaybe<Scalars['JSON']>;
-  credit?: InputMaybe<Scalars['JSON']>;
-  path?: InputMaybe<Scalars['String']>;
-  mimeType?: InputMaybe<Scalars['String']>;
-  sourceUrl?: InputMaybe<Scalars['String']>;
-  uploadStatus?: InputMaybe<Scalars['String']>;
-  _shapeId?: InputMaybe<Scalars['String']>;
-  _version?: InputMaybe<Scalars['Int']>;
-  _shapeName?: InputMaybe<Scalars['String']>;
-  _createdAt?: InputMaybe<Scalars['String']>;
-  _createdBy?: InputMaybe<Scalars['String']>;
-  _updatedAt?: InputMaybe<Scalars['String']>;
-  _updatedBy?: InputMaybe<Scalars['String']>;
-  _schemaVersion?: InputMaybe<Scalars['Float']>;
-  _enabled?: InputMaybe<Scalars['Boolean']>;
-  _enabledAt?: InputMaybe<Scalars['String']>;
-  _status?: InputMaybe<DefaultWorkflow>;
-  _contentTypeId?: InputMaybe<Scalars['String']>;
-  _contentTypeName?: InputMaybe<Scalars['String']>;
-  s3Key?: InputMaybe<Scalars['String']>;
-};
-
-export type DeleteAssetResult = {
-  __typename?: 'DeleteAssetResult';
-  clientMutationId?: Maybe<Scalars['String']>;
-  result?: Maybe<Scalars['Boolean']>;
-};
-
-/** delete Asset input */
-export type DeleteAssetInput = {
-  _id: Scalars['ID'];
-};
-
-export type UpdateTsStaticSiteResult = {
-  __typename?: 'UpdateTsStaticSiteResult';
-  clientMutationId?: Maybe<Scalars['String']>;
-  result?: Maybe<TsStaticSite>;
-};
-
-/** update TsStaticSite input */
-export type UpdateTsStaticSiteInput = {
-  _id: Scalars['ID'];
-  title?: InputMaybe<Scalars['String']>;
-  baseUrl?: InputMaybe<Scalars['String']>;
-  provider?: InputMaybe<Scalars['String']>;
-  idKey?: InputMaybe<Scalars['String']>;
-  secretKey?: InputMaybe<Scalars['String']>;
-  destination?: InputMaybe<Scalars['String']>;
-  privateAcl?: InputMaybe<Scalars['Boolean']>;
-  environmentVariables?: InputMaybe<Array<InputMaybe<TsStaticSiteEnvironmentVariablesInput>>>;
-  triggers?: InputMaybe<Array<InputMaybe<TsStaticSiteTriggersInput>>>;
-  templateHash?: InputMaybe<Scalars['String']>;
-  _shapeId?: InputMaybe<Scalars['String']>;
-  _version?: InputMaybe<Scalars['Int']>;
-  _shapeName?: InputMaybe<Scalars['String']>;
-  _createdAt?: InputMaybe<Scalars['String']>;
-  _createdBy?: InputMaybe<Scalars['String']>;
-  _updatedAt?: InputMaybe<Scalars['String']>;
-  _updatedBy?: InputMaybe<Scalars['String']>;
-  _schemaVersion?: InputMaybe<Scalars['Float']>;
-  _enabled?: InputMaybe<Scalars['Boolean']>;
-  _enabledAt?: InputMaybe<Scalars['String']>;
-  _status?: InputMaybe<DefaultWorkflow>;
-  _contentTypeId?: InputMaybe<Scalars['String']>;
-  _contentTypeName?: InputMaybe<Scalars['String']>;
-};
-
-export type TsStaticSiteEnvironmentVariablesInput = {
-  name?: InputMaybe<Scalars['String']>;
-  value?: InputMaybe<Scalars['String']>;
-};
-
-export type TsStaticSiteTriggersInput = {
-  contentTypeId?: InputMaybe<Scalars['String']>;
-  status?: InputMaybe<Scalars['String']>;
-};
-
-export type CreateTsStaticSiteResult = {
-  __typename?: 'CreateTsStaticSiteResult';
-  clientMutationId?: Maybe<Scalars['String']>;
-  result?: Maybe<TsStaticSite>;
-};
-
-/** create TsStaticSite input */
-export type CreateTsStaticSiteInput = {
-  title: Scalars['String'];
-  baseUrl?: InputMaybe<Scalars['String']>;
-  provider?: Scalars['String'];
-  idKey?: InputMaybe<Scalars['String']>;
-  secretKey?: InputMaybe<Scalars['String']>;
-  destination: Scalars['String'];
-  privateAcl?: InputMaybe<Scalars['Boolean']>;
-  environmentVariables?: InputMaybe<Array<InputMaybe<TsStaticSiteEnvironmentVariablesInput>>>;
-  triggers?: InputMaybe<Array<InputMaybe<TsStaticSiteTriggersInput>>>;
-  templateHash?: InputMaybe<Scalars['String']>;
-  _shapeId?: InputMaybe<Scalars['String']>;
-  _id?: InputMaybe<Scalars['ID']>;
-  _version?: InputMaybe<Scalars['Int']>;
-  _shapeName?: InputMaybe<Scalars['String']>;
-  _createdAt?: InputMaybe<Scalars['String']>;
-  _createdBy?: InputMaybe<Scalars['String']>;
-  _updatedAt?: InputMaybe<Scalars['String']>;
-  _updatedBy?: InputMaybe<Scalars['String']>;
-  _schemaVersion?: InputMaybe<Scalars['Float']>;
-  _enabled?: InputMaybe<Scalars['Boolean']>;
-  _enabledAt?: InputMaybe<Scalars['String']>;
-  _status?: InputMaybe<DefaultWorkflow>;
-  _contentTypeId?: InputMaybe<Scalars['String']>;
-  _contentTypeName?: InputMaybe<Scalars['String']>;
-};
-
-export type DuplicateTsStaticSiteResult = {
-  __typename?: 'DuplicateTsStaticSiteResult';
-  clientMutationId?: Maybe<Scalars['String']>;
-  result?: Maybe<TsStaticSite>;
-};
-
-/** duplicate TsStaticSite input */
-export type DuplicateTsStaticSiteInput = {
-  _id: Scalars['ID'];
-  title?: InputMaybe<Scalars['String']>;
-  baseUrl?: InputMaybe<Scalars['String']>;
-  provider?: InputMaybe<Scalars['String']>;
-  idKey?: InputMaybe<Scalars['String']>;
-  secretKey?: InputMaybe<Scalars['String']>;
-  destination?: InputMaybe<Scalars['String']>;
-  privateAcl?: InputMaybe<Scalars['Boolean']>;
-  environmentVariables?: InputMaybe<Array<InputMaybe<TsStaticSiteEnvironmentVariablesInput>>>;
-  triggers?: InputMaybe<Array<InputMaybe<TsStaticSiteTriggersInput>>>;
-  templateHash?: InputMaybe<Scalars['String']>;
-  _shapeId?: InputMaybe<Scalars['String']>;
-  _version?: InputMaybe<Scalars['Int']>;
-  _shapeName?: InputMaybe<Scalars['String']>;
-  _createdAt?: InputMaybe<Scalars['String']>;
-  _createdBy?: InputMaybe<Scalars['String']>;
-  _updatedAt?: InputMaybe<Scalars['String']>;
-  _updatedBy?: InputMaybe<Scalars['String']>;
-  _schemaVersion?: InputMaybe<Scalars['Float']>;
-  _enabled?: InputMaybe<Scalars['Boolean']>;
-  _enabledAt?: InputMaybe<Scalars['String']>;
-  _status?: InputMaybe<DefaultWorkflow>;
-  _contentTypeId?: InputMaybe<Scalars['String']>;
-  _contentTypeName?: InputMaybe<Scalars['String']>;
-};
-
-export type DeleteTsStaticSiteResult = {
-  __typename?: 'DeleteTsStaticSiteResult';
-  clientMutationId?: Maybe<Scalars['String']>;
-  result?: Maybe<Scalars['Boolean']>;
-};
-
-/** delete TsStaticSite input */
-export type DeleteTsStaticSiteInput = {
-  _id: Scalars['ID'];
-};
-
-export type ShipEngine_PackageInput = {
-  package_id?: InputMaybe<Scalars['Int']>;
-  description?: InputMaybe<Scalars['String']>;
-  package_code?: InputMaybe<Scalars['String']>;
-  tracking_number?: InputMaybe<Scalars['String']>;
-  label_download?: InputMaybe<ShipEngine_LabelDownloadInput>;
-  weight?: InputMaybe<ShipEngine_WeightInput>;
-  dimensions?: InputMaybe<ShipEngine_DimensionsInput>;
-};
-
-export type ShipEngine_LabelDownloadInput = {
-  href?: InputMaybe<Scalars['String']>;
-  pdf?: InputMaybe<Scalars['String']>;
-  png?: InputMaybe<Scalars['String']>;
-  zpl?: InputMaybe<Scalars['String']>;
-};
-
-export type ShipEngine_WeightInput = {
-  value?: InputMaybe<Scalars['Float']>;
-  unit?: InputMaybe<Scalars['String']>;
-};
-
-export type ShipEngine_DimensionsInput = {
-  length?: InputMaybe<Scalars['Float']>;
-  width?: InputMaybe<Scalars['Float']>;
-  height?: InputMaybe<Scalars['Float']>;
-  unit?: InputMaybe<Scalars['String']>;
-};
-
-export type ShipEngine_AddressInput = {
-  name?: InputMaybe<Scalars['String']>;
-  phone?: InputMaybe<Scalars['String']>;
-  address_line1?: InputMaybe<Scalars['String']>;
-  address_line2?: InputMaybe<Scalars['String']>;
-  city_locality?: InputMaybe<Scalars['String']>;
-  state_province?: InputMaybe<Scalars['String']>;
-  postal_code?: InputMaybe<Scalars['String']>;
-  country_code?: InputMaybe<Scalars['String']>;
-  address_residential_indicator?: InputMaybe<Scalars['String']>;
-};
-
-export type Stripe_CustomerAddressPropertyInput = {
-  line1?: InputMaybe<Scalars['String']>;
-  line2?: InputMaybe<Scalars['String']>;
-  city?: InputMaybe<Scalars['String']>;
-  country?: InputMaybe<Scalars['String']>;
-  postal_code?: InputMaybe<Scalars['String']>;
-  state?: InputMaybe<Scalars['String']>;
 };
 
 export type Stripe_CheckoutSessionLineItemsPropertyInput = {
@@ -20023,7 +19518,7 @@ export type Stripe_PaymentIntentInput = {
   description?: InputMaybe<Scalars['String']>;
   /** Unique identifier for the object. */
   id?: InputMaybe<Scalars['String']>;
-  invoice?: InputMaybe<Stripe_InvoiceInput>;
+  invoice?: InputMaybe<InvoiceWrappedStringInputUnion>;
   last_payment_error?: InputMaybe<Stripe_ApiErrorsInput>;
   /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
   livemode?: InputMaybe<Scalars['Boolean']>;
@@ -20059,6 +19554,9 @@ export type Stripe_PaymentIntentInput = {
   transfer_data?: InputMaybe<Stripe_TransferDataInput>;
   /** A string that identifies the resulting payment as part of a group. See the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts) for details. */
   transfer_group?: InputMaybe<Scalars['String']>;
+  invoiceItems?: InputMaybe<Array<InputMaybe<Stripe_InvoiceitemInput>>>;
+  /** The Stripe checkout session associated with this payment. */
+  sessionItems?: InputMaybe<Array<InputMaybe<Stripe_ItemInput>>>;
   _shapeId?: InputMaybe<Scalars['String']>;
   _id?: InputMaybe<Scalars['ID']>;
 };
@@ -23926,6 +23424,348 @@ export type Stripe_TransferDataInput = {
   destination?: InputMaybe<AccountWrappedStringInputUnion>;
 };
 
+export type Stripe_InvoiceitemInput = {
+  /** Amount (in the `currency` specified) of the invoice item. This should always be equal to `unit_amount * quantity`. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
+  currency?: InputMaybe<Scalars['String']>;
+  customer?: InputMaybe<Scalars['String']>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  date?: InputMaybe<Scalars['Int']>;
+  /** An arbitrary string attached to the object. Often useful for displaying to users. */
+  description?: InputMaybe<Scalars['String']>;
+  /** If true, discounts will apply to this invoice item. Always false for prorations. */
+  discountable?: InputMaybe<Scalars['Boolean']>;
+  /** The discounts which apply to the invoice item. Item discounts are applied before invoice discounts. Use `expand[]=discounts` to expand each discount. */
+  discounts?: InputMaybe<Array<InputMaybe<DiscountWrappedStringInputUnion>>>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  invoice?: InputMaybe<InvoiceWrappedStringInputUnion>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: InputMaybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: InputMaybe<Scalars['JSONObject']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+  period?: InputMaybe<Stripe_InvoiceLineItemPeriodInput>;
+  price?: InputMaybe<Stripe_PriceInput>;
+  /** Whether the invoice item was created automatically as a proration adjustment when the customer switched plans. */
+  proration?: InputMaybe<Scalars['Boolean']>;
+  /** Quantity of units for the invoice item. If the invoice item is a proration, the quantity of the subscription that the proration was computed for. */
+  quantity?: InputMaybe<Scalars['Int']>;
+  subscription?: InputMaybe<SubscriptionWrappedStringInputUnion>;
+  /** The subscription item that this invoice item has been created for, if any. */
+  subscription_item?: InputMaybe<Scalars['String']>;
+  /** The tax rates which apply to the invoice item. When set, the `default_tax_rates` on the invoice do not apply to this invoice item. */
+  tax_rates?: InputMaybe<Array<InputMaybe<Stripe_TaxRateInput>>>;
+  test_clock?: InputMaybe<TestHelpersTestClockWrappedStringInputUnion>;
+  /** Unit amount (in the `currency` specified) of the invoice item. */
+  unit_amount?: InputMaybe<Scalars['Int']>;
+  /** Same as `unit_amount`, but contains a decimal value with at most 12 decimal places. */
+  unit_amount_decimal?: InputMaybe<Scalars['String']>;
+};
+
+export type DiscountWrappedStringInputUnion = {
+  wrappedString?: InputMaybe<WrappedStringInput>;
+  discount?: InputMaybe<Stripe_DiscountInput>;
+};
+
+export type Stripe_InvoiceLineItemPeriodInput = {
+  /** The end of the period, which must be greater than or equal to the start. */
+  end?: InputMaybe<Scalars['Int']>;
+  /** The start of the period. */
+  start?: InputMaybe<Scalars['Int']>;
+};
+
+export type SubscriptionWrappedStringInputUnion = {
+  wrappedString?: InputMaybe<WrappedStringInput>;
+  subscription?: InputMaybe<Stripe_SubscriptionInput>;
+};
+
+export type Stripe_SubscriptionInput = {
+  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account. */
+  application_fee_percent?: InputMaybe<Scalars['Float']>;
+  automatic_tax?: InputMaybe<Stripe_SubscriptionAutomaticTaxInput>;
+  /** Determines the date of the first full invoice, and, for plans with `month` or `year` intervals, the day of the month for subsequent invoices. */
+  billing_cycle_anchor?: InputMaybe<Scalars['Int']>;
+  billing_thresholds?: InputMaybe<Stripe_SubscriptionBillingThresholdsInput>;
+  /** A date in the future at which the subscription will automatically get canceled */
+  cancel_at?: InputMaybe<Scalars['Int']>;
+  /** If the subscription has been canceled with the `at_period_end` flag set to `true`, `cancel_at_period_end` on the subscription will be true. You can use this attribute to determine whether a subscription that has a status of active is scheduled to be canceled at the end of the current period. */
+  cancel_at_period_end?: InputMaybe<Scalars['Boolean']>;
+  /** If the subscription has been canceled, the date of that cancellation. If the subscription was canceled with `cancel_at_period_end`, `canceled_at` will reflect the time of the most recent update request, not the end of the subscription period when the subscription is automatically moved to a canceled state. */
+  canceled_at?: InputMaybe<Scalars['Int']>;
+  /** Either `charge_automatically`, or `send_invoice`. When charging automatically, Stripe will attempt to pay this subscription at the end of the cycle using the default source attached to the customer. When sending an invoice, Stripe will email your customer an invoice with payment instructions. */
+  collection_method?: InputMaybe<UpdateProfileResultCollectionMethod>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: InputMaybe<Scalars['Int']>;
+  /** End of the current period that the subscription has been invoiced for. At the end of this period, a new invoice will be created. */
+  current_period_end?: InputMaybe<Scalars['Int']>;
+  /** Start of the current period that the subscription has been invoiced for. */
+  current_period_start?: InputMaybe<Scalars['Int']>;
+  customer?: InputMaybe<Scalars['String']>;
+  /** Number of days a customer has to pay invoices generated by this subscription. This value will be `null` for subscriptions where `collection_method=charge_automatically`. */
+  days_until_due?: InputMaybe<Scalars['Int']>;
+  default_payment_method?: InputMaybe<PaymentMethodWrappedStringInputUnion>;
+  default_source?: InputMaybe<AlipayAccountBankAccountBitcoinReceiverCardSourceWrappedStringInputUnion>;
+  /** The tax rates that will apply to any subscription item that does not have `tax_rates` set. Invoices created will have their `default_tax_rates` populated from the subscription. */
+  default_tax_rates?: InputMaybe<Array<InputMaybe<Stripe_TaxRateInput>>>;
+  discount?: InputMaybe<Stripe_DiscountInput>;
+  /** If the subscription has ended, the date the subscription ended. */
+  ended_at?: InputMaybe<Scalars['Int']>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  /** List of subscription items, each with an attached price. */
+  items?: InputMaybe<UpdateProfileResultOrdersSubscriptionSubscriptionItemsPropertyInput>;
+  latest_invoice?: InputMaybe<InvoiceWrappedStringInputUnion>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: InputMaybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: InputMaybe<Scalars['JSONObject']>;
+  /** Specifies the approximate timestamp on which any pending invoice items will be billed according to the schedule provided at `pending_invoice_item_interval`. */
+  next_pending_invoice_item_invoice?: InputMaybe<Scalars['Int']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+  pause_collection?: InputMaybe<Stripe_SubscriptionsResourcePauseCollectionInput>;
+  payment_settings?: InputMaybe<Stripe_SubscriptionsResourcePaymentSettingsInput>;
+  pending_invoice_item_interval?: InputMaybe<Stripe_SubscriptionPendingInvoiceItemIntervalInput>;
+  pending_setup_intent?: InputMaybe<SetupIntentWrappedStringInputUnion>;
+  pending_update?: InputMaybe<Stripe_SubscriptionsResourcePendingUpdateInput>;
+  schedule?: InputMaybe<SubscriptionScheduleWrappedStringInputUnion>;
+  /** Date when the subscription was first created. The date might differ from the `created` date due to backdating. */
+  start_date?: InputMaybe<Scalars['Int']>;
+  /**
+   * Possible values are `incomplete`, `incomplete_expired`, `trialing`, `active`, `past_due`, `canceled`, or `unpaid`.
+   *
+   * For `collection_method=charge_automatically` a subscription moves into `incomplete` if the initial payment attempt fails. A subscription in this state can only have metadata and default_source updated. Once the first invoice is paid, the subscription moves into an `active` state. If the first invoice is not paid within 23 hours, the subscription transitions to `incomplete_expired`. This is a terminal state, the open invoice will be voided and no further invoices will be generated.
+   *
+   * A subscription that is currently in a trial period is `trialing` and moves to `active` when the trial period is over.
+   *
+   * If subscription `collection_method=charge_automatically` it becomes `past_due` when payment to renew it fails and `canceled` or `unpaid` (depending on your subscriptions settings) when Stripe has exhausted all payment retry attempts.
+   *
+   * If subscription `collection_method=send_invoice` it becomes `past_due` when its invoice is not paid by the due date, and `canceled` or `unpaid` if it is still not paid by an additional deadline after that. Note that when a subscription has a status of `unpaid`, no subsequent invoices will be attempted (invoices will be created, but then immediately automatically closed). After receiving updated payment information from a customer, you may choose to reopen and pay their closed invoices.
+   */
+  status?: InputMaybe<UpdateProfileResultStatus>;
+  test_clock?: InputMaybe<TestHelpersTestClockWrappedStringInputUnion>;
+  transfer_data?: InputMaybe<Stripe_SubscriptionTransferDataInput>;
+  /** If the subscription has a trial, the end of that trial. */
+  trial_end?: InputMaybe<Scalars['Int']>;
+  /** If the subscription has a trial, the beginning of that trial. */
+  trial_start?: InputMaybe<Scalars['Int']>;
+};
+
+export type Stripe_SubscriptionAutomaticTaxInput = {
+  /** Whether Stripe automatically computes tax on this subscription. */
+  enabled?: InputMaybe<Scalars['Boolean']>;
+};
+
+export type Stripe_SubscriptionBillingThresholdsInput = {
+  /** Monetary threshold that triggers the subscription to create an invoice */
+  amount_gte?: InputMaybe<Scalars['Int']>;
+  /** Indicates if the `billing_cycle_anchor` should be reset when a threshold is reached. If true, `billing_cycle_anchor` will be updated to the date/time the threshold was last reached; otherwise, the value will remain unchanged. This value may not be `true` if the subscription contains items with plans that have `aggregate_usage=last_ever`. */
+  reset_billing_cycle_anchor?: InputMaybe<Scalars['Boolean']>;
+};
+
+export enum UpdateProfileResultCollectionMethod {
+  ChargeAutomatically = 'charge_automatically',
+  SendInvoice = 'send_invoice'
+}
+
+export type Stripe_TaxRateInput = {
+  /** Defaults to `true`. When set to `false`, this tax rate cannot be used with new applications or Checkout Sessions, but will still work for subscriptions and invoices that already have it set. */
+  active?: InputMaybe<Scalars['Boolean']>;
+  /** Two-letter country code ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)). */
+  country?: InputMaybe<Scalars['String']>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: InputMaybe<Scalars['Int']>;
+  /** An arbitrary string attached to the tax rate for your internal use only. It will not be visible to your customers. */
+  description?: InputMaybe<Scalars['String']>;
+  /** The display name of the tax rates as it will appear to your customer on their receipt email, PDF, and the hosted invoice page. */
+  display_name?: InputMaybe<Scalars['String']>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  /** This specifies if the tax rate is inclusive or exclusive. */
+  inclusive?: InputMaybe<Scalars['Boolean']>;
+  /** The jurisdiction for the tax rate. You can use this label field for tax reporting purposes. It also appears on your customer’s invoice. */
+  jurisdiction?: InputMaybe<Scalars['String']>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: InputMaybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: InputMaybe<Scalars['JSONObject']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+  /** This represents the tax rate percent out of 100. */
+  percentage?: InputMaybe<Scalars['Float']>;
+  /** [ISO 3166-2 subdivision code](https://en.wikipedia.org/wiki/ISO_3166-2:US), without country prefix. For example, "NY" for New York, United States. */
+  state?: InputMaybe<Scalars['String']>;
+  /** The high-level tax type, such as `vat` or `sales_tax`. */
+  tax_type?: InputMaybe<UpdateProfileResultTaxType>;
+};
+
+export enum UpdateProfileResultTaxType {
+  Gst = 'gst',
+  Hst = 'hst',
+  Jct = 'jct',
+  Pst = 'pst',
+  Qst = 'qst',
+  Rst = 'rst',
+  SalesTax = 'sales_tax',
+  Vat = 'vat'
+}
+
+/** List of subscription items, each with an attached price. */
+export type UpdateProfileResultOrdersSubscriptionSubscriptionItemsPropertyInput = {
+  /** Details about each object. */
+  data: Array<Stripe_SubscriptionItemInput>;
+  /** True if this list has another page of items after this one that can be fetched. */
+  has_more: Scalars['Boolean'];
+  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
+  object: UpdateProfileResultObject;
+  /** The URL where this list can be accessed. */
+  url: Scalars['String'];
+};
+
+export type Stripe_SubscriptionItemInput = {
+  billing_thresholds?: InputMaybe<Stripe_SubscriptionItemBillingThresholdsInput>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: InputMaybe<Scalars['Int']>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: InputMaybe<Scalars['JSONObject']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+  price?: InputMaybe<Stripe_PriceInput>;
+  /** The [quantity](https://stripe.com/docs/subscriptions/quantities) of the plan to which the customer should be subscribed. */
+  quantity?: InputMaybe<Scalars['Int']>;
+  /** The `subscription` this `subscription_item` belongs to. */
+  subscription?: InputMaybe<Scalars['String']>;
+  /** The tax rates which apply to this `subscription_item`. When set, the `default_tax_rates` on the subscription do not apply to this `subscription_item`. */
+  tax_rates?: InputMaybe<Array<InputMaybe<Stripe_TaxRateInput>>>;
+};
+
+export type Stripe_SubscriptionItemBillingThresholdsInput = {
+  /** Usage threshold that triggers the subscription to create an invoice */
+  usage_gte?: InputMaybe<Scalars['Int']>;
+};
+
+export type Stripe_SubscriptionsResourcePauseCollectionInput = {
+  /** The payment collection behavior for this subscription while paused. One of `keep_as_draft`, `mark_uncollectible`, or `void`. */
+  behavior?: InputMaybe<UpdateProfileResultBehavior>;
+  /** The time after which the subscription will resume collecting payments. */
+  resumes_at?: InputMaybe<Scalars['Int']>;
+};
+
+export enum UpdateProfileResultBehavior {
+  KeepAsDraft = 'keep_as_draft',
+  MarkUncollectible = 'mark_uncollectible',
+  Void = 'void'
+}
+
+export type Stripe_SubscriptionsResourcePaymentSettingsInput = {
+  payment_method_options?: InputMaybe<Stripe_SubscriptionsResourcePaymentMethodOptionsInput>;
+  /** The list of payment method types to provide to every invoice created by the subscription. If not set, Stripe attempts to automatically determine the types to use by looking at the invoice’s default payment method, the subscription’s default payment method, the customer’s default payment method, and your [invoice template settings](https://dashboard.stripe.com/settings/billing/invoice). */
+  payment_method_types?: InputMaybe<Array<InputMaybe<UpdateProfileResultPaymentMethodTypes>>>;
+};
+
+export type Stripe_SubscriptionsResourcePaymentMethodOptionsInput = {
+  acss_debit?: InputMaybe<Stripe_InvoicePaymentMethodOptionsAcssDebitInput>;
+  bancontact?: InputMaybe<Stripe_InvoicePaymentMethodOptionsBancontactInput>;
+  card?: InputMaybe<Stripe_SubscriptionPaymentMethodOptionsCardInput>;
+  customer_balance?: InputMaybe<Stripe_InvoicePaymentMethodOptionsCustomerBalanceInput>;
+  konbini?: InputMaybe<Stripe_InvoicePaymentMethodOptionsKonbiniInput>;
+  us_bank_account?: InputMaybe<Stripe_InvoicePaymentMethodOptionsUsBankAccountInput>;
+};
+
+export type Stripe_InvoicePaymentMethodOptionsAcssDebitInput = {
+  mandate_options?: InputMaybe<Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptionsInput>;
+  /** Bank account verification method. */
+  verification_method?: InputMaybe<UpdateProfileResultVerificationMethod>;
+};
+
+export type Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptionsInput = {
+  /** Transaction type of the mandate. */
+  transaction_type?: InputMaybe<UpdateProfileResultTransactionType>;
+};
+
+export type Stripe_InvoicePaymentMethodOptionsBancontactInput = {
+  /** Preferred language of the Bancontact authorization page that the customer is redirected to. */
+  preferred_language?: InputMaybe<UpdateProfileResultPreferredLanguage>;
+};
+
+export type Stripe_SubscriptionPaymentMethodOptionsCardInput = {
+  mandate_options?: InputMaybe<Stripe_InvoiceMandateOptionsCardInput>;
+  /** We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine. */
+  request_three_d_secure?: InputMaybe<UpdateProfileResultRequestThreeDSecure>;
+};
+
+export type Stripe_InvoiceMandateOptionsCardInput = {
+  /** Amount to be charged for future payments. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** One of `fixed` or `maximum`. If `fixed`, the `amount` param refers to the exact amount to be charged in future payments. If `maximum`, the amount charged can be up to the value passed for the `amount` param. */
+  amount_type?: InputMaybe<UpdateProfileResultAmountType>;
+  /** A description of the mandate or subscription that is meant to be displayed to the customer. */
+  description?: InputMaybe<Scalars['String']>;
+};
+
+export type Stripe_InvoicePaymentMethodOptionsCustomerBalanceInput = {
+  bank_transfer?: InputMaybe<Stripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransferInput>;
+  /** The funding method type to be used when there are not enough funds in the customer balance. Permitted values include: `bank_transfer`. */
+  funding_type?: InputMaybe<UpdateProfileResultFundingType>;
+};
+
+export type Stripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransferInput = {
+  /** The bank transfer type that can be used for funding. Permitted values include: `us_bank_account`, `eu_bank_account`, `id_bank_account`, `gb_bank_account`, `jp_bank_account`, `mx_bank_account`, `eu_bank_transfer`, `gb_bank_transfer`, `id_bank_transfer`, `jp_bank_transfer`, `mx_bank_transfer`, or `us_bank_transfer`. */
+  type?: InputMaybe<Scalars['String']>;
+};
+
+export enum UpdateProfileResultFundingType {
+  BankTransfer = 'bank_transfer'
+}
+
+export type Stripe_InvoicePaymentMethodOptionsKonbiniInput = {
+  result?: InputMaybe<Scalars['JSONObject']>;
+};
+
+export type Stripe_InvoicePaymentMethodOptionsUsBankAccountInput = {
+  /** Bank account verification method. */
+  verification_method?: InputMaybe<UpdateProfileResultVerificationMethod>;
+};
+
+export enum UpdateProfileResultPaymentMethodTypes {
+  AchCreditTransfer = 'ach_credit_transfer',
+  AchDebit = 'ach_debit',
+  AcssDebit = 'acss_debit',
+  AuBecsDebit = 'au_becs_debit',
+  BacsDebit = 'bacs_debit',
+  Bancontact = 'bancontact',
+  Boleto = 'boleto',
+  Card = 'card',
+  CustomerBalance = 'customer_balance',
+  Fpx = 'fpx',
+  Giropay = 'giropay',
+  Grabpay = 'grabpay',
+  Ideal = 'ideal',
+  Konbini = 'konbini',
+  Paynow = 'paynow',
+  SepaDebit = 'sepa_debit',
+  Sofort = 'sofort',
+  UsBankAccount = 'us_bank_account',
+  WechatPay = 'wechat_pay'
+}
+
+export type Stripe_SubscriptionPendingInvoiceItemIntervalInput = {
+  /** Specifies invoicing frequency. Either `day`, `week`, `month` or `year`. */
+  interval?: InputMaybe<UpdateProfileResultInterval>;
+  /** The number of intervals between invoices. For example, `interval=month` and `interval_count=3` bills every 3 months. Maximum of one year interval allowed (1 year, 12 months, or 52 weeks). */
+  interval_count?: InputMaybe<Scalars['Int']>;
+};
+
+export type SetupIntentWrappedStringInputUnion = {
+  wrappedString?: InputMaybe<WrappedStringInput>;
+  setupIntent?: InputMaybe<Stripe_SetupIntentInput>;
+};
+
 export type Stripe_SetupIntentInput = {
   application?: InputMaybe<ApplicationWrappedStringInputUnion>;
   /** Reason for cancellation of this SetupIntent, one of `abandoned`, `requested_by_customer`, or `duplicate`. */
@@ -24089,15 +23929,254 @@ export type Stripe_SetupIntentPaymentMethodOptionsUsBankAccountInput = {
   verification_method?: InputMaybe<UpdateProfileResultVerificationMethod>;
 };
 
+export type Stripe_SubscriptionsResourcePendingUpdateInput = {
+  /** If the update is applied, determines the date of the first full invoice, and, for plans with `month` or `year` intervals, the day of the month for subsequent invoices. */
+  billing_cycle_anchor?: InputMaybe<Scalars['Int']>;
+  /** The point after which the changes reflected by this update will be discarded and no longer applied. */
+  expires_at?: InputMaybe<Scalars['Int']>;
+  /** List of subscription items, each with an attached plan, that will be set if the update is applied. */
+  subscription_items?: InputMaybe<Array<InputMaybe<Stripe_SubscriptionItemInput>>>;
+  /** Unix timestamp representing the end of the trial period the customer will get before being charged for the first time, if the update is applied. */
+  trial_end?: InputMaybe<Scalars['Int']>;
+  /** Indicates if a plan's `trial_period_days` should be applied to the subscription. Setting `trial_end` per subscription is preferred, and this defaults to `false`. Setting this flag to `true` together with `trial_end` is not allowed. See [Using trial periods on subscriptions](https://stripe.com/docs/billing/subscriptions/trials) to learn more. */
+  trial_from_plan?: InputMaybe<Scalars['Boolean']>;
+};
+
+export type SubscriptionScheduleWrappedStringInputUnion = {
+  wrappedString?: InputMaybe<WrappedStringInput>;
+  subscriptionSchedule?: InputMaybe<Stripe_SubscriptionScheduleInput>;
+};
+
+export type Stripe_SubscriptionScheduleInput = {
+  /** Time at which the subscription schedule was canceled. Measured in seconds since the Unix epoch. */
+  canceled_at?: InputMaybe<Scalars['Int']>;
+  /** Time at which the subscription schedule was completed. Measured in seconds since the Unix epoch. */
+  completed_at?: InputMaybe<Scalars['Int']>;
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: InputMaybe<Scalars['Int']>;
+  current_phase?: InputMaybe<Stripe_SubscriptionScheduleCurrentPhaseInput>;
+  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
+  default_settings?: InputMaybe<Stripe_SubscriptionSchedulesResourceDefaultSettingsInput>;
+  /** Behavior of the subscription schedule and underlying subscription when it ends. Possible values are `release` and `cancel`. */
+  end_behavior?: InputMaybe<UpdateProfileResultEndBehavior>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: InputMaybe<Scalars['Boolean']>;
+  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
+  metadata?: InputMaybe<Scalars['JSONObject']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+  /** Configuration for the subscription schedule's phases. */
+  phases?: InputMaybe<Array<InputMaybe<Stripe_SubscriptionSchedulePhaseConfigurationInput>>>;
+  /** Time at which the subscription schedule was released. Measured in seconds since the Unix epoch. */
+  released_at?: InputMaybe<Scalars['Int']>;
+  /** ID of the subscription once managed by the subscription schedule (if it is released). */
+  released_subscription?: InputMaybe<Scalars['String']>;
+  /** The present status of the subscription schedule. Possible values are `not_started`, `active`, `completed`, `released`, and `canceled`. You can read more about the different states in our [behavior guide](https://stripe.com/docs/billing/subscriptions/subscription-schedules). */
+  status?: InputMaybe<UpdateProfileResultStatus>;
+  subscription?: InputMaybe<SubscriptionWrappedStringInputUnion>;
+  test_clock?: InputMaybe<TestHelpersTestClockWrappedStringInputUnion>;
+};
+
+export type Stripe_SubscriptionScheduleCurrentPhaseInput = {
+  /** The end of this phase of the subscription schedule. */
+  end_date?: InputMaybe<Scalars['Int']>;
+  /** The start of this phase of the subscription schedule. */
+  start_date?: InputMaybe<Scalars['Int']>;
+};
+
+export type Stripe_SubscriptionSchedulesResourceDefaultSettingsInput = {
+  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account during this phase of the schedule. */
+  application_fee_percent?: InputMaybe<Scalars['Float']>;
+  automatic_tax?: InputMaybe<Stripe_SubscriptionSchedulesResourceDefaultSettingsAutomaticTaxInput>;
+  /** Possible values are `phase_start` or `automatic`. If `phase_start` then billing cycle anchor of the subscription is set to the start of the phase when entering the phase. If `automatic` then the billing cycle anchor is automatically modified as needed when entering the phase. For more information, see the billing cycle [documentation](https://stripe.com/docs/billing/subscriptions/billing-cycle). */
+  billing_cycle_anchor?: InputMaybe<UpdateProfileResultBillingCycleAnchor>;
+  billing_thresholds?: InputMaybe<Stripe_SubscriptionBillingThresholdsInput>;
+  /** Either `charge_automatically`, or `send_invoice`. When charging automatically, Stripe will attempt to pay the underlying subscription at the end of each billing cycle using the default source attached to the customer. When sending an invoice, Stripe will email your customer an invoice with payment instructions. */
+  collection_method?: InputMaybe<UpdateProfileResultCollectionMethod>;
+  default_payment_method?: InputMaybe<PaymentMethodWrappedStringInputUnion>;
+  invoice_settings?: InputMaybe<Stripe_InvoiceSettingSubscriptionScheduleSettingInput>;
+  transfer_data?: InputMaybe<Stripe_SubscriptionTransferDataInput>;
+};
+
+export type Stripe_SubscriptionSchedulesResourceDefaultSettingsAutomaticTaxInput = {
+  /** Whether Stripe automatically computes tax on invoices created during this phase. */
+  enabled?: InputMaybe<Scalars['Boolean']>;
+};
+
+export enum UpdateProfileResultBillingCycleAnchor {
+  Automatic = 'automatic',
+  PhaseStart = 'phase_start'
+}
+
+export type Stripe_InvoiceSettingSubscriptionScheduleSettingInput = {
+  /** Number of days within which a customer must pay invoices generated by this subscription schedule. This value will be `null` for subscription schedules where `billing=charge_automatically`. */
+  days_until_due?: InputMaybe<Scalars['Int']>;
+};
+
+export type Stripe_SubscriptionTransferDataInput = {
+  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the destination account. By default, the entire amount is transferred to the destination. */
+  amount_percent?: InputMaybe<Scalars['Float']>;
+  destination?: InputMaybe<AccountWrappedStringInputUnion>;
+};
+
+export enum UpdateProfileResultEndBehavior {
+  Cancel = 'cancel',
+  None = 'none',
+  Release = 'release',
+  Renew = 'renew'
+}
+
+export type Stripe_SubscriptionSchedulePhaseConfigurationInput = {
+  /** A list of prices and quantities that will generate invoice items appended to the first invoice for this phase. */
+  add_invoice_items?: InputMaybe<Array<InputMaybe<Stripe_SubscriptionScheduleAddInvoiceItemInput>>>;
+  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account during this phase of the schedule. */
+  application_fee_percent?: InputMaybe<Scalars['Float']>;
+  automatic_tax?: InputMaybe<Stripe_SchedulesPhaseAutomaticTaxInput>;
+  /** Possible values are `phase_start` or `automatic`. If `phase_start` then billing cycle anchor of the subscription is set to the start of the phase when entering the phase. If `automatic` then the billing cycle anchor is automatically modified as needed when entering the phase. For more information, see the billing cycle [documentation](https://stripe.com/docs/billing/subscriptions/billing-cycle). */
+  billing_cycle_anchor?: InputMaybe<UpdateProfileResultBillingCycleAnchor>;
+  billing_thresholds?: InputMaybe<Stripe_SubscriptionBillingThresholdsInput>;
+  /** Either `charge_automatically`, or `send_invoice`. When charging automatically, Stripe will attempt to pay the underlying subscription at the end of each billing cycle using the default source attached to the customer. When sending an invoice, Stripe will email your customer an invoice with payment instructions. */
+  collection_method?: InputMaybe<UpdateProfileResultCollectionMethod>;
+  coupon?: InputMaybe<CouponDeletedCouponWrappedStringInputUnion>;
+  default_payment_method?: InputMaybe<PaymentMethodWrappedStringInputUnion>;
+  /** The default tax rates to apply to the subscription during this phase of the subscription schedule. */
+  default_tax_rates?: InputMaybe<Array<InputMaybe<Stripe_TaxRateInput>>>;
+  /** The end of this phase of the subscription schedule. */
+  end_date?: InputMaybe<Scalars['Int']>;
+  invoice_settings?: InputMaybe<Stripe_InvoiceSettingSubscriptionScheduleSettingInput>;
+  /** Subscription items to configure the subscription to during this phase of the subscription schedule. */
+  items?: InputMaybe<Array<InputMaybe<Stripe_SubscriptionScheduleConfigurationItemInput>>>;
+  /** If the subscription schedule will prorate when transitioning to this phase. Possible values are `create_prorations` and `none`. */
+  proration_behavior?: InputMaybe<UpdateProfileResultProrationBehavior>;
+  /** The start of this phase of the subscription schedule. */
+  start_date?: InputMaybe<Scalars['Int']>;
+  transfer_data?: InputMaybe<Stripe_SubscriptionTransferDataInput>;
+  /** When the trial ends within the phase. */
+  trial_end?: InputMaybe<Scalars['Int']>;
+};
+
+export type Stripe_SubscriptionScheduleAddInvoiceItemInput = {
+  price?: InputMaybe<DeletedPricePriceWrappedStringInputUnion>;
+  /** The quantity of the invoice item. */
+  quantity?: InputMaybe<Scalars['Int']>;
+  /** The tax rates which apply to the item. When set, the `default_tax_rates` do not apply to this item. */
+  tax_rates?: InputMaybe<Array<InputMaybe<Stripe_TaxRateInput>>>;
+};
+
+export type DeletedPricePriceWrappedStringInputUnion = {
+  wrappedString?: InputMaybe<WrappedStringInput>;
+  price?: InputMaybe<Stripe_PriceInput>;
+  deletedPrice?: InputMaybe<Stripe_DeletedPriceInput>;
+};
+
+export type Stripe_DeletedPriceInput = {
+  /** Always true for a deleted object */
+  deleted?: InputMaybe<UpdateProfileResultDeleted>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+};
+
+export type Stripe_SchedulesPhaseAutomaticTaxInput = {
+  /** Whether Stripe automatically computes tax on invoices created during this phase. */
+  enabled?: InputMaybe<Scalars['Boolean']>;
+};
+
+export type CouponDeletedCouponWrappedStringInputUnion = {
+  wrappedString?: InputMaybe<WrappedStringInput>;
+  coupon?: InputMaybe<Stripe_CouponInput>;
+  deletedCoupon?: InputMaybe<Stripe_DeletedCouponInput>;
+};
+
+export type Stripe_DeletedCouponInput = {
+  /** Always true for a deleted object */
+  deleted?: InputMaybe<UpdateProfileResultDeleted>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+};
+
+export type Stripe_SubscriptionScheduleConfigurationItemInput = {
+  billing_thresholds?: InputMaybe<Stripe_SubscriptionItemBillingThresholdsInput>;
+  price?: InputMaybe<DeletedPricePriceWrappedStringInputUnion>;
+  /** Quantity of the plan to which the customer should be subscribed. */
+  quantity?: InputMaybe<Scalars['Int']>;
+  /** The tax rates which apply to this `phase_item`. When set, the `default_tax_rates` on the phase do not apply to this `phase_item`. */
+  tax_rates?: InputMaybe<Array<InputMaybe<Stripe_TaxRateInput>>>;
+};
+
+export enum UpdateProfileResultProrationBehavior {
+  AlwaysInvoice = 'always_invoice',
+  CreateProrations = 'create_prorations',
+  None = 'none'
+}
+
+export type TestHelpersTestClockWrappedStringInputUnion = {
+  wrappedString?: InputMaybe<WrappedStringInput>;
+  testHelpersTestClock?: InputMaybe<Stripe_TestHelpersTestClockInput>;
+};
+
+export type Stripe_TestHelpersTestClockInput = {
+  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
+  created?: InputMaybe<Scalars['Int']>;
+  /** Time at which this clock is scheduled to auto delete. */
+  deletes_after?: InputMaybe<Scalars['Int']>;
+  /** Time at which all objects belonging to this clock are frozen. */
+  frozen_time?: InputMaybe<Scalars['Int']>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
+  livemode?: InputMaybe<Scalars['Boolean']>;
+  /** The custom name supplied at creation. */
+  name?: InputMaybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+  /** The status of the Test Clock. */
+  status?: InputMaybe<UpdateProfileResultStatus>;
+};
+
+export type Stripe_ItemInput = {
+  /** Total before any discounts or taxes are applied. */
+  amount_subtotal?: InputMaybe<Scalars['Int']>;
+  /** Total after discounts and taxes. */
+  amount_total?: InputMaybe<Scalars['Int']>;
+  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
+  currency?: InputMaybe<Scalars['String']>;
+  /** An arbitrary string attached to the object. Often useful for displaying to users. Defaults to product name. */
+  description?: InputMaybe<Scalars['String']>;
+  /** The discounts applied to the line item. */
+  discounts?: InputMaybe<Array<InputMaybe<Stripe_LineItemsDiscountAmountInput>>>;
+  /** Unique identifier for the object. */
+  id?: InputMaybe<Scalars['String']>;
+  /** String representing the object's type. Objects of the same type share the same value. */
+  object?: InputMaybe<UpdateProfileResultObject>;
+  price?: InputMaybe<Stripe_PriceInput>;
+  /** The quantity of products being purchased. */
+  quantity?: InputMaybe<Scalars['Int']>;
+  /** The taxes applied to the line item. */
+  taxes?: InputMaybe<Array<InputMaybe<Stripe_LineItemsTaxAmountInput>>>;
+};
+
+export type Stripe_LineItemsDiscountAmountInput = {
+  /** The amount discounted. */
+  amount?: InputMaybe<Scalars['Int']>;
+  discount?: InputMaybe<Stripe_DiscountInput>;
+};
+
+export type Stripe_LineItemsTaxAmountInput = {
+  /** Amount of tax applied for this rate. */
+  amount?: InputMaybe<Scalars['Int']>;
+  rate?: InputMaybe<Stripe_TaxRateInput>;
+};
+
 export type BankAccountCardSourceInputUnion = {
   bankAccount?: InputMaybe<Stripe_BankAccountInput>;
   card?: InputMaybe<Stripe_CardInput>;
   source?: InputMaybe<Stripe_SourceInput>;
-};
-
-export type SetupIntentWrappedStringInputUnion = {
-  wrappedString?: InputMaybe<WrappedStringInput>;
-  setupIntent?: InputMaybe<Stripe_SetupIntentInput>;
 };
 
 export type Stripe_NetworksInput = {
@@ -24297,500 +24376,6 @@ export type UpdateProfileResultOrdersAccountTaxIdsTaxIdCustomerCustomerSubscript
   url: Scalars['String'];
 };
 
-export type Stripe_SubscriptionInput = {
-  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account. */
-  application_fee_percent?: InputMaybe<Scalars['Float']>;
-  automatic_tax?: InputMaybe<Stripe_SubscriptionAutomaticTaxInput>;
-  /** Determines the date of the first full invoice, and, for plans with `month` or `year` intervals, the day of the month for subsequent invoices. */
-  billing_cycle_anchor?: InputMaybe<Scalars['Int']>;
-  billing_thresholds?: InputMaybe<Stripe_SubscriptionBillingThresholdsInput>;
-  /** A date in the future at which the subscription will automatically get canceled */
-  cancel_at?: InputMaybe<Scalars['Int']>;
-  /** If the subscription has been canceled with the `at_period_end` flag set to `true`, `cancel_at_period_end` on the subscription will be true. You can use this attribute to determine whether a subscription that has a status of active is scheduled to be canceled at the end of the current period. */
-  cancel_at_period_end?: InputMaybe<Scalars['Boolean']>;
-  /** If the subscription has been canceled, the date of that cancellation. If the subscription was canceled with `cancel_at_period_end`, `canceled_at` will reflect the time of the most recent update request, not the end of the subscription period when the subscription is automatically moved to a canceled state. */
-  canceled_at?: InputMaybe<Scalars['Int']>;
-  /** Either `charge_automatically`, or `send_invoice`. When charging automatically, Stripe will attempt to pay this subscription at the end of the cycle using the default source attached to the customer. When sending an invoice, Stripe will email your customer an invoice with payment instructions. */
-  collection_method?: InputMaybe<UpdateProfileResultCollectionMethod>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: InputMaybe<Scalars['Int']>;
-  /** End of the current period that the subscription has been invoiced for. At the end of this period, a new invoice will be created. */
-  current_period_end?: InputMaybe<Scalars['Int']>;
-  /** Start of the current period that the subscription has been invoiced for. */
-  current_period_start?: InputMaybe<Scalars['Int']>;
-  customer?: InputMaybe<Scalars['String']>;
-  /** Number of days a customer has to pay invoices generated by this subscription. This value will be `null` for subscriptions where `collection_method=charge_automatically`. */
-  days_until_due?: InputMaybe<Scalars['Int']>;
-  default_payment_method?: InputMaybe<PaymentMethodWrappedStringInputUnion>;
-  default_source?: InputMaybe<AlipayAccountBankAccountBitcoinReceiverCardSourceWrappedStringInputUnion>;
-  /** The tax rates that will apply to any subscription item that does not have `tax_rates` set. Invoices created will have their `default_tax_rates` populated from the subscription. */
-  default_tax_rates?: InputMaybe<Array<InputMaybe<Stripe_TaxRateInput>>>;
-  discount?: InputMaybe<Stripe_DiscountInput>;
-  /** If the subscription has ended, the date the subscription ended. */
-  ended_at?: InputMaybe<Scalars['Int']>;
-  /** Unique identifier for the object. */
-  id?: InputMaybe<Scalars['String']>;
-  /** List of subscription items, each with an attached price. */
-  items?: InputMaybe<UpdateProfileResultOrdersAccountTaxIdsTaxIdCustomerCustomerSubscriptionsDataItemsPropertyInput>;
-  latest_invoice?: InputMaybe<InvoiceWrappedStringInputUnion>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: InputMaybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: InputMaybe<Scalars['JSONObject']>;
-  /** Specifies the approximate timestamp on which any pending invoice items will be billed according to the schedule provided at `pending_invoice_item_interval`. */
-  next_pending_invoice_item_invoice?: InputMaybe<Scalars['Int']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: InputMaybe<UpdateProfileResultObject>;
-  pause_collection?: InputMaybe<Stripe_SubscriptionsResourcePauseCollectionInput>;
-  payment_settings?: InputMaybe<Stripe_SubscriptionsResourcePaymentSettingsInput>;
-  pending_invoice_item_interval?: InputMaybe<Stripe_SubscriptionPendingInvoiceItemIntervalInput>;
-  pending_setup_intent?: InputMaybe<SetupIntentWrappedStringInputUnion>;
-  pending_update?: InputMaybe<Stripe_SubscriptionsResourcePendingUpdateInput>;
-  schedule?: InputMaybe<SubscriptionScheduleWrappedStringInputUnion>;
-  /** Date when the subscription was first created. The date might differ from the `created` date due to backdating. */
-  start_date?: InputMaybe<Scalars['Int']>;
-  /**
-   * Possible values are `incomplete`, `incomplete_expired`, `trialing`, `active`, `past_due`, `canceled`, or `unpaid`.
-   *
-   * For `collection_method=charge_automatically` a subscription moves into `incomplete` if the initial payment attempt fails. A subscription in this state can only have metadata and default_source updated. Once the first invoice is paid, the subscription moves into an `active` state. If the first invoice is not paid within 23 hours, the subscription transitions to `incomplete_expired`. This is a terminal state, the open invoice will be voided and no further invoices will be generated.
-   *
-   * A subscription that is currently in a trial period is `trialing` and moves to `active` when the trial period is over.
-   *
-   * If subscription `collection_method=charge_automatically` it becomes `past_due` when payment to renew it fails and `canceled` or `unpaid` (depending on your subscriptions settings) when Stripe has exhausted all payment retry attempts.
-   *
-   * If subscription `collection_method=send_invoice` it becomes `past_due` when its invoice is not paid by the due date, and `canceled` or `unpaid` if it is still not paid by an additional deadline after that. Note that when a subscription has a status of `unpaid`, no subsequent invoices will be attempted (invoices will be created, but then immediately automatically closed). After receiving updated payment information from a customer, you may choose to reopen and pay their closed invoices.
-   */
-  status?: InputMaybe<UpdateProfileResultStatus>;
-  test_clock?: InputMaybe<TestHelpersTestClockWrappedStringInputUnion>;
-  transfer_data?: InputMaybe<Stripe_SubscriptionTransferDataInput>;
-  /** If the subscription has a trial, the end of that trial. */
-  trial_end?: InputMaybe<Scalars['Int']>;
-  /** If the subscription has a trial, the beginning of that trial. */
-  trial_start?: InputMaybe<Scalars['Int']>;
-};
-
-export type Stripe_SubscriptionAutomaticTaxInput = {
-  /** Whether Stripe automatically computes tax on this subscription. */
-  enabled?: InputMaybe<Scalars['Boolean']>;
-};
-
-export type Stripe_SubscriptionBillingThresholdsInput = {
-  /** Monetary threshold that triggers the subscription to create an invoice */
-  amount_gte?: InputMaybe<Scalars['Int']>;
-  /** Indicates if the `billing_cycle_anchor` should be reset when a threshold is reached. If true, `billing_cycle_anchor` will be updated to the date/time the threshold was last reached; otherwise, the value will remain unchanged. This value may not be `true` if the subscription contains items with plans that have `aggregate_usage=last_ever`. */
-  reset_billing_cycle_anchor?: InputMaybe<Scalars['Boolean']>;
-};
-
-export enum UpdateProfileResultCollectionMethod {
-  ChargeAutomatically = 'charge_automatically',
-  SendInvoice = 'send_invoice'
-}
-
-export type Stripe_TaxRateInput = {
-  /** Defaults to `true`. When set to `false`, this tax rate cannot be used with new applications or Checkout Sessions, but will still work for subscriptions and invoices that already have it set. */
-  active?: InputMaybe<Scalars['Boolean']>;
-  /** Two-letter country code ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)). */
-  country?: InputMaybe<Scalars['String']>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: InputMaybe<Scalars['Int']>;
-  /** An arbitrary string attached to the tax rate for your internal use only. It will not be visible to your customers. */
-  description?: InputMaybe<Scalars['String']>;
-  /** The display name of the tax rates as it will appear to your customer on their receipt email, PDF, and the hosted invoice page. */
-  display_name?: InputMaybe<Scalars['String']>;
-  /** Unique identifier for the object. */
-  id?: InputMaybe<Scalars['String']>;
-  /** This specifies if the tax rate is inclusive or exclusive. */
-  inclusive?: InputMaybe<Scalars['Boolean']>;
-  /** The jurisdiction for the tax rate. You can use this label field for tax reporting purposes. It also appears on your customer’s invoice. */
-  jurisdiction?: InputMaybe<Scalars['String']>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: InputMaybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: InputMaybe<Scalars['JSONObject']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: InputMaybe<UpdateProfileResultObject>;
-  /** This represents the tax rate percent out of 100. */
-  percentage?: InputMaybe<Scalars['Float']>;
-  /** [ISO 3166-2 subdivision code](https://en.wikipedia.org/wiki/ISO_3166-2:US), without country prefix. For example, "NY" for New York, United States. */
-  state?: InputMaybe<Scalars['String']>;
-  /** The high-level tax type, such as `vat` or `sales_tax`. */
-  tax_type?: InputMaybe<UpdateProfileResultTaxType>;
-};
-
-export enum UpdateProfileResultTaxType {
-  Gst = 'gst',
-  Hst = 'hst',
-  Jct = 'jct',
-  Pst = 'pst',
-  Qst = 'qst',
-  Rst = 'rst',
-  SalesTax = 'sales_tax',
-  Vat = 'vat'
-}
-
-/** List of subscription items, each with an attached price. */
-export type UpdateProfileResultOrdersAccountTaxIdsTaxIdCustomerCustomerSubscriptionsDataItemsPropertyInput = {
-  /** Details about each object. */
-  data: Array<Stripe_SubscriptionItemInput>;
-  /** True if this list has another page of items after this one that can be fetched. */
-  has_more: Scalars['Boolean'];
-  /** String representing the object's type. Objects of the same type share the same value. Always has the value `list`. */
-  object: UpdateProfileResultObject;
-  /** The URL where this list can be accessed. */
-  url: Scalars['String'];
-};
-
-export type Stripe_SubscriptionItemInput = {
-  billing_thresholds?: InputMaybe<Stripe_SubscriptionItemBillingThresholdsInput>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: InputMaybe<Scalars['Int']>;
-  /** Unique identifier for the object. */
-  id?: InputMaybe<Scalars['String']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: InputMaybe<Scalars['JSONObject']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: InputMaybe<UpdateProfileResultObject>;
-  price?: InputMaybe<Stripe_PriceInput>;
-  /** The [quantity](https://stripe.com/docs/subscriptions/quantities) of the plan to which the customer should be subscribed. */
-  quantity?: InputMaybe<Scalars['Int']>;
-  /** The `subscription` this `subscription_item` belongs to. */
-  subscription?: InputMaybe<Scalars['String']>;
-  /** The tax rates which apply to this `subscription_item`. When set, the `default_tax_rates` on the subscription do not apply to this `subscription_item`. */
-  tax_rates?: InputMaybe<Array<InputMaybe<Stripe_TaxRateInput>>>;
-};
-
-export type Stripe_SubscriptionItemBillingThresholdsInput = {
-  /** Usage threshold that triggers the subscription to create an invoice */
-  usage_gte?: InputMaybe<Scalars['Int']>;
-};
-
-export type Stripe_SubscriptionsResourcePauseCollectionInput = {
-  /** The payment collection behavior for this subscription while paused. One of `keep_as_draft`, `mark_uncollectible`, or `void`. */
-  behavior?: InputMaybe<UpdateProfileResultBehavior>;
-  /** The time after which the subscription will resume collecting payments. */
-  resumes_at?: InputMaybe<Scalars['Int']>;
-};
-
-export enum UpdateProfileResultBehavior {
-  KeepAsDraft = 'keep_as_draft',
-  MarkUncollectible = 'mark_uncollectible',
-  Void = 'void'
-}
-
-export type Stripe_SubscriptionsResourcePaymentSettingsInput = {
-  payment_method_options?: InputMaybe<Stripe_SubscriptionsResourcePaymentMethodOptionsInput>;
-  /** The list of payment method types to provide to every invoice created by the subscription. If not set, Stripe attempts to automatically determine the types to use by looking at the invoice’s default payment method, the subscription’s default payment method, the customer’s default payment method, and your [invoice template settings](https://dashboard.stripe.com/settings/billing/invoice). */
-  payment_method_types?: InputMaybe<Array<InputMaybe<UpdateProfileResultPaymentMethodTypes>>>;
-};
-
-export type Stripe_SubscriptionsResourcePaymentMethodOptionsInput = {
-  acss_debit?: InputMaybe<Stripe_InvoicePaymentMethodOptionsAcssDebitInput>;
-  bancontact?: InputMaybe<Stripe_InvoicePaymentMethodOptionsBancontactInput>;
-  card?: InputMaybe<Stripe_SubscriptionPaymentMethodOptionsCardInput>;
-  customer_balance?: InputMaybe<Stripe_InvoicePaymentMethodOptionsCustomerBalanceInput>;
-  konbini?: InputMaybe<Stripe_InvoicePaymentMethodOptionsKonbiniInput>;
-  us_bank_account?: InputMaybe<Stripe_InvoicePaymentMethodOptionsUsBankAccountInput>;
-};
-
-export type Stripe_InvoicePaymentMethodOptionsAcssDebitInput = {
-  mandate_options?: InputMaybe<Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptionsInput>;
-  /** Bank account verification method. */
-  verification_method?: InputMaybe<UpdateProfileResultVerificationMethod>;
-};
-
-export type Stripe_InvoicePaymentMethodOptionsAcssDebitMandateOptionsInput = {
-  /** Transaction type of the mandate. */
-  transaction_type?: InputMaybe<UpdateProfileResultTransactionType>;
-};
-
-export type Stripe_InvoicePaymentMethodOptionsBancontactInput = {
-  /** Preferred language of the Bancontact authorization page that the customer is redirected to. */
-  preferred_language?: InputMaybe<UpdateProfileResultPreferredLanguage>;
-};
-
-export type Stripe_SubscriptionPaymentMethodOptionsCardInput = {
-  mandate_options?: InputMaybe<Stripe_InvoiceMandateOptionsCardInput>;
-  /** We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine. */
-  request_three_d_secure?: InputMaybe<UpdateProfileResultRequestThreeDSecure>;
-};
-
-export type Stripe_InvoiceMandateOptionsCardInput = {
-  /** Amount to be charged for future payments. */
-  amount?: InputMaybe<Scalars['Int']>;
-  /** One of `fixed` or `maximum`. If `fixed`, the `amount` param refers to the exact amount to be charged in future payments. If `maximum`, the amount charged can be up to the value passed for the `amount` param. */
-  amount_type?: InputMaybe<UpdateProfileResultAmountType>;
-  /** A description of the mandate or subscription that is meant to be displayed to the customer. */
-  description?: InputMaybe<Scalars['String']>;
-};
-
-export type Stripe_InvoicePaymentMethodOptionsCustomerBalanceInput = {
-  bank_transfer?: InputMaybe<Stripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransferInput>;
-  /** The funding method type to be used when there are not enough funds in the customer balance. Permitted values include: `bank_transfer`. */
-  funding_type?: InputMaybe<UpdateProfileResultFundingType>;
-};
-
-export type Stripe_InvoicePaymentMethodOptionsCustomerBalanceBankTransferInput = {
-  /** The bank transfer type that can be used for funding. Permitted values include: `us_bank_account`, `eu_bank_account`, `id_bank_account`, `gb_bank_account`, `jp_bank_account`, `mx_bank_account`, `eu_bank_transfer`, `gb_bank_transfer`, `id_bank_transfer`, `jp_bank_transfer`, `mx_bank_transfer`, or `us_bank_transfer`. */
-  type?: InputMaybe<Scalars['String']>;
-};
-
-export enum UpdateProfileResultFundingType {
-  BankTransfer = 'bank_transfer'
-}
-
-export type Stripe_InvoicePaymentMethodOptionsKonbiniInput = {
-  result?: InputMaybe<Scalars['JSONObject']>;
-};
-
-export type Stripe_InvoicePaymentMethodOptionsUsBankAccountInput = {
-  /** Bank account verification method. */
-  verification_method?: InputMaybe<UpdateProfileResultVerificationMethod>;
-};
-
-export enum UpdateProfileResultPaymentMethodTypes {
-  AchCreditTransfer = 'ach_credit_transfer',
-  AchDebit = 'ach_debit',
-  AcssDebit = 'acss_debit',
-  AuBecsDebit = 'au_becs_debit',
-  BacsDebit = 'bacs_debit',
-  Bancontact = 'bancontact',
-  Boleto = 'boleto',
-  Card = 'card',
-  CustomerBalance = 'customer_balance',
-  Fpx = 'fpx',
-  Giropay = 'giropay',
-  Grabpay = 'grabpay',
-  Ideal = 'ideal',
-  Konbini = 'konbini',
-  Paynow = 'paynow',
-  SepaDebit = 'sepa_debit',
-  Sofort = 'sofort',
-  UsBankAccount = 'us_bank_account',
-  WechatPay = 'wechat_pay'
-}
-
-export type Stripe_SubscriptionPendingInvoiceItemIntervalInput = {
-  /** Specifies invoicing frequency. Either `day`, `week`, `month` or `year`. */
-  interval?: InputMaybe<UpdateProfileResultInterval>;
-  /** The number of intervals between invoices. For example, `interval=month` and `interval_count=3` bills every 3 months. Maximum of one year interval allowed (1 year, 12 months, or 52 weeks). */
-  interval_count?: InputMaybe<Scalars['Int']>;
-};
-
-export type Stripe_SubscriptionsResourcePendingUpdateInput = {
-  /** If the update is applied, determines the date of the first full invoice, and, for plans with `month` or `year` intervals, the day of the month for subsequent invoices. */
-  billing_cycle_anchor?: InputMaybe<Scalars['Int']>;
-  /** The point after which the changes reflected by this update will be discarded and no longer applied. */
-  expires_at?: InputMaybe<Scalars['Int']>;
-  /** List of subscription items, each with an attached plan, that will be set if the update is applied. */
-  subscription_items?: InputMaybe<Array<InputMaybe<Stripe_SubscriptionItemInput>>>;
-  /** Unix timestamp representing the end of the trial period the customer will get before being charged for the first time, if the update is applied. */
-  trial_end?: InputMaybe<Scalars['Int']>;
-  /** Indicates if a plan's `trial_period_days` should be applied to the subscription. Setting `trial_end` per subscription is preferred, and this defaults to `false`. Setting this flag to `true` together with `trial_end` is not allowed. See [Using trial periods on subscriptions](https://stripe.com/docs/billing/subscriptions/trials) to learn more. */
-  trial_from_plan?: InputMaybe<Scalars['Boolean']>;
-};
-
-export type SubscriptionScheduleWrappedStringInputUnion = {
-  wrappedString?: InputMaybe<WrappedStringInput>;
-  subscriptionSchedule?: InputMaybe<Stripe_SubscriptionScheduleInput>;
-};
-
-export type Stripe_SubscriptionScheduleInput = {
-  /** Time at which the subscription schedule was canceled. Measured in seconds since the Unix epoch. */
-  canceled_at?: InputMaybe<Scalars['Int']>;
-  /** Time at which the subscription schedule was completed. Measured in seconds since the Unix epoch. */
-  completed_at?: InputMaybe<Scalars['Int']>;
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: InputMaybe<Scalars['Int']>;
-  current_phase?: InputMaybe<Stripe_SubscriptionScheduleCurrentPhaseInput>;
-  customer?: InputMaybe<CustomerDeletedCustomerWrappedStringInputUnion>;
-  default_settings?: InputMaybe<Stripe_SubscriptionSchedulesResourceDefaultSettingsInput>;
-  /** Behavior of the subscription schedule and underlying subscription when it ends. Possible values are `release` and `cancel`. */
-  end_behavior?: InputMaybe<UpdateProfileResultEndBehavior>;
-  /** Unique identifier for the object. */
-  id?: InputMaybe<Scalars['String']>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: InputMaybe<Scalars['Boolean']>;
-  /** Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. */
-  metadata?: InputMaybe<Scalars['JSONObject']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: InputMaybe<UpdateProfileResultObject>;
-  /** Configuration for the subscription schedule's phases. */
-  phases?: InputMaybe<Array<InputMaybe<Stripe_SubscriptionSchedulePhaseConfigurationInput>>>;
-  /** Time at which the subscription schedule was released. Measured in seconds since the Unix epoch. */
-  released_at?: InputMaybe<Scalars['Int']>;
-  /** ID of the subscription once managed by the subscription schedule (if it is released). */
-  released_subscription?: InputMaybe<Scalars['String']>;
-  /** The present status of the subscription schedule. Possible values are `not_started`, `active`, `completed`, `released`, and `canceled`. You can read more about the different states in our [behavior guide](https://stripe.com/docs/billing/subscriptions/subscription-schedules). */
-  status?: InputMaybe<UpdateProfileResultStatus>;
-  subscription?: InputMaybe<SubscriptionWrappedStringInputUnion>;
-  test_clock?: InputMaybe<TestHelpersTestClockWrappedStringInputUnion>;
-};
-
-export type Stripe_SubscriptionScheduleCurrentPhaseInput = {
-  /** The end of this phase of the subscription schedule. */
-  end_date?: InputMaybe<Scalars['Int']>;
-  /** The start of this phase of the subscription schedule. */
-  start_date?: InputMaybe<Scalars['Int']>;
-};
-
-export type Stripe_SubscriptionSchedulesResourceDefaultSettingsInput = {
-  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account during this phase of the schedule. */
-  application_fee_percent?: InputMaybe<Scalars['Float']>;
-  automatic_tax?: InputMaybe<Stripe_SubscriptionSchedulesResourceDefaultSettingsAutomaticTaxInput>;
-  /** Possible values are `phase_start` or `automatic`. If `phase_start` then billing cycle anchor of the subscription is set to the start of the phase when entering the phase. If `automatic` then the billing cycle anchor is automatically modified as needed when entering the phase. For more information, see the billing cycle [documentation](https://stripe.com/docs/billing/subscriptions/billing-cycle). */
-  billing_cycle_anchor?: InputMaybe<UpdateProfileResultBillingCycleAnchor>;
-  billing_thresholds?: InputMaybe<Stripe_SubscriptionBillingThresholdsInput>;
-  /** Either `charge_automatically`, or `send_invoice`. When charging automatically, Stripe will attempt to pay the underlying subscription at the end of each billing cycle using the default source attached to the customer. When sending an invoice, Stripe will email your customer an invoice with payment instructions. */
-  collection_method?: InputMaybe<UpdateProfileResultCollectionMethod>;
-  default_payment_method?: InputMaybe<PaymentMethodWrappedStringInputUnion>;
-  invoice_settings?: InputMaybe<Stripe_InvoiceSettingSubscriptionScheduleSettingInput>;
-  transfer_data?: InputMaybe<Stripe_SubscriptionTransferDataInput>;
-};
-
-export type Stripe_SubscriptionSchedulesResourceDefaultSettingsAutomaticTaxInput = {
-  /** Whether Stripe automatically computes tax on invoices created during this phase. */
-  enabled?: InputMaybe<Scalars['Boolean']>;
-};
-
-export enum UpdateProfileResultBillingCycleAnchor {
-  Automatic = 'automatic',
-  PhaseStart = 'phase_start'
-}
-
-export type Stripe_InvoiceSettingSubscriptionScheduleSettingInput = {
-  /** Number of days within which a customer must pay invoices generated by this subscription schedule. This value will be `null` for subscription schedules where `billing=charge_automatically`. */
-  days_until_due?: InputMaybe<Scalars['Int']>;
-};
-
-export type Stripe_SubscriptionTransferDataInput = {
-  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the destination account. By default, the entire amount is transferred to the destination. */
-  amount_percent?: InputMaybe<Scalars['Float']>;
-  destination?: InputMaybe<AccountWrappedStringInputUnion>;
-};
-
-export enum UpdateProfileResultEndBehavior {
-  Cancel = 'cancel',
-  None = 'none',
-  Release = 'release',
-  Renew = 'renew'
-}
-
-export type Stripe_SubscriptionSchedulePhaseConfigurationInput = {
-  /** A list of prices and quantities that will generate invoice items appended to the first invoice for this phase. */
-  add_invoice_items?: InputMaybe<Array<InputMaybe<Stripe_SubscriptionScheduleAddInvoiceItemInput>>>;
-  /** A non-negative decimal between 0 and 100, with at most two decimal places. This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account during this phase of the schedule. */
-  application_fee_percent?: InputMaybe<Scalars['Float']>;
-  automatic_tax?: InputMaybe<Stripe_SchedulesPhaseAutomaticTaxInput>;
-  /** Possible values are `phase_start` or `automatic`. If `phase_start` then billing cycle anchor of the subscription is set to the start of the phase when entering the phase. If `automatic` then the billing cycle anchor is automatically modified as needed when entering the phase. For more information, see the billing cycle [documentation](https://stripe.com/docs/billing/subscriptions/billing-cycle). */
-  billing_cycle_anchor?: InputMaybe<UpdateProfileResultBillingCycleAnchor>;
-  billing_thresholds?: InputMaybe<Stripe_SubscriptionBillingThresholdsInput>;
-  /** Either `charge_automatically`, or `send_invoice`. When charging automatically, Stripe will attempt to pay the underlying subscription at the end of each billing cycle using the default source attached to the customer. When sending an invoice, Stripe will email your customer an invoice with payment instructions. */
-  collection_method?: InputMaybe<UpdateProfileResultCollectionMethod>;
-  coupon?: InputMaybe<CouponDeletedCouponWrappedStringInputUnion>;
-  default_payment_method?: InputMaybe<PaymentMethodWrappedStringInputUnion>;
-  /** The default tax rates to apply to the subscription during this phase of the subscription schedule. */
-  default_tax_rates?: InputMaybe<Array<InputMaybe<Stripe_TaxRateInput>>>;
-  /** The end of this phase of the subscription schedule. */
-  end_date?: InputMaybe<Scalars['Int']>;
-  invoice_settings?: InputMaybe<Stripe_InvoiceSettingSubscriptionScheduleSettingInput>;
-  /** Subscription items to configure the subscription to during this phase of the subscription schedule. */
-  items?: InputMaybe<Array<InputMaybe<Stripe_SubscriptionScheduleConfigurationItemInput>>>;
-  /** If the subscription schedule will prorate when transitioning to this phase. Possible values are `create_prorations` and `none`. */
-  proration_behavior?: InputMaybe<UpdateProfileResultProrationBehavior>;
-  /** The start of this phase of the subscription schedule. */
-  start_date?: InputMaybe<Scalars['Int']>;
-  transfer_data?: InputMaybe<Stripe_SubscriptionTransferDataInput>;
-  /** When the trial ends within the phase. */
-  trial_end?: InputMaybe<Scalars['Int']>;
-};
-
-export type Stripe_SubscriptionScheduleAddInvoiceItemInput = {
-  price?: InputMaybe<DeletedPricePriceWrappedStringInputUnion>;
-  /** The quantity of the invoice item. */
-  quantity?: InputMaybe<Scalars['Int']>;
-  /** The tax rates which apply to the item. When set, the `default_tax_rates` do not apply to this item. */
-  tax_rates?: InputMaybe<Array<InputMaybe<Stripe_TaxRateInput>>>;
-};
-
-export type DeletedPricePriceWrappedStringInputUnion = {
-  wrappedString?: InputMaybe<WrappedStringInput>;
-  price?: InputMaybe<Stripe_PriceInput>;
-  deletedPrice?: InputMaybe<Stripe_DeletedPriceInput>;
-};
-
-export type Stripe_DeletedPriceInput = {
-  /** Always true for a deleted object */
-  deleted?: InputMaybe<UpdateProfileResultDeleted>;
-  /** Unique identifier for the object. */
-  id?: InputMaybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: InputMaybe<UpdateProfileResultObject>;
-};
-
-export type Stripe_SchedulesPhaseAutomaticTaxInput = {
-  /** Whether Stripe automatically computes tax on invoices created during this phase. */
-  enabled?: InputMaybe<Scalars['Boolean']>;
-};
-
-export type CouponDeletedCouponWrappedStringInputUnion = {
-  wrappedString?: InputMaybe<WrappedStringInput>;
-  coupon?: InputMaybe<Stripe_CouponInput>;
-  deletedCoupon?: InputMaybe<Stripe_DeletedCouponInput>;
-};
-
-export type Stripe_DeletedCouponInput = {
-  /** Always true for a deleted object */
-  deleted?: InputMaybe<UpdateProfileResultDeleted>;
-  /** Unique identifier for the object. */
-  id?: InputMaybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: InputMaybe<UpdateProfileResultObject>;
-};
-
-export type Stripe_SubscriptionScheduleConfigurationItemInput = {
-  billing_thresholds?: InputMaybe<Stripe_SubscriptionItemBillingThresholdsInput>;
-  price?: InputMaybe<DeletedPricePriceWrappedStringInputUnion>;
-  /** Quantity of the plan to which the customer should be subscribed. */
-  quantity?: InputMaybe<Scalars['Int']>;
-  /** The tax rates which apply to this `phase_item`. When set, the `default_tax_rates` on the phase do not apply to this `phase_item`. */
-  tax_rates?: InputMaybe<Array<InputMaybe<Stripe_TaxRateInput>>>;
-};
-
-export enum UpdateProfileResultProrationBehavior {
-  AlwaysInvoice = 'always_invoice',
-  CreateProrations = 'create_prorations',
-  None = 'none'
-}
-
-export type SubscriptionWrappedStringInputUnion = {
-  wrappedString?: InputMaybe<WrappedStringInput>;
-  subscription?: InputMaybe<Stripe_SubscriptionInput>;
-};
-
-export type TestHelpersTestClockWrappedStringInputUnion = {
-  wrappedString?: InputMaybe<WrappedStringInput>;
-  testHelpersTestClock?: InputMaybe<Stripe_TestHelpersTestClockInput>;
-};
-
-export type Stripe_TestHelpersTestClockInput = {
-  /** Time at which the object was created. Measured in seconds since the Unix epoch. */
-  created?: InputMaybe<Scalars['Int']>;
-  /** Time at which this clock is scheduled to auto delete. */
-  deletes_after?: InputMaybe<Scalars['Int']>;
-  /** Time at which all objects belonging to this clock are frozen. */
-  frozen_time?: InputMaybe<Scalars['Int']>;
-  /** Unique identifier for the object. */
-  id?: InputMaybe<Scalars['String']>;
-  /** Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode. */
-  livemode?: InputMaybe<Scalars['Boolean']>;
-  /** The custom name supplied at creation. */
-  name?: InputMaybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: InputMaybe<UpdateProfileResultObject>;
-  /** The status of the Test Clock. */
-  status?: InputMaybe<UpdateProfileResultStatus>;
-};
-
 export type Stripe_CustomerTaxInput = {
   /** Surfaces if automatic tax computation is possible given the current customer location information. */
   automatic_tax?: InputMaybe<UpdateProfileResultAutomaticTax>;
@@ -24969,18 +24554,6 @@ export type Stripe_DeletedDiscountInput = {
   subscription?: InputMaybe<Scalars['String']>;
 };
 
-export type DiscountWrappedStringInputUnion = {
-  wrappedString?: InputMaybe<WrappedStringInput>;
-  discount?: InputMaybe<Stripe_DiscountInput>;
-};
-
-export type Stripe_InvoiceLineItemPeriodInput = {
-  /** The end of the period, which must be greater than or equal to the start. */
-  end?: InputMaybe<Scalars['Int']>;
-  /** The start of the period. */
-  start?: InputMaybe<Scalars['Int']>;
-};
-
 export type Stripe_InvoicesLineItemsProrationDetailsInput = {
   credited_items?: InputMaybe<Stripe_InvoicesLineItemsCreditedItemsInput>;
 };
@@ -25128,18 +24701,6 @@ export type Stripe_QuotesResourceTotalDetailsResourceBreakdownInput = {
   taxes?: InputMaybe<Array<InputMaybe<Stripe_LineItemsTaxAmountInput>>>;
 };
 
-export type Stripe_LineItemsDiscountAmountInput = {
-  /** The amount discounted. */
-  amount?: InputMaybe<Scalars['Int']>;
-  discount?: InputMaybe<Stripe_DiscountInput>;
-};
-
-export type Stripe_LineItemsTaxAmountInput = {
-  /** Amount of tax applied for this rate. */
-  amount?: InputMaybe<Scalars['Int']>;
-  rate?: InputMaybe<Stripe_TaxRateInput>;
-};
-
 export type Stripe_QuotesResourceUpfrontInput = {
   /** Total before any discounts or taxes are applied. */
   amount_subtotal?: InputMaybe<Scalars['Int']>;
@@ -25160,28 +24721,6 @@ export type UpdateProfileResultOrdersQuoteQuoteComputedUpfrontLineItemsPropertyI
   object: UpdateProfileResultObject;
   /** The URL where this list can be accessed. */
   url: Scalars['String'];
-};
-
-export type Stripe_ItemInput = {
-  /** Total before any discounts or taxes are applied. */
-  amount_subtotal?: InputMaybe<Scalars['Int']>;
-  /** Total after discounts and taxes. */
-  amount_total?: InputMaybe<Scalars['Int']>;
-  /** Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies). */
-  currency?: InputMaybe<Scalars['String']>;
-  /** An arbitrary string attached to the object. Often useful for displaying to users. Defaults to product name. */
-  description?: InputMaybe<Scalars['String']>;
-  /** The discounts applied to the line item. */
-  discounts?: InputMaybe<Array<InputMaybe<Stripe_LineItemsDiscountAmountInput>>>;
-  /** Unique identifier for the object. */
-  id?: InputMaybe<Scalars['String']>;
-  /** String representing the object's type. Objects of the same type share the same value. */
-  object?: InputMaybe<UpdateProfileResultObject>;
-  price?: InputMaybe<Stripe_PriceInput>;
-  /** The quantity of products being purchased. */
-  quantity?: InputMaybe<Scalars['Int']>;
-  /** The taxes applied to the line item. */
-  taxes?: InputMaybe<Array<InputMaybe<Stripe_LineItemsTaxAmountInput>>>;
 };
 
 export type Stripe_QuotesResourceFromQuoteInput = {
