@@ -1,14 +1,14 @@
-import type { NextPage } from 'next';
-import type { Voucherify_LoyaltyCard } from 'lib/takeshape/types';
-import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { Heading, Divider, Alert, Spinner, Container, Flex, Box } from '@theme-ui/components';
-import { Page, Section } from 'components/layout';
-import { SubscriptionList } from 'components/subscriptions';
-import { PaymentList } from 'components/payments';
 import { useQuery } from '@apollo/client';
-import { GetMySubscriptions, GetMyPayments, GetMyLoyaltyCard } from 'lib/queries';
-import { useProfile } from 'lib/takeshape';
+import { withAuthenticationRequired } from '@auth0/auth0-react';
+import { Alert, Box, Container, Divider, Flex, Heading, Spinner } from '@theme-ui/components';
+import { Page, Section } from 'components/layout';
 import LoyaltyCard from 'components/loyalty-card';
+import { PaymentList } from 'components/payments';
+import { SubscriptionList } from 'components/subscriptions';
+import { GetMyLoyaltyCard, GetMyPayments, GetMySubscriptions } from 'lib/queries';
+import { useProfile } from 'lib/takeshape';
+import type { Voucherify_LoyaltyCard } from 'lib/takeshape/types';
+import type { NextPage } from 'next';
 
 const PurchasesPage: NextPage = () => {
   const { isProfileReady } = useProfile();
@@ -46,7 +46,7 @@ const PurchasesPage: NextPage = () => {
 
             {!paymentsData && <Spinner />}
 
-            {paymentsData && <PaymentList payments={paymentsData.payments} />}
+            {paymentsData && <PaymentList payments={paymentsData.payments.items} />}
 
             {paymentsError && (
               <>

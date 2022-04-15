@@ -259,42 +259,44 @@ export const DeleteMySubscription = gql`
 
 export const GetMyPayments = gql`
   query GetMyPaymentsQuery {
-    payments: getMyPaymentsIndexed(limit: 5) {
-      id
-      amount
-      currency
-      created
-      invoiceItems {
-        object
+    payments: getMyPaymentsIndexed(size: 5, sort: { field: "created", order: "desc" }) {
+      items {
         id
         amount
         currency
-        quantity
-        price {
-          product {
-            id
-            name
-            images
+        created
+        invoiceItems {
+          object
+          id
+          amount
+          currency
+          quantity
+          price {
+            product {
+              id
+              name
+              images
+            }
           }
         }
-      }
-      sessionItems {
-        object
-        id
-        amount_total
-        currency
-        quantity
-        price {
-          product {
-            id
-            name
-            images
+        sessionItems {
+          object
+          id
+          amount_total
+          currency
+          quantity
+          price {
+            product {
+              id
+              name
+              images
+            }
           }
         }
-      }
-      shipment {
-        tracking_number
-        tracking_status
+        shipment {
+          tracking_number
+          tracking_status
+        }
       }
     }
   }

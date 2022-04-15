@@ -606,12 +606,7 @@
       }
     },
     "getMyPaymentsIndexed": {
-      "shape": {
-        "type": "array",
-        "items": {
-          "@ref": "stripe:PaymentIntent"
-        }
-      },
+      "shape": "PaginatedList<Stripe_PaymentIntent>",
       "resolver": {
         "compose": [
           {
@@ -648,58 +643,18 @@
                 {
                   "path": "where.customer.eq",
                   "mapping": "$resolvers.profile.stripeCustomerId"
+                },
+                {
+                  "path": "where.status.eq",
+                  "value": "succeeded"
                 }
               ]
             }
           }
-        ],
-        "results": {
-          "ops": [
-            {
-              "path": "$",
-              "mapping": [
-                [
-                  "get",
-                  {
-                    "path": "$finalResolver.items"
-                  }
-                ],
-                [
-                  "filter",
-                  {
-                    "predicate": [
-                      "status",
-                      "succeeded"
-                    ]
-                  }
-                ]
-              ]
-            }
-          ]
-        }
+        ]
       },
       "description": "Get the signed-in user's payments from Stripe",
-      "args": {
-        "type": "object",
-        "properties": {
-          "expand": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "limit": {
-            "type": "number"
-          },
-          "created": {},
-          "starting_after": {
-            "type": "string"
-          },
-          "ending_before": {
-            "type": "string"
-          }
-        }
-      }
+      "args": "TSListArgs<Stripe_PaymentIntent>"
     },
     "getProfile": {
       "shape": "Profile",
