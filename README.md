@@ -40,6 +40,8 @@ graph TD
 
 ## Instructions
 
+To run this starter, you'll first need to configure accounts and generate credentials for each API the project uses. Instructions for this process are below:
+
 ### Auth0
 
 1. Create an Auth0 account, if you haven't already at [auth0.com](https://auth0.com/).
@@ -122,27 +124,62 @@ graph TD
    - Enter an `Account name` where indicated.
    - **Save** the settings.
 
-### Connecting Other Services
+### REVIEWS.io
 
-Voucherify, Referral Candy, Reviews.io and Ship Engine are easy to connect as REST services on TakeShape. All three require simple auth headers and tokens. We have [a guide for connecting REST services](https://app.takeshape.io/docs/services/providers/rest/#connect-a-rest-service) in our docs.
+1. Get your Store ID and API Key from REVIEWS.io
+   - [Navigate to API integrations by clicking here](https://dash.reviews.io/integration/api), or follow the below instructions.
+   - On your dashboard, select **Integrations** in the  navigation on the left. Select **API** in the list of integrations.
+   - Under **API Credentials**, copy and save the `Store ID` and `API Key`
 
-Below is a list of guides from each service's documentation for authenticating your API's:
+![A screenshot of the API page in Reviews.io](./readme_images/reviewsio/api-keys-reviewsio.png)
 
-- [Voucherify](https://docs.voucherify.io/docs/authentication)
-- [Ship Engine](https://www.shipengine.com/docs/rest/#headers)
-- [Referral Candy](https://www.referralcandy.com/api#authentication)
-- [Reviews.io](https://api.reviews.co.uk/documentation/index.html#api-_footer)
+2. Navigate to your TakeShape project's dashboard and select **REVIEWS.io** under the Services list.
 
-You can [follow our guide](https://app.takeshape.io/docs/services/providers/rest/#connect-a-rest-service) for more information on setting a REST service up in a TakeShape project.
-#### Klaviyo
+3. Under **Store ID**, paste your Store ID, and under **API Key**, paste your API Key. **Save** your service.  
 
-![A list of TakeShape services](./readme_images/services.png)
+![A screenshot of the REVIEWS.io service page](./readme_images/reviewsio/service-page-reviewsio.png)
 
-Setting up Klaviyo in your TakeShape project is as simple as selecting it as a service and adding your Klaviyo API key. On your TakeShape project's dashboard, navigate to the Home tab and select Connect Service
+### Ship Engine
 
-![A list of TakeShape services](./readme_images/connect.png)
+1. Get your API Key from Ship Engine.
+   - Navigate to your [API Dashboard](https://app.shipengine.com/) and select the **Sandbox** tab on the left.
+   - There should already be an API Key generated, but you can generate a new one instantly by selecting **Create New Key** on this page.
+   - Your API Key should begin with **TEST_**. Copy this key to put into your TakeShape project.
 
-To find your api key for Klaviyo, log in to your Klaviyo account and access Account → Settings → API Keys.
+![A screenshot of Ship Engine's API Dashboard](./readme_images/shipengine/api-dashboard-shipengine.png)
+
+2. Navigate to your TakeShape project's dashboard and select **Ship Engine** under the services list.
+
+3. Under **Authentication**, set the Header to `API-Key` and the Token to your API Key (it should start with **TEST_**). **Save** your service.  
+
+### Voucherify
+
+1. Get your `Application ID` from Voucherify.
+   - From your Voucherify dashboard, select Project Settings → Application Keys. Create your keys. You will be given an Application ID and a Secret Key.
+
+![A screenshot of the Voucherify dropdown menu](./readme_images/voucherify/project-settings-voucherify.png)
+
+![A screenshot of the Voucherify application keys page](./readme_images/voucherify/application-keys-voucherify.png)
+
+2. Navigate to your TakeShape project's dashboard and select **Voucherify** under your services list.
+
+3. Under **Authentication**, set the Header to `X-App-Id` and the Token to your App ID. **Save** your service. 
+### Klaviyo
+
+1. Find your api key for Klaviyo.
+   - Log into your Klaviyo account and navigate to Account → Settings → API Keys.
+
+2. On your TakeShape project's dashboard, navigate to the Home tab and select **Klaviyo** from the list of services.
+
+3. In the **Authentication** field, add your Klaviyo API key, and **Save** your Klaviyo service.
+
+![A screenshot of Klaviyo in the list of TakeShape services](./readme_images/klaviyo/select-klaviyo.png)
+
+![A screenshot of the Klaviyo service page](./readme_images/klaviyo/add-authentication-klaviyo.png)
+
+### Referral Candy
+
+For this project, Referral Candy works without authentication. You don't need to edit this service.
 
 ### Running the Starter
 
