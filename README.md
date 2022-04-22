@@ -8,7 +8,6 @@ A full-featured e-commerce experience using the best services out there:
 - Reviews.io for product reviews
 - Voucherify for customer loyalty
 - Ship Engine for shipping
-- Referral Candy for referrals
 - Next.js to build the pages and bundle it all up
 - Vercel to host it
 - **TakeShape ShapeDB for profile data storage**
@@ -22,7 +21,6 @@ graph TD
     Mesh --> P{Products} 
     P --> Stripe
     Mesh --> UP{User Profile}
-    UP --> |Referrals| RC(Referral Candy)
     UP --> |Orders and Subscriptions| Stripe
     UP --> |Newsletter| Klaviyo
     P --> |Product Reviews| Reviews.io
@@ -176,10 +174,6 @@ To run this starter, you'll first need to configure accounts and generate creden
 ![A screenshot of Klaviyo in the list of TakeShape services](./readme_images/klaviyo/select-klaviyo.png)
 
 ![A screenshot of the Klaviyo service page](./readme_images/klaviyo/add-authentication-klaviyo.png)
-
-### Referral Candy
-
-For this project, Referral Candy works without authentication. You don't need to edit this service.
 
 ### Running the Starter
 
