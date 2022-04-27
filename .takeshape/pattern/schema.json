@@ -157,7 +157,7 @@
     "Stripe_PaymentIntent": {
       "queries": {
         "list": {
-          "name": "listPaymentIntents",
+          "name": "Stripe_listPaymentIntents",
           "pagination": {
             "type": "cursor",
             "cursorPath": "data[(@.length-1)].id",
